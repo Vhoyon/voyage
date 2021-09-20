@@ -1,7 +1,7 @@
 {
-  "name": "node-api-backend",
+  "name": "voyage-discord-bot",
   "version": "0.0.0",
-  "description": "",
+  "description": "Discord Bot made with NestJS and discord-nestjs",
   "author": "Guillaume Marcoux",
   "private": true,
   "license": "MIT",
@@ -34,6 +34,7 @@
     "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
+    "@discordjs/opus": "^0.6.0",
     "@nestjs/common": "8.0.6",
     "@nestjs/core": "8.0.6",
     "@nestjs/graphql": "9.0.4",
@@ -44,6 +45,9 @@
     "apollo-server-express": "3.3.0",
     "class-validator": "0.13.1",
     "deepmerge": "4.2.2",
+    "discord-nestjs": "^1.2.1",
+    "discord.js": "^12.5.3",
+    "ffmpeg-static": "^4.4.0",
     "graphql": "15.5.3",
     "graphql-depth-limit": "1.1.0",
     "graphql-subscriptions": "1.2.1",
@@ -51,7 +55,10 @@
     "graphql-ws": "5.5.0",
     "nest-typed-config": "1.6.0",
     "reflect-metadata": "0.1.13",
-    "rxjs": "7.3.0"
+    "rxjs": "7.3.0",
+    "vcommand-parser": "^2.0.0",
+    "youtube-search": "^1.1.6",
+    "ytdl-core": "^4.9.1"
   },
   "devDependencies": {
     "@nestjs/cli": "8.1.1",

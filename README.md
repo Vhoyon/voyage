@@ -1,1 +1,1 @@
-# node-api-template
+# Voyage Discord Bot

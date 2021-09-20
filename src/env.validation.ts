@@ -11,6 +11,8 @@ export const DEFAULT_PORT = 3000;
 
 export const DEFAULT_GRAPHQL_DEPTH_LIMIT = 10;
 
+export const DEFAULT_DISCORD_PREFIX = '!';
+
 export class EnvironmentConfig {
 	@IsEnum(Environment)
 	readonly NODE_ENV: Environment = Environment.Development;
@@ -25,6 +27,20 @@ export class EnvironmentConfig {
 
 	@IsString()
 	readonly KEY!: string;
+
+	// ---------------
+	//     DISCORD
+	// ---------------
+
+	@IsString()
+	readonly DISCORD_TOKEN!: string;
+
+	@IsOptional()
+	@IsString()
+	readonly DISCORD_PREFIX: string = DEFAULT_DISCORD_PREFIX;
+
+	@IsString()
+	readonly YOUTUBE_API_KEY!: string;
 
 	// ---------------
 	//     DATABASE

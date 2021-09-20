@@ -14,6 +14,8 @@ async function bootstrap(): Promise<void> {
 
 	const port = env.PORT;
 
+	app.enableShutdownHooks();
+
 	await app.listen(port);
 
 	console.log(`Server launched on port ${port}!`);

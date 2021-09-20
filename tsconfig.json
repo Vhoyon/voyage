@@ -20,7 +20,7 @@
     ],
     
     "outDir": "./dist",
-    "declaration": true,
+    "declaration": false,
     "sourceMap": true,
     "removeComments": false,
     "incremental": true,
