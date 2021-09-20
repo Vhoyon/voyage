@@ -1,7 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Content, Context, OnCommand } from 'discord-nestjs';
+import { Content, Context, OnCommand, TransformPipe, UsePipes, ValidationPipe } from 'discord-nestjs';
 import { Message } from 'discord.js';
 import { VParsedCommand } from 'vcommand-parser';
+import { VolumeDto } from './dtos/volume.dto';
 import { MusicService } from './music.service';
 
 @Injectable()
@@ -53,27 +54,8 @@ export class MusicGateway {
 	}
 
 	@OnCommand({ name: 'volume' })
-	async onVolume(@Content() parsed: VParsedCommand, @Context() [message]: [Message]) {
-		if (!parsed.content) {
-			await message.channel.send('You need to provide a number to this command!');
-			return;
-		}
-
-		const getVolumeFromContent = (query: string) => {
-			try {
-				return parseInt(query);
-			} catch (error) {
-				return;
-			}
-		};
-
-		const volume = getVolumeFromContent(parsed.content);
-
-		if (!volume) {
-			await message.channel.send('You need to give only a number!');
-			return;
-		}
-
+	@UsePipes(TransformPipe, ValidationPipe)
+	async onVolume(@Content() { volume }: VolumeDto, @Context() [message]: [Message]) {
 		const voiceChannel = message.member?.voice?.channel;
 
 		if (!voiceChannel) {
