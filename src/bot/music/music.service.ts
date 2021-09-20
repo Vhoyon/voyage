@@ -142,7 +142,7 @@ export class MusicService {
 	}
 
 	protected async getLinkableSong(query: string, options: SearchOptions): Promise<LinkableSong> {
-		const youtubeResult = await this.youtubeService.getSearchResult(query, options);
+		const youtubeResult = await this.youtubeService.getSearchResult(query, options.message);
 
 		return {
 			query,
