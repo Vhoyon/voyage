@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Guild, Message, StreamDispatcher, TextChannel, VoiceChannel, VoiceConnection } from 'discord.js';
-import { YoutubeService } from './services/youtube.service';
+import { YoutubeService } from './providers/youtube.service';
 
 export const VOLUME_LOG = 15;
 
@@ -142,14 +142,9 @@ export class MusicService {
 	}
 
 	protected async getLinkableSong(query: string, options: SearchOptions): Promise<LinkableSong> {
-		const youtubeResult = await this.youtubeService.getSearchResult(query, options.message);
+		const linkableSong = await this.youtubeService.getLinkableSong(query, options.message);
 
-		return {
-			query,
-			source: 'youtube',
-			url: youtubeResult.id,
-			title: youtubeResult.title,
-		};
+		return linkableSong;
 	}
 
 	setVolume(of: Message | GuildQueue, volume: number) {

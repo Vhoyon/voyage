@@ -1,7 +1,7 @@
 import { ConfigModule } from '$/config.module';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MusicService } from './music.service';
-import { YoutubeService } from './services/youtube.service';
+import { YoutubeService } from './providers/youtube.service';
 
 describe('MusicService', () => {
 	let service: MusicService;

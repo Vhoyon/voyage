@@ -2,7 +2,7 @@ import { ConfigModule } from '$/config.module';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MusicGateway } from './music.gateway';
 import { MusicService } from './music.service';
-import { YoutubeService } from './services/youtube.service';
+import { YoutubeService } from './providers/youtube.service';
 
 describe('MusicGateway', () => {
 	let gateway: MusicGateway;
