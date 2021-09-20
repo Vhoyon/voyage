@@ -69,6 +69,11 @@ export class MusicService {
 
 		const song = await this.getLinkableSong(query, { message });
 
+		if (!song) {
+			await message.channel.send(`Couldn't find a match for query **${query}**`);
+			return;
+		}
+
 		if (guildQueue) {
 			guildQueue.songs.push(song);
 
@@ -141,7 +146,7 @@ export class MusicService {
 		return dispatcher;
 	}
 
-	protected async getLinkableSong(query: string, options: SearchOptions): Promise<LinkableSong> {
+	protected async getLinkableSong(query: string, options: SearchOptions): Promise<LinkableSong | null> {
 		const linkableSong = await this.youtubeService.getLinkableSong(query, options.message);
 
 		return linkableSong;

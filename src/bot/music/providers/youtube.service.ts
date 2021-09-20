@@ -10,15 +10,28 @@ import { MusicProvider } from './music-provider.interface';
 export class YoutubeService implements MusicProvider {
 	constructor(private readonly env: EnvironmentConfig) {}
 
-	async getLinkableSong(query: string, message: Message): Promise<LinkableSong> {
-		const youtubeResult = await this.getSearchResult(query, message);
+	async getLinkableSong(query: string, message: Message): Promise<LinkableSong | null> {
+		try {
+			const videoId = ytdl.getURLVideoID(query);
 
-		return {
-			query,
-			source: 'youtube',
-			url: youtubeResult.id,
-			title: youtubeResult.title,
-		};
+			const info = await ytdl.getBasicInfo(videoId);
+
+			return {
+				query,
+				source: 'youtube',
+				url: info.videoDetails.video_url,
+				title: info.videoDetails.title,
+			};
+		} catch (error) {
+			const youtubeResult = await this.getSearchResult(query, message);
+
+			return {
+				query,
+				source: 'youtube',
+				url: youtubeResult.id,
+				title: youtubeResult.title,
+			};
+		}
 	}
 
 	protected async getSearchResult(query: string, message: Message) {
