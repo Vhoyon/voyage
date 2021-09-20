@@ -14,6 +14,8 @@ export class YoutubeService implements MusicProvider {
 		try {
 			const videoId = ytdl.getURLVideoID(query);
 
+			await message.channel.send(`Fetching Youtube video at \`${query}\`!`);
+
 			const info = await ytdl.getBasicInfo(videoId);
 
 			return {
@@ -51,6 +53,8 @@ export class YoutubeService implements MusicProvider {
 	async getStream(song: LinkableSong) {
 		return ytdl(song.url, {
 			filter: 'audioonly',
+			// eslint-disable-next-line @typescript-eslint/no-magic-numbers
+			highWaterMark: 1 << 25, // This apparently fixes audio being cut off too soon
 		});
 	}
 }
