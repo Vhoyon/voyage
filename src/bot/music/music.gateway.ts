@@ -77,10 +77,22 @@ export class MusicGateway {
 		const voiceChannel = message.member?.voice?.channel;
 
 		if (!voiceChannel) {
-			await message.channel.send('You need to be in a voice channel to skip a song!');
+			await message.channel.send(`You need to be in a voice channel to set the music's volume!`);
 			return;
 		}
 
 		this.musicService.setVolume(message, volume);
+	}
+
+	@OnCommand({ name: 'disconnect' })
+	async onDisconnect(@Content() parsed: VParsedCommand, @Context() [message]: [Message]) {
+		const voiceChannel = message.member?.voice?.channel;
+
+		if (!voiceChannel) {
+			await message.channel.send('You need to be in a voice channel to stop me from playing music!');
+			return;
+		}
+
+		await this.musicService.disconnect(message);
 	}
 }

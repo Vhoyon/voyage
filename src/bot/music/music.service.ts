@@ -187,4 +187,27 @@ export class MusicService {
 			await message.channel.send(`Skipped! No more songs are the the queue, goodbye!`);
 		}
 	}
+
+	async disconnect(message: Message) {
+		if (!message.guild) {
+			return;
+		}
+		if (!message.member?.voice.channel) {
+			return;
+		}
+
+		const key = this.getKeyFromGuild(message.guild);
+
+		const guildQueue = this.queue.get(key);
+
+		if (!guildQueue) {
+			await message.channel.send(`I'm not even playing a song :/`);
+			return;
+		}
+
+		guildQueue.songs = [];
+		guildQueue.connection.dispatcher.end();
+
+		await message.channel.send(`Adios!`);
+	}
 }
