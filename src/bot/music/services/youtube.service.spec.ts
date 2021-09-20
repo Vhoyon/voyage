@@ -1,18 +1,17 @@
 import { ConfigModule } from '$/config.module';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MusicService } from './music.service';
-import { YoutubeService } from './services/youtube.service';
+import { YoutubeService } from './youtube.service';
 
-describe('MusicService', () => {
-	let service: MusicService;
+describe('YoutubeService', () => {
+	let service: YoutubeService;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ConfigModule],
-			providers: [MusicService, YoutubeService],
+			providers: [YoutubeService],
 		}).compile();
 
-		service = module.get<MusicService>(MusicService);
+		service = module.get<YoutubeService>(YoutubeService);
 	});
 
 	it('should be defined', () => {
