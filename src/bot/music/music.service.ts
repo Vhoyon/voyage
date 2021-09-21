@@ -15,11 +15,11 @@ export type LinkableSong = {
 	description?: string;
 };
 
-export type GuildQueue = {
+export type MusicBoard = {
 	id: string;
 	textChannel: TextChannel;
 	voiceChannel: VoiceChannel;
-	songs: LinkableSong[];
+	songQueue: LinkableSong[];
 	volume: number;
 	playing: boolean;
 	connection: VoiceConnection;
@@ -35,7 +35,7 @@ export type SearchOptions = {
 
 @Injectable()
 export class MusicService {
-	private readonly queue = new Map<string, GuildQueue>();
+	private readonly guildBoards = new Map<string, MusicBoard>();
 
 	/** Disconnect timeout, in seconds. */
 	private readonly DISCONNECT_TIMEOUT: number;
@@ -49,14 +49,14 @@ export class MusicService {
 		return guild.id;
 	}
 
-	protected getGuildQueue(of: Message | GuildQueue) {
+	protected getMusicBoard(of: Message | MusicBoard) {
 		if (of instanceof Message) {
 			if (!of.guild) {
 				return;
 			}
 			const key = this.getKeyFromGuild(of.guild);
 
-			return this.queue.get(key);
+			return this.guildBoards.get(key);
 		}
 
 		return of;
@@ -74,7 +74,7 @@ export class MusicService {
 
 		const key = this.getKeyFromGuild(message.guild);
 
-		const guildQueue = this.queue.get(key);
+		const musicBoard = this.guildBoards.get(key);
 
 		const song = await this.getLinkableSong(query, { message });
 
@@ -83,43 +83,43 @@ export class MusicService {
 			return;
 		}
 
-		if (guildQueue) {
-			guildQueue.songs.push(song);
+		if (musicBoard) {
+			musicBoard.songQueue.push(song);
 
-			guildQueue.textChannel.send(`Added to queue: **${song.title}**`);
+			musicBoard.textChannel.send(`Added to queue: **${song.title}**`);
 		} else {
 			try {
 				const connection = await voiceChannel.join();
 
-				const newGuildQueue: GuildQueue = {
+				const newMusicBoard: MusicBoard = {
 					id: key,
 					textChannel: message.channel as TextChannel,
 					voiceChannel: voiceChannel,
-					songs: [],
+					songQueue: [],
 					volume: 5,
 					playing: false,
 					doDisconnectImmediately: false,
 					connection,
 				};
 
-				this.queue.set(key, newGuildQueue);
+				this.guildBoards.set(key, newMusicBoard);
 
-				await this.playSong(song, newGuildQueue);
+				await this.playSong(song, newMusicBoard);
 
-				newGuildQueue.textChannel.send(`Start playing: **${song.title}**`);
+				newMusicBoard.textChannel.send(`Start playing: **${song.title}**`);
 			} catch (error) {
 				await message.channel.send(`${error}`);
 			}
 		}
 	}
 
-	protected clearGuildQueue(guildQueue: GuildQueue) {
-		guildQueue.voiceChannel.leave();
+	protected clearMusicBoard(musicBoard: MusicBoard) {
+		musicBoard.voiceChannel.leave();
 
-		this.queue.delete(guildQueue.id);
+		this.guildBoards.delete(musicBoard.id);
 	}
 
-	protected async playSong(song: LinkableSong, guildQueue: GuildQueue) {
+	protected async playSong(song: LinkableSong, musicBoard: MusicBoard) {
 		const getStream = async (song: LinkableSong) => {
 			switch (song.source) {
 				case 'youtube':
@@ -129,45 +129,45 @@ export class MusicService {
 		};
 
 		const playNextSong = async () => {
-			guildQueue.playing = false;
+			musicBoard.playing = false;
 
-			const nextSong = guildQueue.songs.shift();
+			const nextSong = musicBoard.songQueue.shift();
 
 			if (!nextSong) {
-				if (guildQueue.doDisconnectImmediately) {
-					this.clearGuildQueue(guildQueue);
+				if (musicBoard.doDisconnectImmediately) {
+					this.clearMusicBoard(musicBoard);
 				} else {
-					guildQueue.disconnectTimeoutId = setTimeout(() => this.clearGuildQueue(guildQueue), this.DISCONNECT_TIMEOUT);
+					musicBoard.disconnectTimeoutId = setTimeout(() => this.clearMusicBoard(musicBoard), this.DISCONNECT_TIMEOUT);
 				}
 
 				return;
 			}
 
-			this.setVolume(guildQueue, guildQueue.volume);
+			this.setVolume(musicBoard, musicBoard.volume);
 
-			await this.playSong(nextSong, guildQueue);
+			await this.playSong(nextSong, musicBoard);
 		};
 
-		if (guildQueue.disconnectTimeoutId) {
-			clearTimeout(guildQueue.disconnectTimeoutId);
+		if (musicBoard.disconnectTimeoutId) {
+			clearTimeout(musicBoard.disconnectTimeoutId);
 		}
 
 		const stream = await getStream(song);
 
-		guildQueue.playing = true;
+		musicBoard.playing = true;
 
-		const dispatcher = guildQueue.connection
+		const dispatcher = musicBoard.connection
 			.play(stream, { type: 'opus' })
 			.on('finish', playNextSong)
 			.on('error', (error) => {
-				guildQueue.playing = false;
+				musicBoard.playing = false;
 
 				console.error(error);
 			});
 
-		guildQueue.dispatcher = dispatcher;
+		musicBoard.dispatcher = dispatcher;
 
-		this.setVolume(guildQueue, guildQueue.volume);
+		this.setVolume(musicBoard, musicBoard.volume);
 	}
 
 	protected async getLinkableSong(query: string, options: SearchOptions): Promise<LinkableSong | null> {
@@ -176,13 +176,13 @@ export class MusicService {
 		return linkableSong;
 	}
 
-	setVolume(of: Message | GuildQueue, volume: number) {
-		const guildQueue = this.getGuildQueue(of);
+	setVolume(of: Message | MusicBoard, volume: number) {
+		const musicBoard = this.getMusicBoard(of);
 
-		if (guildQueue?.dispatcher) {
-			guildQueue.dispatcher.setVolumeLogarithmic(volume / VOLUME_LOG);
+		if (musicBoard?.dispatcher) {
+			musicBoard.dispatcher.setVolumeLogarithmic(volume / VOLUME_LOG);
 
-			guildQueue.volume = volume;
+			musicBoard.volume = volume;
 		}
 	}
 
@@ -196,20 +196,20 @@ export class MusicService {
 
 		const key = this.getKeyFromGuild(message.guild);
 
-		const guildQueue = this.queue.get(key);
+		const musicBoard = this.guildBoards.get(key);
 
-		if (!guildQueue?.playing) {
+		if (!musicBoard?.playing) {
 			await message.channel.send(`Play a song first before trying to skip it!`);
 			return;
 		}
 
-		const didSkipAll = !guildQueue.songs.length;
+		const didSkipAll = !musicBoard.songQueue.length;
 
 		if (didSkipAll) {
-			guildQueue.doDisconnectImmediately = true;
+			musicBoard.doDisconnectImmediately = true;
 		}
 
-		guildQueue.connection.dispatcher.end();
+		musicBoard.connection.dispatcher.end();
 
 		if (!didSkipAll) {
 			await message.channel.send(`Skipped!`);
@@ -228,19 +228,19 @@ export class MusicService {
 
 		const key = this.getKeyFromGuild(message.guild);
 
-		const guildQueue = this.queue.get(key);
+		const musicBoard = this.guildBoards.get(key);
 
-		if (!guildQueue) {
+		if (!musicBoard) {
 			await message.channel.send(`I'm not even playing a song :/`);
 			return;
 		}
 
-		if (guildQueue.playing) {
-			guildQueue.songs = [];
-			guildQueue.doDisconnectImmediately = true;
-			guildQueue.connection.dispatcher.end();
+		if (musicBoard.playing) {
+			musicBoard.songQueue = [];
+			musicBoard.doDisconnectImmediately = true;
+			musicBoard.connection.dispatcher.end();
 		} else {
-			this.clearGuildQueue(guildQueue);
+			this.clearMusicBoard(musicBoard);
 		}
 
 		await message.channel.send(`Adios!`);
