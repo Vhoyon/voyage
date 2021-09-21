@@ -164,7 +164,7 @@ jobs:
       - name: Release
         uses: ridedott/release-me-action@master
         with:
-          disable-changelog: true
+          disable-generate-changelog: true
         env:
           GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
 
