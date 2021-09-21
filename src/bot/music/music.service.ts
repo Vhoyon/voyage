@@ -71,6 +71,15 @@ export class MusicService {
 
 	protected getMusicBoard(of: Message | MusicBoard | Guild) {
 		if (of instanceof Message || of instanceof Guild) {
+			if (of instanceof Message) {
+				if (!of.guild) {
+					return;
+				}
+				if (!of.member?.voice.channel) {
+					return;
+				}
+			}
+
 			const guild = of instanceof Message ? of.guild : of;
 
 			if (!guild) {
@@ -241,16 +250,7 @@ export class MusicService {
 	}
 
 	async skip(message: Message) {
-		if (!message.guild) {
-			return;
-		}
-		if (!message.member?.voice.channel) {
-			return;
-		}
-
-		const key = this.getKeyFromGuild(message.guild);
-
-		const musicBoard = this.guildBoards.get(key);
+		const musicBoard = this.getMusicBoard(message);
 
 		if (!musicBoard?.playing) {
 			await message.channel.send(`Play a song first before trying to skip it!`);
@@ -273,16 +273,7 @@ export class MusicService {
 	}
 
 	async disconnect(message: Message) {
-		if (!message.guild) {
-			return;
-		}
-		if (!message.member?.voice.channel) {
-			return;
-		}
-
-		const key = this.getKeyFromGuild(message.guild);
-
-		const musicBoard = this.guildBoards.get(key);
+		const musicBoard = this.getMusicBoard(message);
 
 		if (!musicBoard) {
 			await message.channel.send(`I'm not even playing a song :/`);
@@ -299,16 +290,7 @@ export class MusicService {
 	}
 
 	async seek(timestamp: string, message: Message) {
-		if (!message.guild) {
-			return;
-		}
-		if (!message.member?.voice.channel) {
-			return;
-		}
-
-		const key = this.getKeyFromGuild(message.guild);
-
-		const musicBoard = this.guildBoards.get(key);
+		const musicBoard = this.getMusicBoard(message);
 
 		if (!musicBoard?.playing) {
 			await message.channel.send(`I cannot seek through a song when nothing is playing!`);
