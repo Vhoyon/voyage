@@ -155,7 +155,7 @@ jobs:
           tag: 'v${{ needs.build.outputs.version }}'
 
   tag-release:
-    name: 'Deploy'
+    name: 'Create Release'
     runs-on: ubuntu-latest
     needs: [build, deploy]
 
