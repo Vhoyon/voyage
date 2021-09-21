@@ -3,5 +3,7 @@ import { Message } from 'discord.js';
 import { LinkableSong } from '../music.service';
 
 export interface MusicProvider {
-	getLinkableSong(query: string, message: Message): PromiseLike<LinkableSong | null>;
+	isQueryProviderUrl(query: string): PromiseLike<boolean>;
+
+	getLinkableSong(query: string, isUrl: boolean, message: Message): PromiseLike<LinkableSong | null>;
 }

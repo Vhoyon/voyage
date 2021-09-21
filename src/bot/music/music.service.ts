@@ -4,6 +4,7 @@ import { PromiseLike } from '$/utils/types';
 import { Injectable } from '@nestjs/common';
 import { Guild, Message, StreamDispatcher, TextChannel, VoiceChannel, VoiceConnection } from 'discord.js';
 import { Readable } from 'stream';
+import { MusicProvider } from './providers/music-provider.interface';
 import { YoutubeService } from './providers/youtube.service';
 
 export const VOLUME_LOG = 15;
@@ -54,9 +55,15 @@ export class MusicService {
 
 	static readonly seekBlacklist: SongSource[] = ['youtube'];
 
-	constructor(readonly env: EnvironmentConfig, private readonly youtubeService: YoutubeService) {
+	readonly providers: MusicProvider[];
+	readonly fallbackProvider: MusicProvider;
+
+	constructor(readonly env: EnvironmentConfig, readonly youtubeService: YoutubeService) {
 		// eslint-disable-next-line @typescript-eslint/no-magic-numbers
 		this.DISCONNECT_TIMEOUT = env.DISCORD_MUSIC_DISCONNECT_TIMEOUT * 1000;
+
+		this.providers = [youtubeService];
+		this.fallbackProvider = youtubeService;
 	}
 
 	protected getKeyFromGuild(guild: Guild) {
@@ -182,7 +189,9 @@ export class MusicService {
 	}
 
 	protected async getLinkableSong(query: string, options: SearchOptions): Promise<LinkableSong | null> {
-		const linkableSong = await this.youtubeService.getLinkableSong(query, options.message);
+		const provider = this.providers.find((provider) => provider.isQueryProviderUrl(query));
+
+		const linkableSong = await (provider ?? this.fallbackProvider).getLinkableSong(query, !!provider, options.message);
 
 		return linkableSong;
 	}
@@ -197,7 +206,12 @@ export class MusicService {
 		}
 	}
 
-	protected endCurrentSong(musicBoard: MusicBoard) {
+	protected endCurrentSong(musicBoard: MusicBoard, options?: Partial<{ disconnect: boolean }>) {
+		if (options?.disconnect) {
+			musicBoard.songQueue = [];
+			musicBoard.doDisconnectImmediately = true;
+		}
+
 		musicBoard.connection.dispatcher.end();
 	}
 
@@ -251,9 +265,7 @@ export class MusicService {
 		}
 
 		if (musicBoard.playing) {
-			musicBoard.songQueue = [];
-			musicBoard.doDisconnectImmediately = true;
-			this.endCurrentSong(musicBoard);
+			this.endCurrentSong(musicBoard, { disconnect: true });
 		} else {
 			this.clearMusicBoard(musicBoard);
 		}
