@@ -17,6 +17,10 @@ export class YoutubeService implements MusicProvider {
 	async getLinkableSong(query: string, isUrl: boolean, message: Message) {
 		const youtubeId = await this.getYoutubeVideoId(query, isUrl, message);
 
+		if (!youtubeId) {
+			return null;
+		}
+
 		try {
 			const info = await ytdl.getBasicInfo(youtubeId);
 
@@ -58,6 +62,10 @@ export class YoutubeService implements MusicProvider {
 
 			const youtubeResult = await this.getSearchResult(query);
 
+			if (!youtubeResult) {
+				return null;
+			}
+
 			return youtubeResult.id;
 		}
 	}
@@ -71,6 +79,10 @@ export class YoutubeService implements MusicProvider {
 
 		const searchResult = await search(query, youtubeOptions);
 
-		return searchResult.results[0];
+		if (searchResult.results[0]) {
+			return searchResult.results[0];
+		}
+
+		return null;
 	}
 }
