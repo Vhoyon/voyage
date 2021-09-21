@@ -104,7 +104,7 @@ export class MusicGateway {
 	}
 
 	@OnCommand({ name: 'disconnect' })
-	async onDisconnect(@Content() parsed: VParsedCommand, @Context() [message]: [Message]) {
+	async onDisconnect(@Context() [message]: [Message]) {
 		const voiceChannel = message.member?.voice?.channel;
 
 		if (!voiceChannel) {
