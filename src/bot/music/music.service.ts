@@ -1,7 +1,7 @@
 import { EnvironmentConfig } from '$/env.validation';
 import { parseTimeIntoSeconds } from '$/utils/funcs';
 import { PromiseLike } from '$/utils/types';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Type } from '@nestjs/common';
 import { Guild, Message, StreamDispatcher, TextChannel, VoiceChannel, VoiceConnection } from 'discord.js';
 import { Readable } from 'stream';
 import { MusicProvider } from './providers/music-provider.interface';
@@ -9,11 +9,9 @@ import { YoutubeService } from './providers/youtube.service';
 
 export const VOLUME_LOG = 15;
 
-export type SongSource = 'youtube';
-
 export type SearchOptions = {
 	message: Message;
-	forceSource?: SongSource;
+	forceProvider?: Type<MusicProvider>;
 };
 
 export type PlaySongOptions = {
@@ -22,7 +20,7 @@ export type PlaySongOptions = {
 
 export type LinkableSong = {
 	query: string;
-	source: SongSource;
+	provider: Type<MusicProvider>;
 	url: string;
 	title: string;
 	description?: string;
@@ -53,7 +51,7 @@ export class MusicService {
 	/** Disconnect timeout, in seconds. */
 	private readonly DISCONNECT_TIMEOUT: number;
 
-	static readonly seekBlacklist: SongSource[] = ['youtube'];
+	static readonly seekBlacklist: Type<MusicProvider>[] = [YoutubeService];
 
 	readonly providers: MusicProvider[];
 	readonly fallbackProvider: MusicProvider;
@@ -189,6 +187,19 @@ export class MusicService {
 	}
 
 	protected async getLinkableSong(query: string, options: SearchOptions): Promise<LinkableSong | null> {
+		if (options.forceProvider) {
+			const forcedProvider = this.providers.find((provider) => provider instanceof options.forceProvider!);
+
+			if (!forcedProvider) {
+				return null;
+			}
+
+			const linkableSong = await forcedProvider.getLinkableSong(query, forcedProvider.isQueryProviderUrl(query), options.message);
+
+			return linkableSong;
+		}
+
+		// No forced provider, find first that matches
 		const provider = this.providers.find((provider) => provider.isQueryProviderUrl(query));
 
 		const linkableSong = await (provider ?? this.fallbackProvider).getLinkableSong(query, !!provider, options.message);
@@ -292,8 +303,8 @@ export class MusicService {
 
 		const seekedSong = musicBoard.lastSongPlayed!;
 
-		if (MusicService.seekBlacklist.includes(seekedSong.source)) {
-			await message.channel.send(`Unfortunately, seeking for \`${seekedSong.source}\` is not available.`);
+		if (MusicService.seekBlacklist.includes(seekedSong.provider)) {
+			await message.channel.send(`Unfortunately, seeking for \`${seekedSong.provider}\` is not available.`);
 			return;
 		}
 

@@ -14,21 +14,23 @@ export class YoutubeService implements MusicProvider {
 		return ytdl.validateURL(query);
 	}
 
-	async getLinkableSong(query: string, isUrl: boolean, message: Message): Promise<LinkableSong | null> {
+	async getLinkableSong(query: string, isUrl: boolean, message: Message) {
 		const youtubeId = await this.getYoutubeVideoId(query, isUrl, message);
 
 		const info = await ytdl.getBasicInfo(youtubeId);
 
 		const url = info.videoDetails.video_url;
 
-		return {
+		const song: LinkableSong = {
 			query,
-			source: 'youtube',
+			provider: YoutubeService,
 			url,
 			title: info.videoDetails.title,
 			duration: parseInt(info.videoDetails.lengthSeconds),
 			getStream: () => this.getStream(url),
 		};
+
+		return song;
 	}
 
 	async getStream(url: string) {
