@@ -120,7 +120,7 @@ export class MusicService {
 		const song = await this.getLinkableSong(query, { message });
 
 		if (!song) {
-			await message.channel.send(`Couldn't find a match for query **${query}**`);
+			await message.channel.send(`Couldn't find a match for query \`${query}\`...`);
 			return;
 		}
 
@@ -147,7 +147,7 @@ export class MusicService {
 
 				await this.playSong(song, newMusicBoard);
 
-				newMusicBoard.textChannel.send(`Start playing: **${song.title}**`);
+				newMusicBoard.textChannel.send(`Start playing: \`${song.title}\``);
 			} catch (error) {
 				await message.channel.send(`${error}`);
 			}
