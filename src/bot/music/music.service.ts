@@ -42,6 +42,7 @@ export type MusicBoard = {
 	dispatcher?: StreamDispatcher;
 	doDisconnectImmediately: boolean;
 	disconnectTimeoutId?: NodeJS.Timeout;
+	looping?: 'one' | 'all' | number;
 };
 
 @Injectable()
@@ -176,7 +177,15 @@ export class MusicService {
 		const playNextSong = async () => {
 			musicBoard.playing = false;
 
+			if (musicBoard.looping == 'one') {
+				musicBoard.songQueue = [musicBoard.lastSongPlayed!, ...musicBoard.songQueue];
+			}
+
 			const nextSong = musicBoard.songQueue.shift();
+
+			if (musicBoard.looping == 'all') {
+				musicBoard.songQueue = [...musicBoard.songQueue, musicBoard.lastSongPlayed!];
+			}
 
 			if (!nextSong) {
 				if (musicBoard.doDisconnectImmediately) {
@@ -337,5 +346,44 @@ export class MusicService {
 		}
 
 		this.cancelMusicBoardTimeout(musicBoard);
+	}
+
+	async loop(message: Message) {
+		const musicBoard = this.getMusicBoard(message);
+
+		if (!musicBoard?.playing) {
+			await message.channel.send(`I cannot set a looping song when nothing is playing!`);
+			return;
+		}
+
+		musicBoard.looping = 'one';
+
+		await message.channel.send(`Looping current song (\`${musicBoard.lastSongPlayed!.title}\`)!`);
+	}
+
+	async loopAll(message: Message) {
+		const musicBoard = this.getMusicBoard(message);
+
+		if (!musicBoard?.playing) {
+			await message.channel.send(`I cannot loop the player when nothing is playing!`);
+			return;
+		}
+
+		musicBoard.looping = 'all';
+
+		await message.channel.send(`Looping all song in the current playlist!`);
+	}
+
+	async unloop(message: Message) {
+		const musicBoard = this.getMusicBoard(message);
+
+		if (!musicBoard?.playing) {
+			await message.channel.send(`I don't need to unloop anything : nothing is playing!`);
+			return;
+		}
+
+		musicBoard.looping = undefined;
+
+		await message.channel.send(`Unlooped the current music playlist!`);
 	}
 }

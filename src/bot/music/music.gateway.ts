@@ -130,4 +130,40 @@ export class MusicGateway {
 
 		await this.musicService.seek(parsed.content, message);
 	}
+
+	@OnCommand({ name: 'loop' })
+	async onLoop(@Context() [message]: [Message]) {
+		const voiceChannel = message.member?.voice?.channel;
+
+		if (!voiceChannel) {
+			await message.channel.send('You need to be in a voice channel to loop a song!');
+			return;
+		}
+
+		await this.musicService.loop(message);
+	}
+
+	@OnCommand({ name: 'loopall' })
+	async onLoopall(@Context() [message]: [Message]) {
+		const voiceChannel = message.member?.voice?.channel;
+
+		if (!voiceChannel) {
+			await message.channel.send('You need to be in a voice channel to loop the player!');
+			return;
+		}
+
+		await this.musicService.loopAll(message);
+	}
+
+	@OnCommand({ name: 'unloop' })
+	async onUnloop(@Context() [message]: [Message]) {
+		const voiceChannel = message.member?.voice?.channel;
+
+		if (!voiceChannel) {
+			await message.channel.send('You need to be in a voice channel to unloop the music player!');
+			return;
+		}
+
+		await this.musicService.unloop(message);
+	}
 }
