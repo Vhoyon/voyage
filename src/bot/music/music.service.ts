@@ -177,8 +177,14 @@ export class MusicService {
 		const playNextSong = async () => {
 			musicBoard.playing = false;
 
-			if (musicBoard.looping == 'one') {
+			const isProperLoopingCount = typeof musicBoard.looping == 'number' && musicBoard.looping > 0;
+
+			if (musicBoard.looping == 'one' || isProperLoopingCount) {
 				musicBoard.songQueue = [musicBoard.lastSongPlayed!, ...musicBoard.songQueue];
+
+				if (typeof musicBoard.looping == 'number') {
+					musicBoard.looping--;
+				}
 			}
 
 			const nextSong = musicBoard.songQueue.shift();
@@ -348,7 +354,7 @@ export class MusicService {
 		this.cancelMusicBoardTimeout(musicBoard);
 	}
 
-	async loop(message: Message) {
+	async loop(message: Message, count?: number) {
 		const musicBoard = this.getMusicBoard(message);
 
 		if (!musicBoard?.playing) {
@@ -356,9 +362,13 @@ export class MusicService {
 			return;
 		}
 
-		musicBoard.looping = 'one';
+		musicBoard.looping = count ?? 'one';
 
-		await message.channel.send(`Looping current song (\`${musicBoard.lastSongPlayed!.title}\`)!`);
+		if (count) {
+			await message.channel.send(`Looping current song (\`${musicBoard.lastSongPlayed!.title}\`) **${count}** times!`);
+		} else {
+			await message.channel.send(`Looping current song (\`${musicBoard.lastSongPlayed!.title}\`)!`);
+		}
 	}
 
 	async loopAll(message: Message) {

@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Content, Context, On, OnCommand, TransformPipe, UsePipes, ValidationPipe } from 'discord-nestjs';
 import { Message, VoiceState } from 'discord.js';
 import { VParsedCommand } from 'vcommand-parser';
+import { LoopDto } from './dtos/loop.dto';
 import { VolumeDto } from './dtos/volume.dto';
 import { MusicService } from './music.service';
 
@@ -132,7 +133,8 @@ export class MusicGateway {
 	}
 
 	@OnCommand({ name: 'loop' })
-	async onLoop(@Context() [message]: [Message]) {
+	@UsePipes(TransformPipe, ValidationPipe)
+	async onLoop(@Content() { count }: LoopDto, @Context() [message]: [Message]) {
 		const voiceChannel = message.member?.voice?.channel;
 
 		if (!voiceChannel) {
@@ -140,7 +142,7 @@ export class MusicGateway {
 			return;
 		}
 
-		await this.musicService.loop(message);
+		await this.musicService.loop(message, count);
 	}
 
 	@OnCommand({ name: 'loopall' })
