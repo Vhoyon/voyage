@@ -58,7 +58,7 @@
 		"no-empty-function": "off",
 		"@typescript-eslint/no-empty-function": ["error", { "allow": ["private-constructors"] }],
 		"@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
-		"@typescript-eslint/no-magic-numbers": ["warn", { "ignoreArrayIndexes": true, "ignoreReadonlyClassProperties": true, "ignore": [-1, 0, 1] }],
+		"@typescript-eslint/no-magic-numbers": ["warn", { "ignoreArrayIndexes": true, "ignoreReadonlyClassProperties": true, "ignore": [-1, 0, 1, 1000, 60] }],
 		"@typescript-eslint/no-non-null-assertion": "off",
 		"no-mixed-spaces-and-tabs": ["error", "smart-tabs"]
 	},
