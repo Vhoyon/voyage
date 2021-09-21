@@ -153,20 +153,3 @@ jobs:
         with:
           repo-token: '${{ secrets.GITHUB_TOKEN }}'
           tag: 'v${{ needs.build.outputs.version }}'
-
-  tag-release:
-    name: 'Create Release'
-    runs-on: ubuntu-latest
-    needs: [build, deploy]
-
-    if: needs.build.outputs.changed == 'true'
-
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-
-      - uses: 'marvinpinto/action-automatic-releases@latest'
-        with:
-          repo_token: '${{ secrets.GITHUB_TOKEN }}'
-          prerelease: false
