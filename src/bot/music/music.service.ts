@@ -1,11 +1,9 @@
+import { EnvironmentConfig } from '$/env.validation';
 import { Injectable } from '@nestjs/common';
 import { Guild, Message, StreamDispatcher, TextChannel, VoiceChannel, VoiceConnection } from 'discord.js';
 import { YoutubeService } from './providers/youtube.service';
 
 export const VOLUME_LOG = 15;
-
-// eslint-disable-next-line @typescript-eslint/no-magic-numbers
-export const DISCONNECT_TIMEOUT_MS = 1 * 1000 * 60;
 
 export type SongSource = 'youtube';
 
@@ -39,7 +37,13 @@ export type SearchOptions = {
 export class MusicService {
 	private readonly queue = new Map<string, GuildQueue>();
 
-	constructor(private readonly youtubeService: YoutubeService) {}
+	/** Disconnect timeout, in seconds. */
+	private readonly DISCONNECT_TIMEOUT: number;
+
+	constructor(readonly env: EnvironmentConfig, private readonly youtubeService: YoutubeService) {
+		// eslint-disable-next-line @typescript-eslint/no-magic-numbers
+		this.DISCONNECT_TIMEOUT = env.DISCORD_MUSIC_DISCONNECT_TIMEOUT * 1000;
+	}
 
 	protected getKeyFromGuild(guild: Guild) {
 		return guild.id;
@@ -133,7 +137,7 @@ export class MusicService {
 				if (guildQueue.doDisconnectImmediately) {
 					this.clearGuildQueue(guildQueue);
 				} else {
-					guildQueue.disconnectTimeoutId = setTimeout(() => this.clearGuildQueue(guildQueue), DISCONNECT_TIMEOUT_MS);
+					guildQueue.disconnectTimeoutId = setTimeout(() => this.clearGuildQueue(guildQueue), this.DISCONNECT_TIMEOUT);
 				}
 
 				return;
