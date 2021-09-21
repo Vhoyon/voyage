@@ -17,20 +17,24 @@ export class YoutubeService implements MusicProvider {
 	async getLinkableSong(query: string, isUrl: boolean, message: Message) {
 		const youtubeId = await this.getYoutubeVideoId(query, isUrl, message);
 
-		const info = await ytdl.getBasicInfo(youtubeId);
+		try {
+			const info = await ytdl.getBasicInfo(youtubeId);
 
-		const url = info.videoDetails.video_url;
+			const url = info.videoDetails.video_url;
 
-		const song: LinkableSong = {
-			query,
-			provider: YoutubeService,
-			url,
-			title: info.videoDetails.title,
-			duration: parseInt(info.videoDetails.lengthSeconds),
-			getStream: () => this.getStream(url),
-		};
+			const song: LinkableSong = {
+				query,
+				provider: YoutubeService,
+				url,
+				title: info.videoDetails.title,
+				duration: parseInt(info.videoDetails.lengthSeconds),
+				getStream: () => this.getStream(url),
+			};
 
-		return song;
+			return song;
+		} catch (error) {
+			throw `Couldn't download video from query \`${query}\`.\nIs the video private / age restricted?`;
+		}
 	}
 
 	async getStream(url: string) {

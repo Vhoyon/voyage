@@ -117,7 +117,14 @@ export class MusicService {
 
 		const musicBoard = this.guildBoards.get(key);
 
-		const song = await this.getLinkableSong(query, { message });
+		let song: LinkableSong | null;
+
+		try {
+			song = await this.getLinkableSong(query, { message });
+		} catch (error) {
+			await message.channel.send(`**_ERROR_** : ${error}`);
+			return;
+		}
 
 		if (!song) {
 			await message.channel.send(`Couldn't find a match for query \`${query}\`...`);
