@@ -22,6 +22,7 @@ export class YoutubeService implements MusicProvider {
 			source: 'youtube',
 			url,
 			title: info.videoDetails.title,
+			duration: parseInt(info.videoDetails.lengthSeconds),
 			getStream: () => this.getStream(url),
 		};
 	}

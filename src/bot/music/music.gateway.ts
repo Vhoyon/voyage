@@ -77,4 +77,21 @@ export class MusicGateway {
 
 		await this.musicService.disconnect(message);
 	}
+
+	@OnCommand({ name: 'seek' })
+	async onSeek(@Content() parsed: VParsedCommand, @Context() [message]: [Message]) {
+		if (!parsed.content) {
+			await message.channel.send('You need to provide a timestamp (`##?:##?:##`) to this command!');
+			return;
+		}
+
+		const voiceChannel = message.member?.voice?.channel;
+
+		if (!voiceChannel) {
+			await message.channel.send('You need to be in a voice channel to seek music!');
+			return;
+		}
+
+		await this.musicService.seek(parsed.content, message);
+	}
 }

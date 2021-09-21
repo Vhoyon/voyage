@@ -1,4 +1,5 @@
 import { EnvironmentConfig } from '$/env.validation';
+import { parseTimeIntoSeconds } from '$/utils/funcs';
 import { PromiseLike } from '$/utils/types';
 import { Injectable } from '@nestjs/common';
 import { Guild, Message, StreamDispatcher, TextChannel, VoiceChannel, VoiceConnection } from 'discord.js';
@@ -9,13 +10,25 @@ export const VOLUME_LOG = 15;
 
 export type SongSource = 'youtube';
 
+export type SearchOptions = {
+	message: Message;
+	forceSource?: SongSource;
+};
+
+export type PlaySongOptions = {
+	seek: number;
+};
+
 export type LinkableSong = {
 	query: string;
 	source: SongSource;
 	url: string;
 	title: string;
 	description?: string;
+	/** Duration of the song in seconds */
+	duration: number;
 	getStream: () => PromiseLike<Readable>;
+	options?: Partial<PlaySongOptions>;
 };
 
 export type MusicBoard = {
@@ -23,6 +36,7 @@ export type MusicBoard = {
 	textChannel: TextChannel;
 	voiceChannel: VoiceChannel;
 	songQueue: LinkableSong[];
+	lastSongPlayed?: LinkableSong;
 	volume: number;
 	playing: boolean;
 	connection: VoiceConnection;
@@ -31,17 +45,14 @@ export type MusicBoard = {
 	disconnectTimeoutId?: NodeJS.Timeout;
 };
 
-export type SearchOptions = {
-	message: Message;
-	forceSource?: SongSource;
-};
-
 @Injectable()
 export class MusicService {
 	private readonly guildBoards = new Map<string, MusicBoard>();
 
 	/** Disconnect timeout, in seconds. */
 	private readonly DISCONNECT_TIMEOUT: number;
+
+	static readonly seekBlacklist: SongSource[] = ['youtube'];
 
 	constructor(readonly env: EnvironmentConfig, private readonly youtubeService: YoutubeService) {
 		// eslint-disable-next-line @typescript-eslint/no-magic-numbers
@@ -147,6 +158,8 @@ export class MusicService {
 			clearTimeout(musicBoard.disconnectTimeoutId);
 		}
 
+		musicBoard.lastSongPlayed = song;
+
 		const stream = await song.getStream();
 
 		musicBoard.playing = true;
@@ -154,6 +167,7 @@ export class MusicService {
 		const dispatcher = musicBoard.connection
 			.play(stream, {
 				type: song.url.includes('youtube.com') ? 'opus' : 'ogg/opus',
+				seek: song.options?.seek,
 			})
 			.on('finish', playNextSong)
 			.on('error', (error) => {
@@ -183,6 +197,10 @@ export class MusicService {
 		}
 	}
 
+	protected endCurrentSong(musicBoard: MusicBoard) {
+		musicBoard.connection.dispatcher.end();
+	}
+
 	async skip(message: Message) {
 		if (!message.guild) {
 			return;
@@ -206,7 +224,7 @@ export class MusicService {
 			musicBoard.doDisconnectImmediately = true;
 		}
 
-		musicBoard.connection.dispatcher.end();
+		this.endCurrentSong(musicBoard);
 
 		if (!didSkipAll) {
 			await message.channel.send(`Skipped!`);
@@ -235,11 +253,46 @@ export class MusicService {
 		if (musicBoard.playing) {
 			musicBoard.songQueue = [];
 			musicBoard.doDisconnectImmediately = true;
-			musicBoard.connection.dispatcher.end();
+			this.endCurrentSong(musicBoard);
 		} else {
 			this.clearMusicBoard(musicBoard);
 		}
 
 		await message.channel.send(`Adios!`);
+	}
+
+	async seek(timestamp: string, message: Message) {
+		if (!message.guild) {
+			return;
+		}
+		if (!message.member?.voice.channel) {
+			return;
+		}
+
+		const key = this.getKeyFromGuild(message.guild);
+
+		const musicBoard = this.guildBoards.get(key);
+
+		if (!musicBoard?.playing) {
+			await message.channel.send(`I cannot seek through a song when nothing is playing!`);
+			return;
+		}
+
+		const seekedSong = musicBoard.lastSongPlayed!;
+
+		if (MusicService.seekBlacklist.includes(seekedSong.source)) {
+			await message.channel.send(`Unfortunately, seeking for \`${seekedSong.source}\` is not available.`);
+			return;
+		}
+
+		const seekTime = parseTimeIntoSeconds(timestamp);
+
+		seekedSong.options = { ...seekedSong.options, seek: seekTime };
+
+		musicBoard.songQueue = [seekedSong, ...musicBoard.songQueue];
+
+		this.endCurrentSong(musicBoard);
+
+		await message.channel.send(`Seeked current song to ${seekTime} seconds!`);
 	}
 }
