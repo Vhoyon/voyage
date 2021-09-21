@@ -184,19 +184,21 @@ export class MusicService {
 		const playNextSong = async () => {
 			musicBoard.playing = false;
 
-			const isProperLoopingCount = typeof musicBoard.looping == 'number' && musicBoard.looping > 0;
+			if (!musicBoard.doDisconnectImmediately) {
+				const isProperLoopingCount = typeof musicBoard.looping == 'number' && musicBoard.looping > 0;
 
-			if (musicBoard.looping == 'one' || isProperLoopingCount) {
-				musicBoard.songQueue = [musicBoard.lastSongPlayed!, ...musicBoard.songQueue];
+				if (musicBoard.looping == 'one' || isProperLoopingCount) {
+					musicBoard.songQueue = [musicBoard.lastSongPlayed!, ...musicBoard.songQueue];
 
-				if (typeof musicBoard.looping == 'number') {
-					musicBoard.looping--;
+					if (typeof musicBoard.looping == 'number') {
+						musicBoard.looping--;
+					}
 				}
 			}
 
 			const nextSong = musicBoard.songQueue.shift();
 
-			if (musicBoard.looping == 'all') {
+			if (!musicBoard.doDisconnectImmediately && musicBoard.looping == 'all') {
 				musicBoard.songQueue = [...musicBoard.songQueue, musicBoard.lastSongPlayed!];
 			}
 
