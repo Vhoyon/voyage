@@ -11,50 +11,55 @@ export class YoutubeService implements MusicProvider {
 	constructor(private readonly env: EnvironmentConfig) {}
 
 	async getLinkableSong(query: string, message: Message): Promise<LinkableSong | null> {
-		try {
-			const videoId = ytdl.getURLVideoID(query);
+		const youtubeId = await this.getYoutubeVideoId(query, message);
 
+		const info = await ytdl.getBasicInfo(youtubeId);
+
+		const url = info.videoDetails.video_url;
+
+		return {
+			query,
+			source: 'youtube',
+			url,
+			title: info.videoDetails.title,
+			getStream: () => this.getStream(url),
+		};
+	}
+
+	async getStream(url: string) {
+		return ytdl(url, {
+			filter: 'audioonly',
+			// eslint-disable-next-line @typescript-eslint/no-magic-numbers
+			highWaterMark: 1 << 25, // This apparently fixes audio being cut off too soon
+		});
+	}
+
+	protected async getYoutubeVideoId(query: string, message: Message) {
+		if (ytdl.validateURL(query)) {
+			// query is already url
 			await message.channel.send(`Fetching Youtube video at \`${query}\`!`);
 
-			const info = await ytdl.getBasicInfo(videoId);
+			const videoId = ytdl.getURLVideoID(query);
 
-			return {
-				query,
-				source: 'youtube',
-				url: info.videoDetails.video_url,
-				title: info.videoDetails.title,
-			};
-		} catch (error) {
-			const youtubeResult = await this.getSearchResult(query, message);
+			return videoId;
+		} else {
+			await message.channel.send(`Searching Youtube for \`${query}\`!`);
 
-			return {
-				query,
-				source: 'youtube',
-				url: youtubeResult.id,
-				title: youtubeResult.title,
-			};
+			const youtubeResult = await this.getSearchResult(query);
+
+			return youtubeResult.id;
 		}
 	}
 
-	protected async getSearchResult(query: string, message: Message) {
+	protected async getSearchResult(query: string) {
 		const youtubeOptions: YouTubeSearchOptions = {
 			key: this.env.YOUTUBE_API_KEY,
 			maxResults: 10,
 			type: 'video',
 		};
 
-		await message.channel.send(`Searching Youtube for "${query}"!`);
-
 		const searchResult = await search(query, youtubeOptions);
 
 		return searchResult.results[0];
-	}
-
-	async getStream(song: LinkableSong) {
-		return ytdl(song.url, {
-			filter: 'audioonly',
-			// eslint-disable-next-line @typescript-eslint/no-magic-numbers
-			highWaterMark: 1 << 25, // This apparently fixes audio being cut off too soon
-		});
 	}
 }

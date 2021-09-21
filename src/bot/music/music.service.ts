@@ -1,6 +1,8 @@
 import { EnvironmentConfig } from '$/env.validation';
+import { PromiseLike } from '$/utils/types';
 import { Injectable } from '@nestjs/common';
 import { Guild, Message, StreamDispatcher, TextChannel, VoiceChannel, VoiceConnection } from 'discord.js';
+import { Readable } from 'stream';
 import { YoutubeService } from './providers/youtube.service';
 
 export const VOLUME_LOG = 15;
@@ -13,6 +15,7 @@ export type LinkableSong = {
 	url: string;
 	title: string;
 	description?: string;
+	getStream: () => PromiseLike<Readable>;
 };
 
 export type MusicBoard = {
@@ -120,14 +123,6 @@ export class MusicService {
 	}
 
 	protected async playSong(song: LinkableSong, musicBoard: MusicBoard) {
-		const getStream = async (song: LinkableSong) => {
-			switch (song.source) {
-				case 'youtube':
-				default:
-					return this.youtubeService.getStream(song);
-			}
-		};
-
 		const playNextSong = async () => {
 			musicBoard.playing = false;
 
@@ -152,12 +147,14 @@ export class MusicService {
 			clearTimeout(musicBoard.disconnectTimeoutId);
 		}
 
-		const stream = await getStream(song);
+		const stream = await song.getStream();
 
 		musicBoard.playing = true;
 
 		const dispatcher = musicBoard.connection
-			.play(stream, { type: 'opus' })
+			.play(stream, {
+				type: song.url.includes('youtube.com') ? 'opus' : 'ogg/opus',
+			})
 			.on('finish', playNextSong)
 			.on('error', (error) => {
 				musicBoard.playing = false;
