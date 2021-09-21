@@ -4,6 +4,9 @@ import { YoutubeService } from './providers/youtube.service';
 
 export const VOLUME_LOG = 15;
 
+// eslint-disable-next-line @typescript-eslint/no-magic-numbers
+export const DISCONNECT_TIMEOUT_MS = 1 * 1000 * 60;
+
 export type SongSource = 'youtube';
 
 export type LinkableSong = {
@@ -23,6 +26,8 @@ export type GuildQueue = {
 	playing: boolean;
 	connection: VoiceConnection;
 	dispatcher?: StreamDispatcher;
+	doDisconnectImmediately: boolean;
+	disconnectTimeoutId?: NodeJS.Timeout;
 };
 
 export type SearchOptions = {
@@ -86,19 +91,16 @@ export class MusicService {
 					id: key,
 					textChannel: message.channel as TextChannel,
 					voiceChannel: voiceChannel,
-					songs: [song],
+					songs: [],
 					volume: 5,
 					playing: false,
+					doDisconnectImmediately: false,
 					connection,
 				};
 
 				this.queue.set(key, newGuildQueue);
 
-				const dispatcher = await this.playSong(newGuildQueue);
-
-				newGuildQueue.dispatcher = dispatcher;
-
-				this.setVolume(newGuildQueue, newGuildQueue.volume);
+				await this.playSong(song, newGuildQueue);
 
 				newGuildQueue.textChannel.send(`Start playing: **${song.title}**`);
 			} catch (error) {
@@ -107,19 +109,13 @@ export class MusicService {
 		}
 	}
 
-	protected async playSong(guildQueue: GuildQueue) {
-		const song = guildQueue.songs.shift();
+	protected clearGuildQueue(guildQueue: GuildQueue) {
+		guildQueue.voiceChannel.leave();
 
-		if (!song) {
-			guildQueue.voiceChannel.leave();
+		this.queue.delete(guildQueue.id);
+	}
 
-			this.queue.delete(guildQueue.id);
-
-			return;
-		}
-
-		guildQueue.playing = true;
-
+	protected async playSong(song: LinkableSong, guildQueue: GuildQueue) {
 		const getStream = async (song: LinkableSong) => {
 			switch (song.source) {
 				case 'youtube':
@@ -128,22 +124,46 @@ export class MusicService {
 			}
 		};
 
+		const playNextSong = async () => {
+			guildQueue.playing = false;
+
+			const nextSong = guildQueue.songs.shift();
+
+			if (!nextSong) {
+				if (guildQueue.doDisconnectImmediately) {
+					this.clearGuildQueue(guildQueue);
+				} else {
+					guildQueue.disconnectTimeoutId = setTimeout(() => this.clearGuildQueue(guildQueue), DISCONNECT_TIMEOUT_MS);
+				}
+
+				return;
+			}
+
+			this.setVolume(guildQueue, guildQueue.volume);
+
+			await this.playSong(nextSong, guildQueue);
+		};
+
+		if (guildQueue.disconnectTimeoutId) {
+			clearTimeout(guildQueue.disconnectTimeoutId);
+		}
+
 		const stream = await getStream(song);
+
+		guildQueue.playing = true;
 
 		const dispatcher = guildQueue.connection
 			.play(stream, { type: 'opus' })
-			.on('finish', () => {
-				guildQueue.playing = false;
-
-				this.playSong(guildQueue);
-			})
+			.on('finish', playNextSong)
 			.on('error', (error) => {
 				guildQueue.playing = false;
 
 				console.error(error);
 			});
 
-		return dispatcher;
+		guildQueue.dispatcher = dispatcher;
+
+		this.setVolume(guildQueue, guildQueue.volume);
 	}
 
 	protected async getLinkableSong(query: string, options: SearchOptions): Promise<LinkableSong | null> {
@@ -174,14 +194,20 @@ export class MusicService {
 
 		const guildQueue = this.queue.get(key);
 
-		if (!guildQueue) {
+		if (!guildQueue?.playing) {
 			await message.channel.send(`Play a song first before trying to skip it!`);
 			return;
 		}
 
+		const didSkipAll = !guildQueue.songs.length;
+
+		if (didSkipAll) {
+			guildQueue.doDisconnectImmediately = true;
+		}
+
 		guildQueue.connection.dispatcher.end();
 
-		if (guildQueue.songs.length) {
+		if (!didSkipAll) {
 			await message.channel.send(`Skipped!`);
 		} else {
 			await message.channel.send(`Skipped! No more songs are the the queue, goodbye!`);
@@ -205,8 +231,13 @@ export class MusicService {
 			return;
 		}
 
-		guildQueue.songs = [];
-		guildQueue.connection.dispatcher.end();
+		if (guildQueue.playing) {
+			guildQueue.songs = [];
+			guildQueue.doDisconnectImmediately = true;
+			guildQueue.connection.dispatcher.end();
+		} else {
+			this.clearGuildQueue(guildQueue);
+		}
 
 		await message.channel.send(`Adios!`);
 	}
