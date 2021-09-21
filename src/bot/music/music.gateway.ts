@@ -168,4 +168,14 @@ export class MusicGateway {
 
 		await this.musicService.unloop(message);
 	}
+
+	@OnCommand({ name: 'blacklist' })
+	async onBlacklist(@Context() [message]: [Message]) {
+		await this.musicService.blacklist(message);
+	}
+
+	@OnCommand({ name: 'free' })
+	async onUnblacklist(@Context() [message]: [Message]) {
+		await this.musicService.unblacklist(message);
+	}
 }
