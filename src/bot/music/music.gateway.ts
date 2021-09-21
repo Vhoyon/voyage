@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Content, Context, OnCommand, TransformPipe, UsePipes, ValidationPipe } from 'discord-nestjs';
-import { Message } from 'discord.js';
+import { Content, Context, On, OnCommand, TransformPipe, UsePipes, ValidationPipe } from 'discord-nestjs';
+import { Message, VoiceState } from 'discord.js';
 import { VParsedCommand } from 'vcommand-parser';
 import { VolumeDto } from './dtos/volume.dto';
 import { MusicService } from './music.service';
@@ -10,6 +10,42 @@ export class MusicGateway {
 	private readonly logger = new Logger(MusicGateway.name);
 
 	constructor(private readonly musicService: MusicService) {}
+
+	@On({ event: 'voiceStateUpdate' })
+	async onUserDisconnect(@Context() [oldVoiceState, newVoiceState]: [VoiceState, VoiceState]) {
+		// Only handle user leaving, not user joining
+		if (newVoiceState.channelID) {
+			return;
+		}
+
+		// Ignore bots
+		if (oldVoiceState.member?.user.bot) {
+			return;
+		}
+
+		const numberOfHumansRemaining = oldVoiceState.channel?.members.array().filter((m) => !m.user.bot).length;
+
+		if (numberOfHumansRemaining !== 0) {
+			return;
+		}
+
+		this.musicService.startAloneTimeout(oldVoiceState.guild);
+	}
+
+	@On({ event: 'voiceStateUpdate' })
+	async onUserConnect(@Context() [oldVoiceState, newVoiceState]: [VoiceState, VoiceState]) {
+		// Only handle user joining, not user leaving
+		if (oldVoiceState.channelID) {
+			return;
+		}
+
+		// Ignore bots
+		if (newVoiceState.member?.user.bot) {
+			return;
+		}
+
+		this.musicService.stopAloneTimeout(newVoiceState.guild);
+	}
 
 	@OnCommand({ name: 'play' })
 	async onPlay(@Content() parsed: VParsedCommand, @Context() [message]: [Message]) {

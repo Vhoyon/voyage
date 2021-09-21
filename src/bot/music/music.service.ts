@@ -50,6 +50,7 @@ export class MusicService {
 
 	/** Disconnect timeout, in seconds. */
 	private readonly DISCONNECT_TIMEOUT: number;
+	private readonly ALONE_DISCONNECT_TIMEOUT: number;
 
 	static readonly seekBlacklist: Type<MusicProvider>[] = [YoutubeService];
 
@@ -57,8 +58,8 @@ export class MusicService {
 	readonly fallbackProvider: MusicProvider;
 
 	constructor(readonly env: EnvironmentConfig, readonly youtubeService: YoutubeService) {
-		// eslint-disable-next-line @typescript-eslint/no-magic-numbers
 		this.DISCONNECT_TIMEOUT = env.DISCORD_MUSIC_DISCONNECT_TIMEOUT * 1000;
+		this.ALONE_DISCONNECT_TIMEOUT = env.DISCORD_MUSIC_ALONE_DISCONNECT_TIMEOUT * 1000;
 
 		this.providers = [youtubeService];
 		this.fallbackProvider = youtubeService;
@@ -68,17 +69,28 @@ export class MusicService {
 		return guild.id;
 	}
 
-	protected getMusicBoard(of: Message | MusicBoard) {
-		if (of instanceof Message) {
-			if (!of.guild) {
+	protected getMusicBoard(of: Message | MusicBoard | Guild) {
+		if (of instanceof Message || of instanceof Guild) {
+			const guild = of instanceof Message ? of.guild : of;
+
+			if (!guild) {
 				return;
 			}
-			const key = this.getKeyFromGuild(of.guild);
+
+			const key = this.getKeyFromGuild(guild);
 
 			return this.guildBoards.get(key);
 		}
 
 		return of;
+	}
+
+	protected cancelMusicBoardTimeout(musicBoard: MusicBoard) {
+		if (musicBoard.disconnectTimeoutId) {
+			clearTimeout(musicBoard.disconnectTimeoutId);
+		}
+
+		musicBoard.disconnectTimeoutId = undefined;
 	}
 
 	async play(query: string, message: Message) {
@@ -132,10 +144,23 @@ export class MusicService {
 		}
 	}
 
-	protected clearMusicBoard(musicBoard: MusicBoard) {
-		musicBoard.voiceChannel.leave();
+	protected leaveAndClearMusicBoard(musicBoard: MusicBoard) {
+		if (musicBoard.playing) {
+			this.endCurrentSong(musicBoard, { disconnect: true });
+		} else {
+			musicBoard.voiceChannel.leave();
 
-		this.guildBoards.delete(musicBoard.id);
+			this.guildBoards.delete(musicBoard.id);
+		}
+	}
+
+	protected endCurrentSong(musicBoard: MusicBoard, options?: Partial<{ disconnect: boolean }>) {
+		if (options?.disconnect) {
+			musicBoard.songQueue = [];
+			musicBoard.doDisconnectImmediately = true;
+		}
+
+		musicBoard.connection.dispatcher.end();
 	}
 
 	protected async playSong(song: LinkableSong, musicBoard: MusicBoard) {
@@ -146,9 +171,9 @@ export class MusicService {
 
 			if (!nextSong) {
 				if (musicBoard.doDisconnectImmediately) {
-					this.clearMusicBoard(musicBoard);
+					this.leaveAndClearMusicBoard(musicBoard);
 				} else {
-					musicBoard.disconnectTimeoutId = setTimeout(() => this.clearMusicBoard(musicBoard), this.DISCONNECT_TIMEOUT);
+					musicBoard.disconnectTimeoutId = setTimeout(() => this.leaveAndClearMusicBoard(musicBoard), this.DISCONNECT_TIMEOUT);
 				}
 
 				return;
@@ -159,9 +184,7 @@ export class MusicService {
 			await this.playSong(nextSong, musicBoard);
 		};
 
-		if (musicBoard.disconnectTimeoutId) {
-			clearTimeout(musicBoard.disconnectTimeoutId);
-		}
+		this.cancelMusicBoardTimeout(musicBoard);
 
 		musicBoard.lastSongPlayed = song;
 
@@ -217,15 +240,6 @@ export class MusicService {
 		}
 	}
 
-	protected endCurrentSong(musicBoard: MusicBoard, options?: Partial<{ disconnect: boolean }>) {
-		if (options?.disconnect) {
-			musicBoard.songQueue = [];
-			musicBoard.doDisconnectImmediately = true;
-		}
-
-		musicBoard.connection.dispatcher.end();
-	}
-
 	async skip(message: Message) {
 		if (!message.guild) {
 			return;
@@ -278,7 +292,7 @@ export class MusicService {
 		if (musicBoard.playing) {
 			this.endCurrentSong(musicBoard, { disconnect: true });
 		} else {
-			this.clearMusicBoard(musicBoard);
+			this.leaveAndClearMusicBoard(musicBoard);
 		}
 
 		await message.channel.send(`Adios!`);
@@ -317,5 +331,29 @@ export class MusicService {
 		this.endCurrentSong(musicBoard);
 
 		await message.channel.send(`Seeked current song to ${seekTime} seconds!`);
+	}
+
+	async startAloneTimeout(guild: Guild) {
+		const musicBoard = this.getMusicBoard(guild);
+
+		if (!musicBoard) {
+			return;
+		}
+
+		musicBoard.disconnectTimeoutId = setTimeout(() => {
+			musicBoard.textChannel.send(`Nobody's listening to me anymore, cya!`);
+
+			this.leaveAndClearMusicBoard(musicBoard);
+		}, this.ALONE_DISCONNECT_TIMEOUT);
+	}
+
+	async stopAloneTimeout(guild: Guild) {
+		const musicBoard = this.getMusicBoard(guild);
+
+		if (!musicBoard) {
+			return;
+		}
+
+		this.cancelMusicBoardTimeout(musicBoard);
 	}
 }

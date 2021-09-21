@@ -14,6 +14,7 @@ export const DEFAULT_GRAPHQL_DEPTH_LIMIT = 10;
 export const DEFAULT_DISCORD_PREFIX = '!';
 
 export const DEFAULT_DISCORD_MUSIC_DISCONNECT_TIMEOUT = 60;
+export const DEFAULT_DISCORD_MUSIC_ALONE_DISCONNECT_TIMEOUT = 15;
 
 export class EnvironmentConfig {
 	@IsEnum(Environment)
@@ -45,6 +46,11 @@ export class EnvironmentConfig {
 	@Type(() => Number)
 	@IsNumber()
 	readonly DISCORD_MUSIC_DISCONNECT_TIMEOUT: number = DEFAULT_DISCORD_MUSIC_DISCONNECT_TIMEOUT;
+
+	@IsOptional()
+	@Type(() => Number)
+	@IsNumber()
+	readonly DISCORD_MUSIC_ALONE_DISCONNECT_TIMEOUT: number = DEFAULT_DISCORD_MUSIC_ALONE_DISCONNECT_TIMEOUT;
 
 	@IsString()
 	readonly YOUTUBE_API_KEY!: string;
