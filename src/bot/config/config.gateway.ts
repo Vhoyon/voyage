@@ -10,10 +10,28 @@ export class DiscordConfigGateway {
 	constructor(private readonly discordProvider: DiscordClientProvider, private readonly prisma: PrismaService) {}
 
 	@Once({ event: 'ready' })
-	onReady() {
-		const botUser = this.discordProvider.getClient().user;
+	async onReady() {
+		const client = this.discordProvider.getClient();
 
-		this.logger.log(`Logged in as ${botUser?.tag}!`);
+		this.logger.log(`Logged in as ${client.user?.tag}!`);
+
+		await Promise.all(
+			client.guilds.cache.map(async (guild) => {
+				const pGuild = await this.prisma.guild.findUnique({
+					where: {
+						guildId: guild.id,
+					},
+				});
+
+				if (!pGuild) {
+					return await this.prisma.guild.create({
+						data: {
+							guildId: guild.id,
+						},
+					});
+				}
+			}),
+		);
 	}
 
 	@On({ event: 'guildCreate' })
