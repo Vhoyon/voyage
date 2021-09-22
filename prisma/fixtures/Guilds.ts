@@ -1,11 +1,10 @@
-import { Message, PrismaClient } from '@prisma/client';
+import { Guild, PrismaClient } from '@prisma/client';
 import { Fixture, LinkMethod } from 'prisma-fixtures';
-import UserFixture from './Users';
 
-export default class MessageFixture extends Fixture<Message> {
-	override dependencies = [UserFixture];
+export default class GuildFixture extends Fixture<Guild> {
+	override dependencies = [];
 
-	override async seed(_prisma: PrismaClient, _link: LinkMethod<this>): Promise<Message[]> {
+	override async seed(_prisma: PrismaClient, _link: LinkMethod<this>): Promise<Guild[]> {
 		// const messages = await createMany(
 		// 	prisma.message.create,
 		// 	{

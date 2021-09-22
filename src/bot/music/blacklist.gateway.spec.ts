@@ -1,20 +1,21 @@
 import { ConfigModule } from '$/config.module';
 import { PrismaModule } from '$/prisma/prisma.module';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MusicGateway } from './music.gateway';
-import { MusicService } from './music.service';
+import { BlacklistGateway } from './blacklist.gateway';
+import { BlacklistService } from './blacklist.service';
 import { YoutubeService } from './providers/youtube.service';
 
-describe('MusicGateway', () => {
-	let gateway: MusicGateway;
+describe('BlacklistGateway', () => {
+	let gateway: BlacklistGateway;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ConfigModule, PrismaModule],
-			providers: [MusicGateway, MusicService, YoutubeService],
+			controllers: [BlacklistGateway],
+			providers: [BlacklistService, YoutubeService],
 		}).compile();
 
-		gateway = module.get<MusicGateway>(MusicGateway);
+		gateway = module.get<BlacklistGateway>(BlacklistGateway);
 	});
 
 	it('should be defined', () => {

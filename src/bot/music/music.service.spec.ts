@@ -1,4 +1,5 @@
 import { ConfigModule } from '$/config.module';
+import { PrismaModule } from '$/prisma/prisma.module';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MusicService } from './music.service';
 import { YoutubeService } from './providers/youtube.service';
@@ -8,7 +9,7 @@ describe('MusicService', () => {
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [ConfigModule],
+			imports: [ConfigModule, PrismaModule],
 			providers: [MusicService, YoutubeService],
 		}).compile();
 

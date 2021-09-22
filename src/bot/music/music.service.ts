@@ -1,4 +1,5 @@
 import { EnvironmentConfig } from '$/env.validation';
+import { PrismaService } from '$/prisma/prisma.service';
 import { parseTimeIntoSeconds } from '$/utils/funcs';
 import { PromiseLike } from '$/utils/types';
 import { Injectable, Type } from '@nestjs/common';
@@ -8,9 +9,6 @@ import { MusicProvider } from './providers/music-provider.interface';
 import { YoutubeService } from './providers/youtube.service';
 
 export const VOLUME_LOG = 15;
-
-/** The number of seconds to keep the blacklisted message and its command. */
-export const BLACKLISTED_MESSAGE_RETENTION = 3;
 
 export type SearchOptions = {
 	message: Message;
@@ -50,8 +48,6 @@ export type MusicBoard = {
 
 @Injectable()
 export class MusicService {
-	private blacklistedChannels: string[] = [];
-
 	private readonly guildBoards = new Map<string, MusicBoard>();
 
 	/** Disconnect timeout, in seconds. */
@@ -63,7 +59,7 @@ export class MusicService {
 	readonly providers: MusicProvider[];
 	readonly fallbackProvider: MusicProvider;
 
-	constructor(readonly env: EnvironmentConfig, readonly youtubeService: YoutubeService) {
+	constructor(private readonly prisma: PrismaService, readonly env: EnvironmentConfig, readonly youtubeService: YoutubeService) {
 		this.DISCONNECT_TIMEOUT = env.DISCORD_MUSIC_DISCONNECT_TIMEOUT * 1000;
 		this.ALONE_DISCONNECT_TIMEOUT = env.DISCORD_MUSIC_ALONE_DISCONNECT_TIMEOUT * 1000;
 
@@ -113,9 +109,6 @@ export class MusicService {
 			return;
 		}
 		if (!message.member?.voice.channel) {
-			return;
-		}
-		if (this.checkForBlacklistChannel(message)) {
 			return;
 		}
 
@@ -272,10 +265,6 @@ export class MusicService {
 	}
 
 	setVolume(of: Message | MusicBoard, volume: number) {
-		if (of instanceof Message && this.checkForBlacklistChannel(of)) {
-			return;
-		}
-
 		const musicBoard = this.getMusicBoard(of);
 
 		if (musicBoard?.dispatcher) {
@@ -286,10 +275,6 @@ export class MusicService {
 	}
 
 	async skip(message: Message) {
-		if (this.checkForBlacklistChannel(message)) {
-			return;
-		}
-
 		const musicBoard = this.getMusicBoard(message);
 
 		if (!musicBoard?.playing) {
@@ -313,10 +298,6 @@ export class MusicService {
 	}
 
 	async disconnect(message: Message) {
-		if (this.checkForBlacklistChannel(message)) {
-			return;
-		}
-
 		const musicBoard = this.getMusicBoard(message);
 
 		if (!musicBoard) {
@@ -334,10 +315,6 @@ export class MusicService {
 	}
 
 	async seek(timestamp: string, message: Message) {
-		if (this.checkForBlacklistChannel(message)) {
-			return;
-		}
-
 		const musicBoard = this.getMusicBoard(message);
 
 		if (!musicBoard?.playing) {
@@ -388,10 +365,6 @@ export class MusicService {
 	}
 
 	async loop(message: Message, count?: number) {
-		if (this.checkForBlacklistChannel(message)) {
-			return;
-		}
-
 		const musicBoard = this.getMusicBoard(message);
 
 		if (!musicBoard?.playing) {
@@ -409,10 +382,6 @@ export class MusicService {
 	}
 
 	async loopAll(message: Message) {
-		if (this.checkForBlacklistChannel(message)) {
-			return;
-		}
-
 		const musicBoard = this.getMusicBoard(message);
 
 		if (!musicBoard?.playing) {
@@ -426,10 +395,6 @@ export class MusicService {
 	}
 
 	async unloop(message: Message) {
-		if (this.checkForBlacklistChannel(message)) {
-			return;
-		}
-
 		const musicBoard = this.getMusicBoard(message);
 
 		if (!musicBoard?.playing) {
@@ -440,48 +405,5 @@ export class MusicService {
 		musicBoard.looping = undefined;
 
 		await message.channel.send(`Unlooped the current music playlist!`);
-	}
-
-	protected checkForBlacklistChannel(message: Message) {
-		if (this.blacklistedChannels.includes(message.channel.id)) {
-			const sendBlacklistedMessage = async () => {
-				const sentMessage = await message.channel.send(`You can't use this command on this channel!`);
-
-				setTimeout(async () => {
-					sentMessage.delete();
-					message.delete();
-				}, BLACKLISTED_MESSAGE_RETENTION * 1000);
-			};
-
-			sendBlacklistedMessage();
-
-			return true;
-		}
-
-		return false;
-	}
-
-	async blacklist(message: Message) {
-		const textChannel = message.channel;
-
-		if (this.blacklistedChannels.includes(textChannel.id)) {
-			return;
-		}
-
-		this.blacklistedChannels.push(textChannel.id);
-
-		await message.channel.send(`Blacklisted this channel from accepting music commands!`);
-	}
-
-	async unblacklist(message: Message) {
-		const textChannel = message.channel;
-
-		if (!this.blacklistedChannels.includes(textChannel.id)) {
-			return;
-		}
-
-		this.blacklistedChannels = this.blacklistedChannels.filter((channel) => channel != textChannel.id);
-
-		await message.channel.send(`Unblocked this channel for accepting music commands!`);
 	}
 }

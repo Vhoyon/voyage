@@ -1,13 +1,14 @@
 import { ConfigModule } from '$/config.module';
 import { EnvironmentConfig } from '$/env.validation';
+import { PrismaModule } from '$/prisma/prisma.module';
 import { Module } from '@nestjs/common';
 import { DiscordModule } from 'discord-nestjs';
-import { ConfigGateway } from './config/config.gateway';
+import { DiscordConfigGateway } from './config/config.gateway';
 import { MusicModule } from './music/music.module';
 import { RequestPipe } from './utils/request.pipe';
 
 export const discordModule = DiscordModule.forRootAsync({
-	imports: [ConfigModule],
+	imports: [ConfigModule, PrismaModule],
 	inject: [EnvironmentConfig],
 	useFactory: async (env: EnvironmentConfig) => {
 		const requestPipe = RequestPipe({
@@ -24,7 +25,7 @@ export const discordModule = DiscordModule.forRootAsync({
 });
 
 @Module({
-	imports: [discordModule, MusicModule],
-	providers: [ConfigGateway],
+	imports: [discordModule, MusicModule, PrismaModule],
+	providers: [DiscordConfigGateway],
 })
 export class BotModule {}
