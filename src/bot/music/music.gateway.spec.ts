@@ -2,8 +2,8 @@ import { ConfigModule } from '$/config.module';
 import { PrismaModule } from '$/prisma/prisma.module';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MusicGateway } from './music.gateway';
-import { MusicService } from './music.service';
 import { YoutubeService } from './providers/youtube.service';
+import { MusicService } from './services/music.service';
 
 describe('MusicGateway', () => {
 	let gateway: MusicGateway;

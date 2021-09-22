@@ -4,8 +4,8 @@ import { Message, VoiceState } from 'discord.js';
 import { VParsedCommand } from 'vcommand-parser';
 import { LoopDto } from './dtos/loop.dto';
 import { VolumeDto } from './dtos/volume.dto';
-import { MusicGuard } from './music.guard';
-import { MusicService } from './music.service';
+import { MusicGuard } from './guards/music.guard';
+import { MusicService } from './services/music.service';
 
 @Controller()
 @UseGuards(MusicGuard)

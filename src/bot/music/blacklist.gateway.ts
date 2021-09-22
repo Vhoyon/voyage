@@ -1,7 +1,7 @@
 import { Controller, Logger } from '@nestjs/common';
 import { Context, OnCommand } from 'discord-nestjs';
 import { Message } from 'discord.js';
-import { BlacklistService } from './blacklist.service';
+import { BlacklistService } from './services/blacklist.service';
 
 @Controller()
 export class BlacklistGateway {

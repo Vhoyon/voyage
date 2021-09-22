@@ -1,8 +1,8 @@
 import { ConfigModule } from '$/config.module';
 import { PrismaModule } from '$/prisma/prisma.module';
 import { Test, TestingModule } from '@nestjs/testing';
+import { YoutubeService } from '../providers/youtube.service';
 import { MusicService } from './music.service';
-import { YoutubeService } from './providers/youtube.service';
 
 describe('MusicService', () => {
 	let service: MusicService;

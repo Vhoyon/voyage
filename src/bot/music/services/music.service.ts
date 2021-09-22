@@ -1,12 +1,12 @@
 import { EnvironmentConfig } from '$/env.validation';
 import { PrismaService } from '$/prisma/prisma.service';
 import { parseTimeIntoSeconds } from '$/utils/funcs';
-import { PromiseLike } from '$/utils/types';
 import { Injectable, Type } from '@nestjs/common';
-import { Guild, Message, StreamDispatcher, TextChannel, VoiceChannel, VoiceConnection } from 'discord.js';
-import { Readable } from 'stream';
-import { MusicProvider } from './providers/music-provider.interface';
-import { YoutubeService } from './providers/youtube.service';
+import { Guild, Message, TextChannel } from 'discord.js';
+import { LinkableSong } from '../interfaces/linkable-song.interface';
+import { MusicBoard } from '../interfaces/music-board.interface';
+import { MusicProvider } from '../interfaces/music-provider.interface';
+import { YoutubeService } from '../providers/youtube.service';
 
 export const VOLUME_LOG = 15;
 
@@ -17,33 +17,6 @@ export type SearchOptions = {
 
 export type PlaySongOptions = {
 	seek: number;
-};
-
-export type LinkableSong = {
-	query: string;
-	provider: Type<MusicProvider>;
-	url: string;
-	title: string;
-	description?: string;
-	/** Duration of the song in seconds */
-	duration: number;
-	getStream: () => PromiseLike<Readable>;
-	options?: Partial<PlaySongOptions>;
-};
-
-export type MusicBoard = {
-	id: string;
-	textChannel: TextChannel;
-	voiceChannel: VoiceChannel;
-	songQueue: LinkableSong[];
-	lastSongPlayed?: LinkableSong;
-	volume: number;
-	playing: boolean;
-	connection: VoiceConnection;
-	dispatcher?: StreamDispatcher;
-	doDisconnectImmediately: boolean;
-	disconnectTimeoutId?: NodeJS.Timeout;
-	looping?: 'one' | 'all' | number;
 };
 
 @Injectable()

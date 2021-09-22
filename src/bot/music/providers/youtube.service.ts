@@ -3,8 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { Message } from 'discord.js';
 import search, { YouTubeSearchOptions } from 'youtube-search';
 import ytdl from 'ytdl-core-discord';
-import { LinkableSong } from '../music.service';
-import { MusicProvider } from './music-provider.interface';
+import { LinkableSong } from '../interfaces/linkable-song.interface';
+import { MusicProvider } from '../interfaces/music-provider.interface';
 
 @Injectable()
 export class YoutubeService implements MusicProvider {
