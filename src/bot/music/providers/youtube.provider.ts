@@ -7,7 +7,7 @@ import { LinkableSong } from '../interfaces/linkable-song.interface';
 import { MusicProvider } from '../interfaces/music-provider.interface';
 
 @Injectable()
-export class YoutubeService implements MusicProvider {
+export class YoutubeProvider implements MusicProvider {
 	constructor(private readonly env: EnvironmentConfig) {}
 
 	isQueryProviderUrl(query: string) {
@@ -28,7 +28,7 @@ export class YoutubeService implements MusicProvider {
 
 			const song: LinkableSong = {
 				query,
-				provider: YoutubeService,
+				provider: YoutubeProvider,
 				url,
 				title: info.videoDetails.title,
 				duration: parseInt(info.videoDetails.lengthSeconds),

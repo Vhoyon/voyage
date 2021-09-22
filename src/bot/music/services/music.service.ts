@@ -6,7 +6,7 @@ import { Guild, Message, TextChannel } from 'discord.js';
 import { LinkableSong } from '../interfaces/linkable-song.interface';
 import { MusicBoard } from '../interfaces/music-board.interface';
 import { MusicProvider } from '../interfaces/music-provider.interface';
-import { YoutubeService } from '../providers/youtube.service';
+import { YoutubeProvider } from '../providers/youtube.provider';
 
 export const VOLUME_LOG = 15;
 
@@ -27,12 +27,12 @@ export class MusicService {
 	private readonly DISCONNECT_TIMEOUT: number;
 	private readonly ALONE_DISCONNECT_TIMEOUT: number;
 
-	static readonly seekBlacklist: Type<MusicProvider>[] = [YoutubeService];
+	static readonly seekBlacklist: Type<MusicProvider>[] = [YoutubeProvider];
 
 	readonly providers: MusicProvider[];
 	readonly fallbackProvider: MusicProvider;
 
-	constructor(private readonly prisma: PrismaService, readonly env: EnvironmentConfig, readonly youtubeService: YoutubeService) {
+	constructor(private readonly prisma: PrismaService, readonly env: EnvironmentConfig, readonly youtubeService: YoutubeProvider) {
 		this.DISCONNECT_TIMEOUT = env.DISCORD_MUSIC_DISCONNECT_TIMEOUT * 1000;
 		this.ALONE_DISCONNECT_TIMEOUT = env.DISCORD_MUSIC_ALONE_DISCONNECT_TIMEOUT * 1000;
 

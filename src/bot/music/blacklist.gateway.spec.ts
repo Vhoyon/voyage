@@ -2,7 +2,7 @@ import { ConfigModule } from '$/config.module';
 import { PrismaModule } from '$/prisma/prisma.module';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BlacklistGateway } from './blacklist.gateway';
-import { YoutubeService } from './providers/youtube.service';
+import { YoutubeProvider } from './providers/youtube.provider';
 import { BlacklistService } from './services/blacklist.service';
 
 describe('BlacklistGateway', () => {
@@ -12,7 +12,7 @@ describe('BlacklistGateway', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ConfigModule, PrismaModule],
 			controllers: [BlacklistGateway],
-			providers: [BlacklistService, YoutubeService],
+			providers: [BlacklistService, YoutubeProvider],
 		}).compile();
 
 		gateway = module.get<BlacklistGateway>(BlacklistGateway);

@@ -2,7 +2,7 @@ import { ConfigModule } from '$/config.module';
 import { PrismaModule } from '$/prisma/prisma.module';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MusicGateway } from './music.gateway';
-import { YoutubeService } from './providers/youtube.service';
+import { YoutubeProvider } from './providers/youtube.provider';
 import { MusicService } from './services/music.service';
 
 describe('MusicGateway', () => {
@@ -11,7 +11,7 @@ describe('MusicGateway', () => {
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ConfigModule, PrismaModule],
-			providers: [MusicGateway, MusicService, YoutubeService],
+			providers: [MusicGateway, MusicService, YoutubeProvider],
 		}).compile();
 
 		gateway = module.get<MusicGateway>(MusicGateway);
