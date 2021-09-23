@@ -2,13 +2,14 @@ import { Controller, Logger } from '@nestjs/common';
 import { Content, Context, On, OnCommand, TransformPipe, UseGuards, UsePipes, ValidationPipe } from 'discord-nestjs';
 import { Message, VoiceState } from 'discord.js';
 import { VParsedCommand } from 'vcommand-parser';
+import { MessageIsFromTextChannelGuard } from '../common/guards/message-is-from-textchannel.guard';
 import { LoopDto } from './dtos/loop.dto';
 import { VolumeDto } from './dtos/volume.dto';
 import { MusicGuard } from './guards/music.guard';
 import { MusicService } from './services/music.service';
 
 @Controller()
-@UseGuards(MusicGuard)
+@UseGuards(MessageIsFromTextChannelGuard, MusicGuard)
 export class MusicGateway {
 	private readonly logger = new Logger(MusicGateway.name);
 
