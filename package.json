@@ -5,6 +5,9 @@
   "author": "Guillaume Marcoux",
   "private": true,
   "license": "MIT",
+  "engines": {
+    "node": ">=16"
+  },
   "scripts": {
     "init": "gulp init",
     "build": "gulp build",
