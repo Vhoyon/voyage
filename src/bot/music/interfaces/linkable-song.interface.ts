@@ -1,4 +1,4 @@
-import { PlaySongOptions } from '../services/music.service';
+import { StreamOptions } from 'discord.js';
 import { MusicProvider } from './music-provider.interface';
 
 export interface LinkableSong {
@@ -9,5 +9,5 @@ export interface LinkableSong {
 	description?: string;
 	/** Duration of the song in seconds */
 	duration: number;
-	options?: Partial<PlaySongOptions>;
+	streamOptions?: StreamOptions;
 }

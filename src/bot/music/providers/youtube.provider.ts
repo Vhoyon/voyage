@@ -33,6 +33,9 @@ export class YoutubeProvider implements MusicProvider {
 				url,
 				title: info.videoDetails.title,
 				duration: parseInt(info.videoDetails.lengthSeconds),
+				streamOptions: {
+					type: 'opus',
+				},
 			};
 
 			return song;

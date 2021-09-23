@@ -15,10 +15,6 @@ export type SearchOptions = {
 	forceProvider?: Type<MusicProvider>;
 };
 
-export type PlaySongOptions = {
-	seek: number;
-};
-
 @Injectable()
 export class MusicService {
 	private readonly logger = new Logger(MusicService.name);
@@ -136,25 +132,6 @@ export class MusicService {
 		}
 	}
 
-	protected leaveAndClearMusicBoard(musicBoard: MusicBoard) {
-		if (musicBoard.playing) {
-			this.endCurrentSong(musicBoard, { disconnect: true });
-		} else {
-			musicBoard.voiceChannel.leave();
-
-			this.guildBoards.delete(musicBoard.id);
-		}
-	}
-
-	protected endCurrentSong(musicBoard: MusicBoard, options?: Partial<{ disconnect: boolean }>) {
-		if (options?.disconnect) {
-			musicBoard.songQueue = [];
-			musicBoard.doDisconnectImmediately = true;
-		}
-
-		musicBoard.connection.dispatcher.end();
-	}
-
 	protected async playSong(song: LinkableSong, musicBoard: MusicBoard) {
 		const playNextSong = async () => {
 			musicBoard.playing = false;
@@ -220,24 +197,40 @@ export class MusicService {
 		musicBoard.playing = true;
 
 		const dispatcher = musicBoard.connection
-			.play(stream, {
-				type: song.url.includes('youtube.com') ? 'opus' : 'ogg/opus',
-				seek: song.options?.seek,
-			})
+			.play(stream, song.streamOptions)
 			.on('finish', playNextSong)
 			.on('error', (error) => {
 				musicBoard.playing = false;
 
-				console.error(error);
+				this.logger.error(error);
 			});
 
 		musicBoard.dispatcher = dispatcher;
 
-		if (song.options?.seek) {
-			song.options.seek = undefined;
+		if (song.streamOptions) {
+			song.streamOptions.seek = undefined;
 		}
 
 		this.setVolume(musicBoard, musicBoard.volume);
+	}
+
+	protected leaveAndClearMusicBoard(musicBoard: MusicBoard) {
+		if (musicBoard.playing) {
+			this.endCurrentSong(musicBoard, { disconnect: true });
+		} else {
+			musicBoard.voiceChannel.leave();
+
+			this.guildBoards.delete(musicBoard.id);
+		}
+	}
+
+	protected endCurrentSong(musicBoard: MusicBoard, options?: Partial<{ disconnect: boolean }>) {
+		if (options?.disconnect) {
+			musicBoard.songQueue = [];
+			musicBoard.doDisconnectImmediately = true;
+		}
+
+		musicBoard.connection.dispatcher.end();
 	}
 
 	protected async getLinkableSong(query: string, options: SearchOptions): Promise<LinkableSong | null> {
