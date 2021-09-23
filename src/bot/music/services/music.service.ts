@@ -1,7 +1,7 @@
 import { EnvironmentConfig } from '$/env.validation';
 import { PrismaService } from '$/prisma/prisma.service';
 import { parseTimeIntoSeconds } from '$/utils/funcs';
-import { Injectable, Type } from '@nestjs/common';
+import { Injectable, Logger, Type } from '@nestjs/common';
 import { Guild, Message, TextChannel } from 'discord.js';
 import { LinkableSong } from '../interfaces/linkable-song.interface';
 import { MusicBoard } from '../interfaces/music-board.interface';
@@ -21,6 +21,8 @@ export type PlaySongOptions = {
 
 @Injectable()
 export class MusicService {
+	private readonly logger = new Logger(MusicService.name);
+
 	private readonly guildBoards = new Map<string, MusicBoard>();
 
 	/** Disconnect timeout, in seconds. */
@@ -195,6 +197,25 @@ export class MusicService {
 
 		musicBoard.lastSongPlayed = song;
 
+		try {
+			await this.prisma.musicSetting.updateMany({
+				data: {
+					lastSongPlayed: song.query,
+					nbOfSongsPlayed: {
+						increment: 1,
+					},
+				},
+				where: {
+					channelId: musicBoard.textChannel.id,
+					guild: {
+						guildId: musicBoard.voiceChannel.guild.id,
+					},
+				},
+			});
+		} catch (error) {
+			this.logger.error(error);
+		}
+
 		const stream = await song.getStream();
 
 		musicBoard.playing = true;
@@ -237,13 +258,32 @@ export class MusicService {
 		return linkableSong;
 	}
 
-	setVolume(of: Message | MusicBoard, volume: number) {
+	async setVolume(of: Message | MusicBoard, volume: number) {
 		const musicBoard = this.getMusicBoard(of);
 
 		if (musicBoard?.dispatcher) {
 			musicBoard.dispatcher.setVolumeLogarithmic(volume / VOLUME_LOG);
 
 			musicBoard.volume = volume;
+
+			try {
+				await this.prisma.musicSetting.updateMany({
+					data: {
+						volume,
+					},
+					where: {
+						channelId: musicBoard.textChannel.id,
+						guild: {
+							guildId: musicBoard.voiceChannel.guild.id,
+						},
+						volume: {
+							not: volume,
+						},
+					},
+				});
+			} catch (error) {
+				this.logger.error(error);
+			}
 		}
 	}
 
