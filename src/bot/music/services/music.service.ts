@@ -29,14 +29,15 @@ export class MusicService {
 	private readonly DISCONNECT_TIMEOUT: number;
 	private readonly ALONE_DISCONNECT_TIMEOUT: number;
 
-	readonly providers: MusicProvider[];
+	readonly providers: MusicProvider[] = [];
 	readonly fallbackProvider: MusicProvider;
 
 	constructor(private readonly prisma: PrismaService, readonly env: EnvironmentConfig, readonly youtubeService: YoutubeProvider) {
 		this.DISCONNECT_TIMEOUT = env.DISCORD_MUSIC_DISCONNECT_TIMEOUT * 1000;
 		this.ALONE_DISCONNECT_TIMEOUT = env.DISCORD_MUSIC_ALONE_DISCONNECT_TIMEOUT * 1000;
 
-		this.providers = [youtubeService];
+		this.providers.push(youtubeService);
+
 		this.fallbackProvider = youtubeService;
 	}
 
