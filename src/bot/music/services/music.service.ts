@@ -29,8 +29,6 @@ export class MusicService {
 	private readonly DISCONNECT_TIMEOUT: number;
 	private readonly ALONE_DISCONNECT_TIMEOUT: number;
 
-	static readonly seekBlacklist: Type<MusicProvider>[] = [YoutubeProvider];
-
 	readonly providers: MusicProvider[];
 	readonly fallbackProvider: MusicProvider;
 
@@ -216,7 +214,7 @@ export class MusicService {
 			this.logger.error(error);
 		}
 
-		const stream = await song.getStream();
+		const stream = await song.provider.getStream(song.url);
 
 		musicBoard.playing = true;
 
@@ -233,6 +231,10 @@ export class MusicService {
 			});
 
 		musicBoard.dispatcher = dispatcher;
+
+		if (song.options?.seek) {
+			song.options.seek = undefined;
+		}
 
 		this.setVolume(musicBoard, musicBoard.volume);
 	}
@@ -335,22 +337,22 @@ export class MusicService {
 			return;
 		}
 
-		const seekedSong = musicBoard.lastSongPlayed!;
-
-		if (MusicService.seekBlacklist.includes(seekedSong.provider)) {
-			await message.channel.send(`Unfortunately, seeking for \`${seekedSong.provider}\` is not available.`);
-			return;
-		}
-
 		const seekTime = parseTimeIntoSeconds(timestamp);
 
-		seekedSong.options = { ...seekedSong.options, seek: seekTime };
+		try {
+			const seekedSong = await musicBoard.lastSongPlayed!.provider.seek(musicBoard.lastSongPlayed!, seekTime);
 
-		musicBoard.songQueue = [seekedSong, ...musicBoard.songQueue];
+			musicBoard.songQueue = [seekedSong, ...musicBoard.songQueue];
 
-		this.endCurrentSong(musicBoard);
+			this.endCurrentSong(musicBoard);
 
-		await message.channel.send(`Seeked current song to ${seekTime} seconds!`);
+			await message.channel.send(`Seeked current song to ${seekTime} seconds!`);
+		} catch (error: unknown) {
+			if (typeof error == 'string') {
+				await message.channel.send(error);
+			}
+			return;
+		}
 	}
 
 	async startAloneTimeout(guild: Guild) {

@@ -1,4 +1,5 @@
 import { EnvironmentConfig } from '$/env.validation';
+import { PromiseLike } from '$/utils/types';
 import { Injectable } from '@nestjs/common';
 import { Message } from 'discord.js';
 import search, { YouTubeSearchOptions } from 'youtube-search';
@@ -28,11 +29,10 @@ export class YoutubeProvider implements MusicProvider {
 
 			const song: LinkableSong = {
 				query,
-				provider: YoutubeProvider,
+				provider: this,
 				url,
 				title: info.videoDetails.title,
 				duration: parseInt(info.videoDetails.lengthSeconds),
-				getStream: () => this.getStream(url),
 			};
 
 			return song;
@@ -47,6 +47,11 @@ export class YoutubeProvider implements MusicProvider {
 			// eslint-disable-next-line @typescript-eslint/no-magic-numbers
 			highWaterMark: 1 << 25, // This apparently fixes audio being cut off too soon
 		});
+	}
+
+	seek(): PromiseLike<LinkableSong> {
+		// song.options = { ...song.options, seek: seekTime };
+		throw `Seek for Youtube is not available!`;
 	}
 
 	protected async getYoutubeVideoId(query: string, isUrl: boolean, message: Message) {
