@@ -25,7 +25,7 @@ export const discordModule = DiscordModule.forRootAsync({
 });
 
 @Module({
-	imports: [discordModule, MusicModule, PrismaModule],
+	imports: [discordModule, PrismaModule, MusicModule],
 	providers: [DiscordConfigGateway],
 })
 export class BotModule {}
