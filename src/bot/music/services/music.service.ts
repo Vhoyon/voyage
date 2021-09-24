@@ -348,15 +348,14 @@ export class MusicService {
 		await message.channel.send(`Shuffled the queue!`);
 	}
 
-	async viewQueue(message: Message) {
+	// eslint-disable-next-line @typescript-eslint/no-magic-numbers
+	async viewQueue(message: Message, nbOfSongsToDisplay = 10) {
 		const queue = this.getQueue(message);
 
 		if (!queue?.isPlaying) {
 			await message.channel.send(`No queue here!`);
 			return;
 		}
-
-		const nbOfSongsToDisplay = 10;
 
 		const formattedSongs = queue.songs.slice(0, nbOfSongsToDisplay).map((song, i) => `**${i + 1}** : \`${song.name}\``);
 

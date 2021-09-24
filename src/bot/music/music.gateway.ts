@@ -3,6 +3,7 @@ import { Content, Context, OnCommand, TransformPipe, UseGuards, UsePipes, Valida
 import { Message } from 'discord.js';
 import { VParsedCommand } from 'vcommand-parser';
 import { MessageIsFromTextChannelGuard } from '../common/guards/message-is-from-textchannel.guard';
+import { QueueDto } from './dtos/queue.dto';
 import { VolumeDto } from './dtos/volume.dto';
 import { MusicGuard } from './guards/music.guard';
 import { MusicService } from './services/music.service';
@@ -176,7 +177,8 @@ export class MusicGateway {
 	}
 
 	@OnCommand({ name: 'queue' })
-	async onGetQueue(@Context() [message]: [Message]) {
+	@UsePipes(TransformPipe, ValidationPipe)
+	async onGetQueue(@Content() { count }: QueueDto, @Context() [message]: [Message]) {
 		const voiceChannel = message.member?.voice?.channel;
 
 		if (!voiceChannel) {
@@ -184,6 +186,6 @@ export class MusicGateway {
 			return;
 		}
 
-		await this.musicService.viewQueue(message);
+		await this.musicService.viewQueue(message, count);
 	}
 }
