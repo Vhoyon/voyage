@@ -54,7 +54,7 @@ export class MusicService {
 			})
 			.on('songChanged', async (queue, newSong, oldSong) => {
 				if ((oldSong.data as SongData).skipped) {
-					await (queue.data as QueueData).textChannel.send(`Skipped \`${oldSong.name}\`!`);
+					await (queue.data as QueueData).textChannel.send(`Skipped \`${oldSong.name}\`. Now playing \`${newSong.name}\`!`);
 				}
 			})
 			.on('queueEnd', async (queue) => {
