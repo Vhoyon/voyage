@@ -135,29 +135,35 @@ export class MusicService {
 
 		const hadSongs = queue.songs.length;
 
-		if (isQuerySong) {
-			const song = await queue.play(query);
+		try {
+			if (isQuerySong) {
+				const song = await queue.play(query);
 
-			song.setData(songData);
+				song.setData(songData);
 
-			if (hadSongs) {
-				await message.channel.send(`Added song \`${song.name}\` to the queue!`);
+				if (hadSongs) {
+					await message.channel.send(`Added song \`${song.name}\` to the queue!`);
+				} else {
+					await message.channel.send(`Playing song \`${song.name}\`!`);
+				}
 			} else {
-				await message.channel.send(`Playing song \`${song.name}\`!`);
-			}
-		} else {
-			const playlist = await queue.playlist(query);
+				const playlist = await queue.playlist(query);
 
-			playlist.songs.forEach((s) => s.setData(songData));
+				playlist.songs.forEach((s) => s.setData(songData));
 
-			if (hadSongs) {
-				await message.channel.send(`Added playlist \`${playlist.name}\` (containing \`${playlist.songs.length}\`) to the queue!`);
-			} else {
-				await message.channel.send(`Playing playlist \`${playlist.name}\`!`);
+				if (hadSongs) {
+					await message.channel.send(`Added playlist \`${playlist.name}\` (containing \`${playlist.songs.length}\` songs) to the queue!`);
+				} else {
+					await message.channel.send(`Playing playlist \`${playlist.name}\` (containing \`${playlist.songs.length}\` songs)!`);
+				}
 			}
+
+			await this.setVolume(queue, guildMusicSettings.volume);
+		} catch (error) {
+			await message.channel.send(
+				`Couldn't find a match for the query \`${query}\`. If you used a link, make sure the video / playlist is not private!`,
+			);
 		}
-
-		await this.setVolume(queue, guildMusicSettings.volume);
 	}
 
 	// protected async playSong(song: LinkableSong, musicBoard: MusicBoard) {
