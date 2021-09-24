@@ -299,6 +299,11 @@ export class MusicService {
 			return;
 		}
 
+		if (queue.repeatMode == RepeatMode.SONG) {
+			await message.channel.send(`This song is already looping!`);
+			return;
+		}
+
 		queue.setRepeatMode(RepeatMode.SONG);
 
 		await message.channel.send(`Looping current song (\`${queue.nowPlaying.name}\`)!`);
