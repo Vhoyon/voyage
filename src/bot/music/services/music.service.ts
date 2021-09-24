@@ -1,77 +1,87 @@
 import { EnvironmentConfig } from '$/env.validation';
 import { PrismaService } from '$/prisma/prisma.service';
 import { parseTimeIntoSeconds } from '$/utils/funcs';
-import { Injectable, Logger, Type } from '@nestjs/common';
-import { Guild, Message, TextChannel } from 'discord.js';
-import { LinkableSong } from '../interfaces/linkable-song.interface';
-import { MusicBoard } from '../interfaces/music-board.interface';
-import { MusicProvider } from '../interfaces/music-provider.interface';
-import { YoutubeProvider } from '../providers/youtube.provider';
+import { Injectable, Logger } from '@nestjs/common';
+import { Player, Queue, RepeatMode } from 'discord-music-player';
+import { DiscordClientProvider } from 'discord-nestjs';
+import { Message, TextChannel } from 'discord.js';
 
 export const VOLUME_LOG = 15;
 
-export type SearchOptions = {
-	message: Message;
-	forceProvider?: Type<MusicProvider>;
+export type QueueData = {
+	textChannel: TextChannel;
+};
+
+export type SongData = {
+	query: string;
+	skipped?: boolean;
 };
 
 @Injectable()
 export class MusicService {
 	private readonly logger = new Logger(MusicService.name);
 
-	private readonly guildBoards = new Map<string, MusicBoard>();
+	private readonly player;
 
-	/** Disconnect timeout, in seconds. */
-	private readonly DISCONNECT_TIMEOUT: number;
-	private readonly ALONE_DISCONNECT_TIMEOUT: number;
+	constructor(readonly discordProvider: DiscordClientProvider, readonly env: EnvironmentConfig, private readonly prisma: PrismaService) {
+		this.player = new Player(discordProvider.getClient(), {
+			deafenOnJoin: true,
+			leaveOnEnd: true,
+			leaveOnEmpty: true,
+			timeout: env.DISCORD_MUSIC_DISCONNECT_TIMEOUT * 1000,
+		});
 
-	readonly providers: MusicProvider[] = [];
-	readonly fallbackProvider: MusicProvider;
+		this.player
+			.on('songChanged', async (queue, newSong) => {
+				try {
+					await this.prisma.musicSetting.updateMany({
+						data: {
+							lastSongPlayed: (newSong.data as SongData).query,
+							nbOfSongsPlayed: {
+								increment: 1,
+							},
+						},
+						where: {
+							guild: {
+								guildId: queue.guild.id,
+							},
+						},
+					});
+				} catch (error) {
+					this.logger.error(error);
+				}
+			})
+			.on('songChanged', async (queue, newSong, oldSong) => {
+				if ((oldSong.data as SongData).skipped) {
+					await (queue.data as QueueData).textChannel.send(`Skipped \`${oldSong.name}\`!`);
+				}
+			})
+			.on('queueEnd', async (queue) => {
+				const lastPlayedSong = queue.nowPlaying;
 
-	constructor(private readonly prisma: PrismaService, readonly env: EnvironmentConfig, readonly youtubeService: YoutubeProvider) {
-		this.DISCONNECT_TIMEOUT = env.DISCORD_MUSIC_DISCONNECT_TIMEOUT * 1000;
-		this.ALONE_DISCONNECT_TIMEOUT = env.DISCORD_MUSIC_ALONE_DISCONNECT_TIMEOUT * 1000;
-
-		this.providers.push(youtubeService);
-
-		this.fallbackProvider = youtubeService;
+				if ((lastPlayedSong.data as SongData).skipped) {
+					queue.destroy(true);
+					await (queue.data as QueueData).textChannel.send(`Skipped \`${lastPlayedSong.name}\`! No more songs are the the queue, goodbye!`);
+				}
+			})
+			.on('channelEmpty', async (queue) => {
+				(queue.data as QueueData).textChannel.send(`Nobody's listening to me anymore, cya!`);
+			})
+			.on('error', (error, queue) => {
+				this.logger.error(`Error: ${error} in ${queue.guild.name}`);
+			});
 	}
 
-	protected getKeyFromGuild(guild: Guild) {
-		return guild.id;
-	}
-
-	protected getMusicBoard(of: Message | MusicBoard | Guild) {
-		if (of instanceof Message || of instanceof Guild) {
-			if (of instanceof Message) {
-				if (!of.guild) {
-					return;
-				}
-				if (!of.member?.voice.channel) {
-					return;
-				}
-			}
-
-			const guild = of instanceof Message ? of.guild : of;
-
-			if (!guild) {
-				return;
-			}
-
-			const key = this.getKeyFromGuild(guild);
-
-			return this.guildBoards.get(key);
+	protected getQueue(of: Message | Queue) {
+		if (of instanceof Queue) {
+			return of;
 		}
 
-		return of;
-	}
-
-	protected cancelMusicBoardTimeout(musicBoard: MusicBoard) {
-		if (musicBoard.disconnectTimeoutId) {
-			clearTimeout(musicBoard.disconnectTimeoutId);
+		if (!of.guild) {
+			return null;
 		}
 
-		musicBoard.disconnectTimeoutId = undefined;
+		return this.player.getQueue(of.guild.id);
 	}
 
 	async play(query: string, message: Message) {
@@ -82,108 +92,181 @@ export class MusicService {
 			return;
 		}
 
-		const voiceChannel = message.member.voice.channel;
+		let queue = this.getQueue(message);
 
-		const key = this.getKeyFromGuild(message.guild);
-
-		const musicBoard = this.guildBoards.get(key);
-
-		let song: LinkableSong | null;
-
-		try {
-			song = await this.getLinkableSong(query, { message });
-		} catch (error) {
-			await message.channel.send(`**_ERROR_** : ${error}`);
-			return;
+		if (!queue) {
+			queue = this.player.createQueue(message.guild.id, {
+				data: {
+					textChannel: message.channel,
+				} as QueueData,
+			});
 		}
 
-		if (!song) {
-			await message.channel.send(`Couldn't find a match for query \`${query}\`...`);
-			return;
+		let guildMusicSettings = await this.prisma.musicSetting.findFirst({
+			where: {
+				guild: {
+					guildId: message.guild.id,
+				},
+			},
+		});
+
+		if (!guildMusicSettings) {
+			guildMusicSettings = await this.prisma.musicSetting.create({
+				data: {
+					guild: {
+						connect: {
+							guildId: message.guild.id,
+						},
+					},
+				},
+			});
 		}
 
-		if (musicBoard) {
-			musicBoard.songQueue.push(song);
+		await queue.join(message.member.voice.channel);
 
-			musicBoard.textChannel.send(`Added to queue: **${song.title}**`);
-		} else {
-			try {
-				const connection = await voiceChannel.join();
+		const isQuerySong = !query.includes('/playlist');
 
-				const newMusicBoard: MusicBoard = {
-					id: key,
-					textChannel: message.channel as TextChannel,
-					voiceChannel: voiceChannel,
-					songQueue: [],
-					volume: 5,
-					playing: false,
-					doDisconnectImmediately: false,
-					connection,
-				};
-
-				this.guildBoards.set(key, newMusicBoard);
-
-				await this.playSong(song, newMusicBoard);
-
-				newMusicBoard.textChannel.send(`Start playing: \`${song.title}\``);
-			} catch (error) {
-				await message.channel.send(`${error}`);
-			}
-		}
-	}
-
-	protected async playSong(song: LinkableSong, musicBoard: MusicBoard) {
-		const playNextSong = async () => {
-			musicBoard.playing = false;
-
-			if (!musicBoard.doDisconnectImmediately) {
-				const isProperLoopingCount = typeof musicBoard.looping == 'number' && musicBoard.looping > 0;
-
-				if (musicBoard.looping == 'one' || isProperLoopingCount) {
-					musicBoard.songQueue = [musicBoard.lastSongPlayed!, ...musicBoard.songQueue];
-
-					if (typeof musicBoard.looping == 'number') {
-						musicBoard.looping--;
-					}
-				}
-			}
-
-			const nextSong = musicBoard.songQueue.shift();
-
-			if (!musicBoard.doDisconnectImmediately && musicBoard.looping == 'all') {
-				musicBoard.songQueue = [...musicBoard.songQueue, musicBoard.lastSongPlayed!];
-			}
-
-			if (!nextSong) {
-				if (musicBoard.doDisconnectImmediately) {
-					this.leaveAndClearMusicBoard(musicBoard);
-				} else {
-					musicBoard.disconnectTimeoutId = setTimeout(() => this.leaveAndClearMusicBoard(musicBoard), this.DISCONNECT_TIMEOUT);
-				}
-
-				return;
-			}
-
-			this.setVolume(musicBoard, musicBoard.volume);
-
-			await this.playSong(nextSong, musicBoard);
+		const songData: SongData = {
+			query,
 		};
 
-		this.cancelMusicBoardTimeout(musicBoard);
+		await message.channel.send(`Searching for \`${query}\`...`);
 
-		musicBoard.lastSongPlayed = song;
+		if (isQuerySong) {
+			const song = await queue.play(query);
+
+			song.setData(songData);
+
+			await message.channel.send(`Playing song \`${song.name}\``);
+		} else {
+			const playlist = await queue.playlist(query);
+
+			playlist.songs.forEach((s) => s.setData(songData));
+
+			await message.channel.send(`Playing playlist \`${playlist.name}\``);
+		}
+
+		await this.setVolume(queue, guildMusicSettings.volume);
+	}
+
+	// protected async playSong(song: LinkableSong, musicBoard: MusicBoard) {
+	// 	const playNextSong = async () => {
+	// 		musicBoard.playing = false;
+
+	// 		if (!musicBoard.doDisconnectImmediately) {
+	// 			const isProperLoopingCount = typeof musicBoard.looping == 'number' && musicBoard.looping > 0;
+
+	// 			if (musicBoard.looping == 'one' || isProperLoopingCount) {
+	// 				musicBoard.songQueue = [musicBoard.lastSongPlayed!, ...musicBoard.songQueue];
+
+	// 				if (typeof musicBoard.looping == 'number') {
+	// 					musicBoard.looping--;
+	// 				}
+	// 			}
+	// 		}
+
+	// 		const nextSong = musicBoard.songQueue.shift();
+
+	// 		if (!musicBoard.doDisconnectImmediately && musicBoard.looping == 'all') {
+	// 			musicBoard.songQueue = [...musicBoard.songQueue, musicBoard.lastSongPlayed!];
+	// 		}
+
+	// 		if (!nextSong) {
+	// 			if (musicBoard.doDisconnectImmediately) {
+	// 				this.leaveAndClearMusicBoard(musicBoard);
+	// 			} else {
+	// 				musicBoard.disconnectTimeoutId = setTimeout(() => this.leaveAndClearMusicBoard(musicBoard), this.DISCONNECT_TIMEOUT);
+	// 			}
+
+	// 			return;
+	// 		}
+
+	// 		this.setVolume(musicBoard, musicBoard.volume);
+
+	// 		await this.playSong(nextSong, musicBoard);
+	// 	};
+
+	// 	this.cancelMusicBoardTimeout(musicBoard);
+
+	// 	musicBoard.lastSongPlayed = song;
+
+	// 	try {
+	// 		await this.prisma.musicSetting.updateMany({
+	// 			data: {
+	// 				lastSongPlayed: song.query,
+	// 				nbOfSongsPlayed: {
+	// 					increment: 1,
+	// 				},
+	// 			},
+	// 			where: {
+	// 				guild: {
+	// 					guildId: musicBoard.voiceChannel.guild.id,
+	// 				},
+	// 			},
+	// 		});
+	// 	} catch (error) {
+	// 		this.logger.error(error);
+	// 	}
+
+	// 	const stream = await song.provider.getStream(song.url);
+
+	// 	musicBoard.playing = true;
+
+	// 	const dispatcher = musicBoard.connection
+	// 		.play(stream, song.streamOptions)
+	// 		.on('finish', playNextSong)
+	// 		.on('error', (error) => {
+	// 			musicBoard.playing = false;
+
+	// 			this.logger.error(error);
+	// 		});
+
+	// 	musicBoard.dispatcher = dispatcher;
+
+	// 	if (song.streamOptions) {
+	// 		song.streamOptions.seek = undefined;
+	// 	}
+
+	// 	this.setVolume(musicBoard, musicBoard.volume);
+	// }
+
+	// protected async getLinkableSong(query: string, options: SearchOptions): Promise<LinkableSong | null> {
+	// 	if (options.forceProvider) {
+	// 		const forcedProvider = this.providers.find((provider) => provider instanceof options.forceProvider!);
+
+	// 		if (!forcedProvider) {
+	// 			return null;
+	// 		}
+
+	// 		const linkableSong = await forcedProvider.getLinkableSong(query, forcedProvider.isQueryProviderUrl(query), options.message);
+
+	// 		return linkableSong;
+	// 	}
+
+	// 	// No forced provider, find first that matches
+	// 	const provider = this.providers.find((provider) => provider.isQueryProviderUrl(query));
+
+	// 	const linkableSong = await (provider ?? this.fallbackProvider).getLinkableSong(query, !!provider, options.message);
+
+	// 	return linkableSong;
+	// }
+
+	async setVolume(of: Message | Queue, volume: number) {
+		const queue = this.getQueue(of);
+
+		const guildId = of instanceof Message ? of.guild!.id : of.guild.id;
 
 		try {
 			await this.prisma.musicSetting.updateMany({
 				data: {
-					lastSongPlayed: song.query,
-					nbOfSongsPlayed: {
-						increment: 1,
-					},
+					volume,
 				},
 				where: {
 					guild: {
-						guildId: musicBoard.voiceChannel.guild.id,
+						guildId,
+					},
+					volume: {
+						not: volume,
 					},
 				},
 			});
@@ -191,225 +274,97 @@ export class MusicService {
 			this.logger.error(error);
 		}
 
-		const stream = await song.provider.getStream(song.url);
+		queue?.setVolume(volume);
 
-		musicBoard.playing = true;
-
-		const dispatcher = musicBoard.connection
-			.play(stream, song.streamOptions)
-			.on('finish', playNextSong)
-			.on('error', (error) => {
-				musicBoard.playing = false;
-
-				this.logger.error(error);
-			});
-
-		musicBoard.dispatcher = dispatcher;
-
-		if (song.streamOptions) {
-			song.streamOptions.seek = undefined;
-		}
-
-		this.setVolume(musicBoard, musicBoard.volume);
-	}
-
-	protected leaveAndClearMusicBoard(musicBoard: MusicBoard) {
-		if (musicBoard.playing) {
-			this.endCurrentSong(musicBoard, { disconnect: true });
-		} else {
-			musicBoard.voiceChannel.leave();
-
-			this.guildBoards.delete(musicBoard.id);
-		}
-	}
-
-	protected endCurrentSong(musicBoard: MusicBoard, options?: Partial<{ disconnect: boolean }>) {
-		if (options?.disconnect) {
-			musicBoard.songQueue = [];
-			musicBoard.doDisconnectImmediately = true;
-		}
-
-		musicBoard.connection.dispatcher.end();
-	}
-
-	protected async getLinkableSong(query: string, options: SearchOptions): Promise<LinkableSong | null> {
-		if (options.forceProvider) {
-			const forcedProvider = this.providers.find((provider) => provider instanceof options.forceProvider!);
-
-			if (!forcedProvider) {
-				return null;
-			}
-
-			const linkableSong = await forcedProvider.getLinkableSong(query, forcedProvider.isQueryProviderUrl(query), options.message);
-
-			return linkableSong;
-		}
-
-		// No forced provider, find first that matches
-		const provider = this.providers.find((provider) => provider.isQueryProviderUrl(query));
-
-		const linkableSong = await (provider ?? this.fallbackProvider).getLinkableSong(query, !!provider, options.message);
-
-		return linkableSong;
-	}
-
-	async setVolume(of: Message | MusicBoard, volume: number) {
-		const musicBoard = this.getMusicBoard(of);
-
-		if (musicBoard?.dispatcher) {
-			musicBoard.dispatcher.setVolumeLogarithmic(volume / VOLUME_LOG);
-
-			musicBoard.volume = volume;
-
-			try {
-				await this.prisma.musicSetting.updateMany({
-					data: {
-						volume,
-					},
-					where: {
-						guild: {
-							guildId: musicBoard.voiceChannel.guild.id,
-						},
-						volume: {
-							not: volume,
-						},
-					},
-				});
-			} catch (error) {
-				this.logger.error(error);
-			}
-		}
+		return !!queue?.isPlaying;
 	}
 
 	async skip(message: Message) {
-		const musicBoard = this.getMusicBoard(message);
+		const queue = this.getQueue(message);
 
-		if (!musicBoard?.playing) {
+		if (!queue?.isPlaying) {
 			await message.channel.send(`Play a song first before trying to skip it!`);
 			return;
 		}
 
-		const didSkipAll = !musicBoard.songQueue.length;
+		const songSkipped = queue.skip();
 
-		if (didSkipAll) {
-			musicBoard.doDisconnectImmediately = true;
-		}
-
-		this.endCurrentSong(musicBoard);
-
-		if (!didSkipAll) {
-			await message.channel.send(`Skipped!`);
-		} else {
-			await message.channel.send(`Skipped! No more songs are the the queue, goodbye!`);
-		}
+		(songSkipped.data as SongData).skipped = true;
 	}
 
 	async disconnect(message: Message) {
-		const musicBoard = this.getMusicBoard(message);
+		const queue = this.getQueue(message);
 
-		if (!musicBoard) {
-			await message.channel.send(`I'm not even playing a song :/`);
+		if (!queue) {
+			// await message.channel.send(`I'm not even playing a song :/`);
 			return;
 		}
 
-		if (musicBoard.playing) {
-			this.endCurrentSong(musicBoard, { disconnect: true });
-		} else {
-			this.leaveAndClearMusicBoard(musicBoard);
-		}
+		queue.destroy(true);
 
 		await message.channel.send(`Adios!`);
 	}
 
 	async seek(timestamp: string, message: Message) {
-		const musicBoard = this.getMusicBoard(message);
+		const queue = this.getQueue(message);
 
-		if (!musicBoard?.playing) {
-			await message.channel.send(`I cannot seek through a song when nothing is playing!`);
+		if (!queue?.isPlaying) {
+			await message.channel.send(`I cannot seek through a song when nothing is playing...`);
 			return;
 		}
 
 		const seekTime = parseTimeIntoSeconds(timestamp);
+		const seekTimeMS = seekTime * 1000;
 
-		try {
-			const seekedSong = await musicBoard.lastSongPlayed!.provider.seek(musicBoard.lastSongPlayed!, seekTime);
-
-			musicBoard.songQueue = [seekedSong, ...musicBoard.songQueue];
-
-			this.endCurrentSong(musicBoard);
-
-			await message.channel.send(`Seeked current song to ${seekTime} seconds!`);
-		} catch (error: unknown) {
-			if (typeof error == 'string') {
-				await message.channel.send(error);
-			}
-			return;
-		}
-	}
-
-	async startAloneTimeout(guild: Guild) {
-		const musicBoard = this.getMusicBoard(guild);
-
-		if (!musicBoard) {
+		if (seekTimeMS > queue.nowPlaying.millisecons) {
+			await message.channel.send(
+				`You are trying to seek to a time greater than the song itself (\`${queue.nowPlaying.duration}\`). If you want to skip the song, use the skip command!`,
+			);
 			return;
 		}
 
-		musicBoard.disconnectTimeoutId = setTimeout(() => {
-			musicBoard.textChannel.send(`Nobody's listening to me anymore, cya!`);
+		const seekedSong = await queue.seek(seekTimeMS);
 
-			this.leaveAndClearMusicBoard(musicBoard);
-		}, this.ALONE_DISCONNECT_TIMEOUT);
-	}
-
-	async stopAloneTimeout(guild: Guild) {
-		const musicBoard = this.getMusicBoard(guild);
-
-		if (!musicBoard) {
-			return;
+		if (seekedSong == true) {
+			await message.channel.send(`Seeked current song to ${timestamp}!`);
 		}
-
-		this.cancelMusicBoardTimeout(musicBoard);
 	}
 
-	async loop(message: Message, count?: number) {
-		const musicBoard = this.getMusicBoard(message);
+	async loop(message: Message) {
+		const queue = this.getQueue(message);
 
-		if (!musicBoard?.playing) {
+		if (!queue?.isPlaying) {
 			await message.channel.send(`I cannot set a looping song when nothing is playing!`);
 			return;
 		}
 
-		musicBoard.looping = count ?? 'one';
+		queue.setRepeatMode(RepeatMode.SONG);
 
-		if (count) {
-			await message.channel.send(`Looping current song (\`${musicBoard.lastSongPlayed!.title}\`) **${count}** times!`);
-		} else {
-			await message.channel.send(`Looping current song (\`${musicBoard.lastSongPlayed!.title}\`)!`);
-		}
+		await message.channel.send(`Looping current song (\`${queue.nowPlaying.name}\`)!`);
 	}
 
 	async loopAll(message: Message) {
-		const musicBoard = this.getMusicBoard(message);
+		const queue = this.getQueue(message);
 
-		if (!musicBoard?.playing) {
+		if (!queue?.isPlaying) {
 			await message.channel.send(`I cannot loop the player when nothing is playing!`);
 			return;
 		}
 
-		musicBoard.looping = 'all';
+		queue.setRepeatMode(RepeatMode.QUEUE);
 
 		await message.channel.send(`Looping all song in the current playlist!`);
 	}
 
 	async unloop(message: Message) {
-		const musicBoard = this.getMusicBoard(message);
+		const queue = this.getQueue(message);
 
-		if (!musicBoard?.playing) {
+		if (!queue?.isPlaying) {
 			await message.channel.send(`I don't need to unloop anything : nothing is playing!`);
 			return;
 		}
 
-		musicBoard.looping = undefined;
+		queue.setRepeatMode(RepeatMode.DISABLED);
 
 		await message.channel.send(`Unlooped the current music playlist!`);
 	}

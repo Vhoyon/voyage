@@ -3,7 +3,7 @@ import { IsNumber, Max, Min } from 'class-validator';
 import { ArgNum } from 'discord-nestjs';
 
 export const MINIMUM = 1;
-export const MAXIMUM = 10;
+export const MAXIMUM = 200;
 
 export class VolumeDto {
 	@ArgNum((_last: number) => ({ position: 1 }))

@@ -47,11 +47,6 @@ export class EnvironmentConfig {
 	@IsNumber()
 	readonly DISCORD_MUSIC_DISCONNECT_TIMEOUT: number = DEFAULT_DISCORD_MUSIC_DISCONNECT_TIMEOUT;
 
-	@IsOptional()
-	@Type(() => Number)
-	@IsNumber()
-	readonly DISCORD_MUSIC_ALONE_DISCONNECT_TIMEOUT: number = DEFAULT_DISCORD_MUSIC_ALONE_DISCONNECT_TIMEOUT;
-
 	@IsString()
 	readonly YOUTUBE_API_KEY!: string;
 
