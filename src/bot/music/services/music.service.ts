@@ -95,14 +95,6 @@ export class MusicService {
 
 		let queue = this.getQueue(message);
 
-		if (!queue) {
-			queue = this.player.createQueue(message.guild.id, {
-				data: {
-					textChannel: message.channel,
-				} as QueueData,
-			});
-		}
-
 		let guildMusicSettings = await this.prisma.musicSetting.findFirst({
 			where: {
 				guild: {
@@ -120,6 +112,15 @@ export class MusicService {
 						},
 					},
 				},
+			});
+		}
+
+		if (!queue) {
+			queue = this.player.createQueue(message.guild.id, {
+				data: {
+					textChannel: message.channel,
+				} as QueueData,
+				volume: guildMusicSettings.volume,
 			});
 		}
 
@@ -157,8 +158,6 @@ export class MusicService {
 					await message.channel.send(`Playing playlist \`${playlist.name}\` (containing \`${playlist.songs.length}\` songs)!`);
 				}
 			}
-
-			await this.setVolume(queue, guildMusicSettings.volume);
 		} catch (error) {
 			await message.channel.send(
 				`Couldn't find a match for the query \`${query}\`. If you used a link, make sure the video / playlist is not private!`,
