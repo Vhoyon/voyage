@@ -10,6 +10,7 @@ export const VOLUME_LOG = 15;
 
 export type QueueData = {
 	textChannel: TextChannel;
+	isPaused?: boolean;
 };
 
 export type SongData = {
@@ -303,6 +304,48 @@ export class MusicService {
 		queue.destroy(true);
 
 		await message.channel.send(`Adios!`);
+	}
+
+	async pause(message: Message) {
+		const queue = this.getQueue(message);
+
+		if (!queue) {
+			// await message.channel.send(`I'm not even playing a song :/`);
+			return;
+		}
+
+		const wasPaused = (queue.data as QueueData).isPaused;
+
+		if (wasPaused) {
+			await message.channel.send(`The player is already paused! To resume the song, use the \`resume\` command!`);
+			return;
+		}
+
+		queue.setPaused(true);
+		(queue.data as QueueData).isPaused = true;
+
+		await message.channel.send(`Paused \`${queue.nowPlaying.name}\`!`);
+	}
+
+	async resume(message: Message) {
+		const queue = this.getQueue(message);
+
+		if (!queue) {
+			// await message.channel.send(`I'm not even playing a song :/`);
+			return;
+		}
+
+		const wasPaused = (queue.data as QueueData).isPaused;
+
+		if (!wasPaused) {
+			await message.channel.send(`There is no song to resume, play a song first!`);
+			return;
+		}
+
+		queue.setPaused(false);
+		(queue.data as QueueData).isPaused = false;
+
+		await message.channel.send(`Resumed \`${queue.nowPlaying.name}\`!`);
 	}
 
 	async seek(timestamp: string, message: Message) {

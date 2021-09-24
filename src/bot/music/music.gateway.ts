@@ -86,6 +86,30 @@ export class MusicGateway {
 		await this.musicService.disconnect(message);
 	}
 
+	@OnCommand({ name: 'pause' })
+	async onPause(@Context() [message]: [Message]) {
+		const voiceChannel = message.member?.voice?.channel;
+
+		if (!voiceChannel) {
+			await message.channel.send('You need to be in a voice channel to pause music!');
+			return;
+		}
+
+		await this.musicService.pause(message);
+	}
+
+	@OnCommand({ name: 'resume' })
+	async onResume(@Context() [message]: [Message]) {
+		const voiceChannel = message.member?.voice?.channel;
+
+		if (!voiceChannel) {
+			await message.channel.send('You need to be in a voice channel to resume music!');
+			return;
+		}
+
+		await this.musicService.resume(message);
+	}
+
 	@OnCommand({ name: 'seek' })
 	async onSeek(@Content() parsed: VParsedCommand, @Context() [message]: [Message]) {
 		if (!parsed.content) {
