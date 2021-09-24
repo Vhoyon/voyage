@@ -62,7 +62,7 @@ export class MusicService {
 
 				if ((lastPlayedSong.data as SongData).skipped) {
 					queue.destroy(true);
-					await (queue.data as QueueData).textChannel.send(`Skipped \`${lastPlayedSong.name}\`! No more songs are the the queue, goodbye!`);
+					await (queue.data as QueueData).textChannel.send(`Skipped \`${lastPlayedSong.name}\`. No more songs are the the queue, goodbye!`);
 				}
 			})
 			.on('channelEmpty', async (queue) => {
