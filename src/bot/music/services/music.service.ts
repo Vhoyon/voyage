@@ -69,7 +69,7 @@ export class MusicService {
 				(queue.data as QueueData).textChannel.send(`Nobody's listening to me anymore, cya!`);
 			})
 			.on('error', (error, queue) => {
-				this.logger.error(`Error: ${error} in ${queue.guild.name}`);
+				this.logger.error(`Error: ${error} in guild named "${queue.guild?.name}"`);
 			});
 	}
 
@@ -164,108 +164,6 @@ export class MusicService {
 			);
 		}
 	}
-
-	// protected async playSong(song: LinkableSong, musicBoard: MusicBoard) {
-	// 	const playNextSong = async () => {
-	// 		musicBoard.playing = false;
-
-	// 		if (!musicBoard.doDisconnectImmediately) {
-	// 			const isProperLoopingCount = typeof musicBoard.looping == 'number' && musicBoard.looping > 0;
-
-	// 			if (musicBoard.looping == 'one' || isProperLoopingCount) {
-	// 				musicBoard.songQueue = [musicBoard.lastSongPlayed!, ...musicBoard.songQueue];
-
-	// 				if (typeof musicBoard.looping == 'number') {
-	// 					musicBoard.looping--;
-	// 				}
-	// 			}
-	// 		}
-
-	// 		const nextSong = musicBoard.songQueue.shift();
-
-	// 		if (!musicBoard.doDisconnectImmediately && musicBoard.looping == 'all') {
-	// 			musicBoard.songQueue = [...musicBoard.songQueue, musicBoard.lastSongPlayed!];
-	// 		}
-
-	// 		if (!nextSong) {
-	// 			if (musicBoard.doDisconnectImmediately) {
-	// 				this.leaveAndClearMusicBoard(musicBoard);
-	// 			} else {
-	// 				musicBoard.disconnectTimeoutId = setTimeout(() => this.leaveAndClearMusicBoard(musicBoard), this.DISCONNECT_TIMEOUT);
-	// 			}
-
-	// 			return;
-	// 		}
-
-	// 		this.setVolume(musicBoard, musicBoard.volume);
-
-	// 		await this.playSong(nextSong, musicBoard);
-	// 	};
-
-	// 	this.cancelMusicBoardTimeout(musicBoard);
-
-	// 	musicBoard.lastSongPlayed = song;
-
-	// 	try {
-	// 		await this.prisma.musicSetting.updateMany({
-	// 			data: {
-	// 				lastSongPlayed: song.query,
-	// 				nbOfSongsPlayed: {
-	// 					increment: 1,
-	// 				},
-	// 			},
-	// 			where: {
-	// 				guild: {
-	// 					guildId: musicBoard.voiceChannel.guild.id,
-	// 				},
-	// 			},
-	// 		});
-	// 	} catch (error) {
-	// 		this.logger.error(error);
-	// 	}
-
-	// 	const stream = await song.provider.getStream(song.url);
-
-	// 	musicBoard.playing = true;
-
-	// 	const dispatcher = musicBoard.connection
-	// 		.play(stream, song.streamOptions)
-	// 		.on('finish', playNextSong)
-	// 		.on('error', (error) => {
-	// 			musicBoard.playing = false;
-
-	// 			this.logger.error(error);
-	// 		});
-
-	// 	musicBoard.dispatcher = dispatcher;
-
-	// 	if (song.streamOptions) {
-	// 		song.streamOptions.seek = undefined;
-	// 	}
-
-	// 	this.setVolume(musicBoard, musicBoard.volume);
-	// }
-
-	// protected async getLinkableSong(query: string, options: SearchOptions): Promise<LinkableSong | null> {
-	// 	if (options.forceProvider) {
-	// 		const forcedProvider = this.providers.find((provider) => provider instanceof options.forceProvider!);
-
-	// 		if (!forcedProvider) {
-	// 			return null;
-	// 		}
-
-	// 		const linkableSong = await forcedProvider.getLinkableSong(query, forcedProvider.isQueryProviderUrl(query), options.message);
-
-	// 		return linkableSong;
-	// 	}
-
-	// 	// No forced provider, find first that matches
-	// 	const provider = this.providers.find((provider) => provider.isQueryProviderUrl(query));
-
-	// 	const linkableSong = await (provider ?? this.fallbackProvider).getLinkableSong(query, !!provider, options.message);
-
-	// 	return linkableSong;
-	// }
 
 	async setVolume(of: Message | Queue, volume: number) {
 		const queue = this.getQueue(of);
