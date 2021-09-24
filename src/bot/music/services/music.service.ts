@@ -303,6 +303,11 @@ export class MusicService {
 			return;
 		}
 
+		if (queue.repeatMode == RepeatMode.SONG) {
+			await message.channel.send(`Cannot skip currently looping song \`${queue.nowPlaying.name}\`. Use the \`unloop\` command first!`);
+			return;
+		}
+
 		const songSkipped = queue.skip();
 
 		(songSkipped.data as SongData).skipped = true;
