@@ -182,7 +182,6 @@ export class MusicService {
 					},
 				},
 				where: {
-					channelId: musicBoard.textChannel.id,
 					guild: {
 						guildId: musicBoard.voiceChannel.guild.id,
 					},
@@ -268,7 +267,6 @@ export class MusicService {
 						volume,
 					},
 					where: {
-						channelId: musicBoard.textChannel.id,
 						guild: {
 							guildId: musicBoard.voiceChannel.guild.id,
 						},

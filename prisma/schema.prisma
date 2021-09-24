@@ -60,7 +60,6 @@ model MusicBlacklistedChannel {
 
 model MusicSetting {
   id              Int     @id @default(autoincrement())
-  channelId       String  @unique
   volume          Int     @default(5)
   lastSongPlayed  String?
   nbOfSongsPlayed Int?
