@@ -174,4 +174,16 @@ export class MusicGateway {
 
 		await this.musicService.shuffle(message);
 	}
+
+	@OnCommand({ name: 'queue' })
+	async onGetQueue(@Context() [message]: [Message]) {
+		const voiceChannel = message.member?.voice?.channel;
+
+		if (!voiceChannel) {
+			await message.channel.send('You need to be in a voice channel to view the queue!');
+			return;
+		}
+
+		await this.musicService.viewQueue(message);
+	}
 }

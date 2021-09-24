@@ -347,4 +347,23 @@ export class MusicService {
 
 		await message.channel.send(`Shuffled the queue!`);
 	}
+
+	async viewQueue(message: Message) {
+		const queue = this.getQueue(message);
+
+		if (!queue?.isPlaying) {
+			await message.channel.send(`No queue here!`);
+			return;
+		}
+
+		const nbOfSongsToDisplay = 10;
+
+		const formattedSongs = queue.songs.slice(0, nbOfSongsToDisplay).map((song, i) => `**${i + 1}** : \`${song.name}\``);
+
+		await message.channel.send(
+			`Here's the next ${
+				formattedSongs.length != nbOfSongsToDisplay ? formattedSongs.length : `${nbOfSongsToDisplay} (out of ${queue.songs.length})`
+			} songs :\n\n${formattedSongs.join('\n')}`,
+		);
+	}
 }
