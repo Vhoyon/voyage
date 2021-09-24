@@ -162,4 +162,16 @@ export class MusicGateway {
 
 		await this.musicService.unloop(message);
 	}
+
+	@OnCommand({ name: 'shuffle' })
+	async onShuffle(@Context() [message]: [Message]) {
+		const voiceChannel = message.member?.voice?.channel;
+
+		if (!voiceChannel) {
+			await message.channel.send('You need to be in a voice channel to shuffle the queued songs!');
+			return;
+		}
+
+		await this.musicService.shuffle(message);
+	}
 }

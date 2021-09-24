@@ -411,4 +411,17 @@ export class MusicService {
 
 		await message.channel.send(`Unlooped the current music playlist!`);
 	}
+
+	async shuffle(message: Message) {
+		const queue = this.getQueue(message);
+
+		if (!queue?.isPlaying) {
+			await message.channel.send(`I cannot shuffle the queue when nothing is playing!`);
+			return;
+		}
+
+		queue.shuffle();
+
+		await message.channel.send(`Shuffled the queue!`);
+	}
 }
