@@ -133,18 +133,28 @@ export class MusicService {
 
 		await message.channel.send(`Searching for \`${query}\`...`);
 
+		const hadSongs = queue.songs.length;
+
 		if (isQuerySong) {
 			const song = await queue.play(query);
 
 			song.setData(songData);
 
-			await message.channel.send(`Playing song \`${song.name}\``);
+			if (hadSongs) {
+				await message.channel.send(`Added song \`${song.name}\` to the queue!`);
+			} else {
+				await message.channel.send(`Playing song \`${song.name}\`!`);
+			}
 		} else {
 			const playlist = await queue.playlist(query);
 
 			playlist.songs.forEach((s) => s.setData(songData));
 
-			await message.channel.send(`Playing playlist \`${playlist.name}\``);
+			if (hadSongs) {
+				await message.channel.send(`Added playlist \`${playlist.name}\` (containing \`${playlist.songs.length}\`) to the queue!`);
+			} else {
+				await message.channel.send(`Playing playlist \`${playlist.name}\`!`);
+			}
 		}
 
 		await this.setVolume(queue, guildMusicSettings.volume);
