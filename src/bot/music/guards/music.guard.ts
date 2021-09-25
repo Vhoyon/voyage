@@ -11,7 +11,9 @@ export class MusicGuard implements DiscordGuard {
 	constructor(private readonly prisma: PrismaService) {}
 
 	async canActive(event: keyof ClientEvents, [message]: [Message]): Promise<boolean> {
-		if (event != 'message') {
+		const handlingEvents: (keyof ClientEvents)[] = ['message', 'messageCreate'];
+
+		if (!handlingEvents.includes(event)) {
 			return true;
 		}
 
