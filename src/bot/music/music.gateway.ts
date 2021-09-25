@@ -1,9 +1,9 @@
 import { Controller, Logger } from '@nestjs/common';
-import { Content, Context, On, OnCommand, TransformPipe, UseGuards, UsePipes, ValidationPipe } from 'discord-nestjs';
-import { Message, VoiceState } from 'discord.js';
+import { Content, Context, OnCommand, TransformPipe, UseGuards, UsePipes, ValidationPipe } from 'discord-nestjs';
+import { Message } from 'discord.js';
 import { VParsedCommand } from 'vcommand-parser';
 import { MessageIsFromTextChannelGuard } from '../common/guards/message-is-from-textchannel.guard';
-import { LoopDto } from './dtos/loop.dto';
+import { QueueDto } from './dtos/queue.dto';
 import { VolumeDto } from './dtos/volume.dto';
 import { MusicGuard } from './guards/music.guard';
 import { MusicService } from './services/music.service';
@@ -15,43 +15,7 @@ export class MusicGateway {
 
 	constructor(private readonly musicService: MusicService) {}
 
-	@On({ event: 'voiceStateUpdate' })
-	async onUserDisconnect(@Context() [oldVoiceState, newVoiceState]: [VoiceState, VoiceState]) {
-		// Only handle user leaving, not user joining
-		if (newVoiceState.channelID) {
-			return;
-		}
-
-		// Ignore bots
-		if (oldVoiceState.member?.user.bot) {
-			return;
-		}
-
-		const numberOfHumansRemaining = oldVoiceState.channel?.members.array().filter((m) => !m.user.bot).length;
-
-		if (numberOfHumansRemaining !== 0) {
-			return;
-		}
-
-		this.musicService.startAloneTimeout(oldVoiceState.guild);
-	}
-
-	@On({ event: 'voiceStateUpdate' })
-	async onUserConnect(@Context() [oldVoiceState, newVoiceState]: [VoiceState, VoiceState]) {
-		// Only handle user joining, not user leaving
-		if (oldVoiceState.channelID) {
-			return;
-		}
-
-		// Ignore bots
-		if (newVoiceState.member?.user.bot) {
-			return;
-		}
-
-		this.musicService.stopAloneTimeout(newVoiceState.guild);
-	}
-
-	@OnCommand({ name: 'play' })
+	@OnCommand({ name: 'play', aliases: ['p'] })
 	async onPlay(@Content() parsed: VParsedCommand, @Context() [message]: [Message]) {
 		if (!parsed.content) {
 			await message.channel.send('You need to provide a search query to this command!');
@@ -72,14 +36,13 @@ export class MusicGateway {
 			return;
 		}
 
-		await this.musicService.play(parsed.content, message);
+		try {
+			await this.musicService.play(parsed.content, message);
+		} catch (error) {
+			this.logger.error(error, error instanceof TypeError ? error.stack : undefined);
+			await message.channel.send(`An error happened!`);
+		}
 	}
-
-	// @OnCommand({ name: 'p' })
-	// onPlayAlias(@Content() parsed: VParsedCommand, @Context() [message]: [Message]) {
-	// 	// await message.channel.send(`Execute command: ${parsed}, Args: ${message}`);
-	// 	return this.onCommand(parsed, [message]);
-	// }
 
 	@OnCommand({ name: 'skip' })
 	async onSkip(@Context() [message]: [Message]) {
@@ -103,7 +66,13 @@ export class MusicGateway {
 			return;
 		}
 
-		this.musicService.setVolume(message, volume);
+		const wasPlaying = await this.musicService.setVolume(message, volume);
+
+		if (wasPlaying) {
+			await message.channel.send(`Set volume to \`${volume}\`!`);
+		} else {
+			await message.channel.send(`Set volume to \`${volume}\` for the next time a song is played!`);
+		}
 	}
 
 	@OnCommand({ name: 'disconnect' })
@@ -116,6 +85,30 @@ export class MusicGateway {
 		}
 
 		await this.musicService.disconnect(message);
+	}
+
+	@OnCommand({ name: 'pause' })
+	async onPause(@Context() [message]: [Message]) {
+		const voiceChannel = message.member?.voice?.channel;
+
+		if (!voiceChannel) {
+			await message.channel.send('You need to be in a voice channel to pause music!');
+			return;
+		}
+
+		await this.musicService.pause(message);
+	}
+
+	@OnCommand({ name: 'resume' })
+	async onResume(@Context() [message]: [Message]) {
+		const voiceChannel = message.member?.voice?.channel;
+
+		if (!voiceChannel) {
+			await message.channel.send('You need to be in a voice channel to resume music!');
+			return;
+		}
+
+		await this.musicService.resume(message);
 	}
 
 	@OnCommand({ name: 'seek' })
@@ -136,8 +129,7 @@ export class MusicGateway {
 	}
 
 	@OnCommand({ name: 'loop' })
-	@UsePipes(TransformPipe, ValidationPipe)
-	async onLoop(@Content() { count }: LoopDto, @Context() [message]: [Message]) {
+	async onLoop(@Context() [message]: [Message]) {
 		const voiceChannel = message.member?.voice?.channel;
 
 		if (!voiceChannel) {
@@ -145,7 +137,7 @@ export class MusicGateway {
 			return;
 		}
 
-		await this.musicService.loop(message, count);
+		await this.musicService.loop(message);
 	}
 
 	@OnCommand({ name: 'loopall' })
@@ -170,5 +162,30 @@ export class MusicGateway {
 		}
 
 		await this.musicService.unloop(message);
+	}
+
+	@OnCommand({ name: 'shuffle' })
+	async onShuffle(@Context() [message]: [Message]) {
+		const voiceChannel = message.member?.voice?.channel;
+
+		if (!voiceChannel) {
+			await message.channel.send('You need to be in a voice channel to shuffle the queued songs!');
+			return;
+		}
+
+		await this.musicService.shuffle(message);
+	}
+
+	@OnCommand({ name: 'queue' })
+	@UsePipes(TransformPipe, ValidationPipe)
+	async onGetQueue(@Content() { count }: QueueDto, @Context() [message]: [Message]) {
+		const voiceChannel = message.member?.voice?.channel;
+
+		if (!voiceChannel) {
+			await message.channel.send('You need to be in a voice channel to view the queue!');
+			return;
+		}
+
+		await this.musicService.viewQueue(message, count);
 	}
 }

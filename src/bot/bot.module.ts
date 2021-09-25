@@ -16,6 +16,7 @@ export const discordModule = DiscordModule.forRootAsync({
 		});
 
 		return {
+			intents: ['GUILD_VOICE_STATES'],
 			token: env.DISCORD_TOKEN,
 			commandPrefix: env.DISCORD_PREFIX,
 			usePipes: [requestPipe],

@@ -60,7 +60,7 @@ model MusicBlacklistedChannel {
 
 model MusicSetting {
   id              Int     @id @default(autoincrement())
-  volume          Int     @default(5)
+  volume          Int     @default(50)
   lastSongPlayed  String?
   nbOfSongsPlayed Int?
   guild           Guild   @relation(fields: [guildId], references: [id], onDelete: Cascade, onUpdate: Cascade)
