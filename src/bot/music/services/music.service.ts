@@ -136,9 +136,9 @@ export class MusicService {
 
 		const isQuerySong = !query.includes('/playlist');
 
-		const songData: SongData = {
+		const createSongData = (): SongData => ({
 			query,
-		};
+		});
 
 		await message.channel.send(`Searching for \`${query}\`...`);
 
@@ -148,7 +148,7 @@ export class MusicService {
 			if (isQuerySong) {
 				const song = await queue.play(query);
 
-				song.setData(songData);
+				song.setData(createSongData());
 
 				if (hadSongs) {
 					await message.channel.send(`Added song \`${song.name}\` to the queue!`);
@@ -158,7 +158,7 @@ export class MusicService {
 			} else {
 				const playlist = await queue.playlist(query);
 
-				playlist.songs.forEach((s) => s.setData(songData));
+				playlist.songs.forEach((s) => s.setData(createSongData()));
 
 				if (hadSongs) {
 					await message.channel.send(`Added playlist \`${playlist.name}\` (containing \`${playlist.songs.length}\` songs) to the queue!`);
