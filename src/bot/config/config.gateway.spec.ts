@@ -1,4 +1,4 @@
-import { PrismaService } from '$/prisma/prisma.service';
+import { PrismaModule } from '$/prisma/prisma.module';
 import { Test, TestingModule } from '@nestjs/testing';
 import { discordModule } from '../bot.module';
 import { DiscordConfigGateway } from './config.gateway';
@@ -9,8 +9,8 @@ describe('ConfigGateway', () => {
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
-			imports: [discordModule],
-			providers: [DiscordConfigGateway, PrismaService],
+			imports: [discordModule, PrismaModule],
+			providers: [DiscordConfigGateway],
 		}).compile();
 
 		gateway = module.get<DiscordConfigGateway>(DiscordConfigGateway);

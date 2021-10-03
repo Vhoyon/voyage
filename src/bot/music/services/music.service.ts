@@ -69,7 +69,15 @@ export class MusicService {
 				(queue.data as QueueData).textChannel.send(`Nobody's listening to me anymore, cya!`);
 			})
 			.on('error', (error, queue) => {
-				this.logger.error(`Error: ${error} in guild named "${queue.guild?.name}"`);
+				if (typeof error == 'string') {
+					if (error == 'Status code: 410') {
+						(queue.data as QueueData).textChannel.send(
+							`Couldn't play the given query. If you used a link, make sure the video / playlist is not private or age restricted!`,
+						);
+					} else {
+						this.logger.error(`Error: ${error} in guild named "${queue.guild?.name}"`);
+					}
+				}
 			});
 	}
 
