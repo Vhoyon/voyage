@@ -86,43 +86,6 @@ jobs:
         env:
           DATABASE_URL: 'postgres://postgres:postgres@localhost:${{ job.services.postgres.ports[5432] }}/postgres'
 
-  test:
-    if: github.actor != 'renovate[bot]'
-    name: 'Test'
-    runs-on: ubuntu-latest
-
-    services:
-      postgres:
-        image: postgres:13.4
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: postgres
-        ports:
-          - 5432/tcp
-        # needed because the postgres container does not provide a healthcheck
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: ${{env.NODE_VERSION}}
-          cache: 'npm'
-
-      - name: Install
-        run: npm install
-
-      - name: Init
-        run: npm run init
-        env:
-          DATABASE_URL: 'postgres://postgres:postgres@localhost:${{ job.services.postgres.ports[5432] }}/postgres'
-
-      - name: Test
-        run: npm run test
-        env:
-          TEST_DATABASE_URL: 'postgres://postgres:postgres@localhost:${{ job.services.postgres.ports[5432] }}/postgres'
-
   pr-coverage:
     if: github.actor != 'renovate[bot]'
     name: 'PR Coverage'
