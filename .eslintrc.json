@@ -16,7 +16,7 @@
 		"node": true,
 		"jest": true
 	},
-	"ignorePatterns": ["gulpfile.ts", "dist", "src/@generated"],
+	"ignorePatterns": ["gulpfile.ts", "dist", "src/_generated"],
 	"rules": {
 		"@typescript-eslint/interface-name-prefix": "off",
 		"@typescript-eslint/explicit-function-return-type": "off",

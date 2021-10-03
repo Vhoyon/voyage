@@ -122,4 +122,4 @@ tmp
 .tmp
 
 # Ignore Prisma Generated files
-src/@generated
+src/_generated

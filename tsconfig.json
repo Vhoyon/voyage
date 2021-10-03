@@ -10,8 +10,9 @@
     
     "baseUrl": "./",
     "paths": {
-        "$/*": ["./src/*"],
-        "$prisma-graphql/*": ["./src/@generated/prisma-nestjs-graphql/*"]
+      "$prisma-graphql/*": ["./src/_generated/prisma-nestjs-graphql/*"],
+      "$common/*": ["./src/@common/*"],
+      "$/*": ["./src/*"],
     },
     
     "typeRoots": [

@@ -18,7 +18,7 @@ export const configs = {
 	buildDest: (tsProject.config.compilerOptions?.outDir as string) || './dist',
 	uploadsFolder: './uploads',
 	devPort: 3005,
-	prismaGeneratedFolder: 'prisma/@generated',
+	prismaGeneratedFolder: 'prisma/_generated',
 };
 
 // UTILS

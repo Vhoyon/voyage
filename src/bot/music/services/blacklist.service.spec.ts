@@ -1,4 +1,4 @@
-import { PrismaModule } from '$/prisma/prisma.module';
+import { PrismaModule } from '$common/prisma/prisma.module';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BlacklistService } from './blacklist.service';
 

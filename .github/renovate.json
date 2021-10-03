@@ -5,7 +5,7 @@
 	"labels": [
 		"dependencies"
 	],
-	"commitMessagePrefix": "[Renovate] ",
+	"commitMessagePrefix": "deps(renovate): ",
 	"automergeType": "branch",
 	"packageRules": [
 		{

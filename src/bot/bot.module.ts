@@ -1,6 +1,6 @@
-import { ConfigModule } from '$/config.module';
-import { EnvironmentConfig } from '$/env.validation';
-import { PrismaModule } from '$/prisma/prisma.module';
+import { ConfigModule } from '$common/config.module';
+import { EnvironmentConfig } from '$common/env.validation';
+import { PrismaModule } from '$common/prisma/prisma.module';
 import { Module } from '@nestjs/common';
 import { DiscordModule } from 'discord-nestjs';
 import { DiscordConfigGateway } from './config/config.gateway';

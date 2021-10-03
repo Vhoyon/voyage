@@ -1,4 +1,4 @@
-import { PrismaModule } from '$/prisma/prisma.module';
+import { PrismaModule } from '$common/prisma/prisma.module';
 import { Test, TestingModule } from '@nestjs/testing';
 import { discordModule } from '../bot.module';
 import { DiscordConfigGateway } from './config.gateway';

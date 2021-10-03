@@ -1,6 +1,6 @@
-import { EnvironmentConfig } from '$/env.validation';
-import { PrismaService } from '$/prisma/prisma.service';
-import { parseTimeIntoSeconds } from '$/utils/funcs';
+import { EnvironmentConfig } from '$common/env.validation';
+import { PrismaService } from '$common/prisma/prisma.service';
+import { parseTimeIntoSeconds } from '$common/utils/funcs';
 import { Injectable, Logger } from '@nestjs/common';
 import { Player, Queue, RepeatMode } from 'discord-music-player';
 import { DiscordClientProvider } from 'discord-nestjs';

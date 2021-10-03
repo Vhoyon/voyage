@@ -1,4 +1,4 @@
-import { PrismaService } from '$/prisma/prisma.service';
+import { PrismaService } from '$common/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { DiscordGuard } from 'discord-nestjs';
 import { ClientEvents, Message } from 'discord.js';

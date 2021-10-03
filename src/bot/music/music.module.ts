@@ -1,4 +1,4 @@
-import { PrismaModule } from '$/prisma/prisma.module';
+import { PrismaModule } from '$common/prisma/prisma.module';
 import { forwardRef, Module } from '@nestjs/common';
 import { discordModule } from '../bot.module';
 import { BlacklistGateway } from './blacklist.gateway';
