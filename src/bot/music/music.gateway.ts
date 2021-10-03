@@ -188,4 +188,16 @@ export class MusicGateway {
 
 		await this.musicService.viewQueue(message, count);
 	}
+
+	@OnCommand({ name: 'np' })
+	async onNowPlaying(@Context() [message]: [Message]) {
+		const voiceChannel = message.member?.voice?.channel;
+
+		if (!voiceChannel) {
+			await message.channel.send('You need to be in a voice channel to see the current song!');
+			return;
+		}
+
+		await this.musicService.nowPlaying(message);
+	}
 }

@@ -373,4 +373,18 @@ export class MusicService {
 			} songs :\n\n${formattedSongs.join('\n')}`,
 		);
 	}
+
+	async nowPlaying(message: Message) {
+		const queue = this.getQueue(message);
+
+		if (!queue?.isPlaying) {
+			await message.channel.send(`Nothing is currently playing!`);
+			return;
+		}
+
+		const songTitle = queue.nowPlaying.name;
+		const progressBar = queue.createProgressBar().prettier;
+
+		await message.channel.send(`Now playing : \`${songTitle}\`!\n\n\`${progressBar}\``);
+	}
 }
