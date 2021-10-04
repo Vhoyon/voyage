@@ -78,7 +78,7 @@
     "@types/gulp": "4.0.9",
     "@types/gulp-rename": "2.0.1",
     "@types/gulp-replace": "0.0.31",
-    "@types/jest": "27.0.1",
+    "@types/jest": "27.0.2",
     "@types/node": "16.9.1",
     "@types/supertest": "2.0.11",
     "@typescript-eslint/eslint-plugin": "4.31.1",
