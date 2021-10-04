@@ -1,5 +1,5 @@
 import { discordModule } from '$/bot/bot.module';
-import { ConfigModule } from '$common/config.module';
+import { ConfigModule } from '$common/configs/config.module';
 import { PrismaModule } from '$common/prisma/prisma.module';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MusicService } from './music.service';

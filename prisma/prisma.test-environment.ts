@@ -1,5 +1,5 @@
 import NodeEnvironment from 'jest-environment-node';
-import { env } from '../src/@common/config.module';
+import { env } from '../src/@common/configs/config.module';
 
 export class PrismaTestEnvironment extends NodeEnvironment {
 	override async setup() {

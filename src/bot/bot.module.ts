@@ -1,5 +1,5 @@
-import { ConfigModule } from '$common/config.module';
-import { EnvironmentConfig } from '$common/env.validation';
+import { ConfigModule } from '$common/configs/config.module';
+import { EnvironmentConfig } from '$common/configs/env.validation';
 import { PrismaModule } from '$common/prisma/prisma.module';
 import { Module } from '@nestjs/common';
 import { DiscordModule } from 'discord-nestjs';

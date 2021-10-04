@@ -1,4 +1,4 @@
-import { EnvironmentConfig } from '$common/env.validation';
+import { EnvironmentConfig } from '$common/configs/env.validation';
 import { PrismaService } from '$common/prisma/prisma.service';
 import { parseTimeIntoSeconds } from '$common/utils/funcs';
 import { Injectable, Logger } from '@nestjs/common';

@@ -1,4 +1,4 @@
-import { ConfigModule } from '$common/config.module';
+import { ConfigModule } from '$common/configs/config.module';
 import { PrismaModule } from '$common/prisma/prisma.module';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BlacklistGateway } from './blacklist.gateway';
