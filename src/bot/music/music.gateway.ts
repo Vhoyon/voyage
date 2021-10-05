@@ -3,6 +3,7 @@ import { Content, Context, OnCommand, TransformPipe, UseGuards, UsePipes, Valida
 import { Message } from 'discord.js';
 import { VParsedCommand } from 'vcommand-parser';
 import { MessageIsFromTextChannelGuard } from '../common/guards/message-is-from-textchannel.guard';
+import { MessageService } from '../common/message.service';
 import { QueueDto } from './dtos/queue.dto';
 import { VolumeDto } from './dtos/volume.dto';
 import { MusicGuard } from './guards/music.guard';
@@ -13,26 +14,26 @@ import { MusicService } from './services/music.service';
 export class MusicGateway {
 	private readonly logger = new Logger(MusicGateway.name);
 
-	constructor(private readonly musicService: MusicService) {}
+	constructor(private readonly musicService: MusicService, private readonly messageService: MessageService) {}
 
 	@OnCommand({ name: 'play', aliases: ['p'] })
 	async onPlay(@Content() parsed: VParsedCommand, @Context() [message]: [Message]) {
 		if (!parsed.content) {
-			await message.channel.send('You need to provide a search query to this command!');
+			await this.messageService.sendError(message, 'You need to provide a search query to this command!');
 			return;
 		}
 
 		const voiceChannel = message.member?.voice?.channel;
 
 		if (!voiceChannel) {
-			await message.channel.send('You need to be in a voice channel to play music!');
+			await this.messageService.sendError(message, 'You need to be in a voice channel to play music!');
 			return;
 		}
 
 		const permissions = voiceChannel.permissionsFor(message.client.user!);
 
 		if (!permissions?.has('CONNECT') || !permissions.has('SPEAK')) {
-			await message.channel.send('I need the permissions to join and speak in your voice channel!');
+			await this.messageService.sendError(message, 'I need the permissions to join and speak in your voice channel!');
 			return;
 		}
 
@@ -40,7 +41,7 @@ export class MusicGateway {
 			await this.musicService.play(parsed.content, message);
 		} catch (error) {
 			this.logger.error(error, error instanceof TypeError ? error.stack : undefined);
-			await message.channel.send(`An error happened!`);
+			await this.messageService.sendError(message, `An error happened!`);
 		}
 	}
 
@@ -49,7 +50,7 @@ export class MusicGateway {
 		const voiceChannel = message.member?.voice?.channel;
 
 		if (!voiceChannel) {
-			await message.channel.send('You need to be in a voice channel to skip a song!');
+			await this.messageService.sendError(message, 'You need to be in a voice channel to skip a song!');
 			return;
 		}
 
@@ -62,16 +63,16 @@ export class MusicGateway {
 		const voiceChannel = message.member?.voice?.channel;
 
 		if (!voiceChannel) {
-			await message.channel.send(`You need to be in a voice channel to set the music's volume!`);
+			await this.messageService.sendError(message, `You need to be in a voice channel to set the music's volume!`);
 			return;
 		}
 
 		const wasPlaying = await this.musicService.setVolume(message, volume);
 
 		if (wasPlaying) {
-			await message.channel.send(`Set volume to \`${volume}\`!`);
+			await this.messageService.send(message, `Set volume to \`${volume}\`!`);
 		} else {
-			await message.channel.send(`Set volume to \`${volume}\` for the next time a song is played!`);
+			await this.messageService.send(message, `Set volume to \`${volume}\` for the next time a song is played!`);
 		}
 	}
 
@@ -80,7 +81,7 @@ export class MusicGateway {
 		const voiceChannel = message.member?.voice?.channel;
 
 		if (!voiceChannel) {
-			await message.channel.send('You need to be in a voice channel to stop me from playing music!');
+			await this.messageService.sendError(message, 'You need to be in a voice channel to stop me from playing music!');
 			return;
 		}
 
@@ -92,7 +93,7 @@ export class MusicGateway {
 		const voiceChannel = message.member?.voice?.channel;
 
 		if (!voiceChannel) {
-			await message.channel.send('You need to be in a voice channel to pause music!');
+			await this.messageService.sendError(message, 'You need to be in a voice channel to pause music!');
 			return;
 		}
 
@@ -104,7 +105,7 @@ export class MusicGateway {
 		const voiceChannel = message.member?.voice?.channel;
 
 		if (!voiceChannel) {
-			await message.channel.send('You need to be in a voice channel to resume music!');
+			await this.messageService.sendError(message, 'You need to be in a voice channel to resume music!');
 			return;
 		}
 
@@ -114,14 +115,14 @@ export class MusicGateway {
 	@OnCommand({ name: 'seek' })
 	async onSeek(@Content() parsed: VParsedCommand, @Context() [message]: [Message]) {
 		if (!parsed.content) {
-			await message.channel.send('You need to provide a timestamp (`##?:##?:##`) to this command!');
+			await this.messageService.sendError(message, 'You need to provide a timestamp (`##?:##?:##`) to this command!');
 			return;
 		}
 
 		const voiceChannel = message.member?.voice?.channel;
 
 		if (!voiceChannel) {
-			await message.channel.send('You need to be in a voice channel to seek music!');
+			await this.messageService.sendError(message, 'You need to be in a voice channel to seek music!');
 			return;
 		}
 
@@ -133,7 +134,7 @@ export class MusicGateway {
 		const voiceChannel = message.member?.voice?.channel;
 
 		if (!voiceChannel) {
-			await message.channel.send('You need to be in a voice channel to loop a song!');
+			await this.messageService.sendError(message, 'You need to be in a voice channel to loop a song!');
 			return;
 		}
 
@@ -145,7 +146,7 @@ export class MusicGateway {
 		const voiceChannel = message.member?.voice?.channel;
 
 		if (!voiceChannel) {
-			await message.channel.send('You need to be in a voice channel to loop the player!');
+			await this.messageService.sendError(message, 'You need to be in a voice channel to loop the player!');
 			return;
 		}
 
@@ -157,7 +158,7 @@ export class MusicGateway {
 		const voiceChannel = message.member?.voice?.channel;
 
 		if (!voiceChannel) {
-			await message.channel.send('You need to be in a voice channel to unloop the music player!');
+			await this.messageService.sendError(message, 'You need to be in a voice channel to unloop the music player!');
 			return;
 		}
 
@@ -169,7 +170,7 @@ export class MusicGateway {
 		const voiceChannel = message.member?.voice?.channel;
 
 		if (!voiceChannel) {
-			await message.channel.send('You need to be in a voice channel to shuffle the queued songs!');
+			await this.messageService.sendError(message, 'You need to be in a voice channel to shuffle the queued songs!');
 			return;
 		}
 
@@ -182,7 +183,7 @@ export class MusicGateway {
 		const voiceChannel = message.member?.voice?.channel;
 
 		if (!voiceChannel) {
-			await message.channel.send('You need to be in a voice channel to view the queue!');
+			await this.messageService.sendError(message, 'You need to be in a voice channel to view the queue!');
 			return;
 		}
 
@@ -194,7 +195,7 @@ export class MusicGateway {
 		const voiceChannel = message.member?.voice?.channel;
 
 		if (!voiceChannel) {
-			await message.channel.send('You need to be in a voice channel to see the current song!');
+			await this.messageService.sendError(message, 'You need to be in a voice channel to see the current song!');
 			return;
 		}
 

@@ -1,6 +1,7 @@
 import { ConfigModule } from '$common/configs/config.module';
 import { PrismaModule } from '$common/prisma/prisma.module';
 import { Test, TestingModule } from '@nestjs/testing';
+import { MessageService } from '../common/message.service';
 import { BlacklistGateway } from './blacklist.gateway';
 import { BlacklistService } from './services/blacklist.service';
 
@@ -11,7 +12,7 @@ describe('BlacklistGateway', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ConfigModule, PrismaModule],
 			controllers: [BlacklistGateway],
-			providers: [BlacklistService],
+			providers: [BlacklistService, MessageService],
 		}).compile();
 
 		gateway = module.get<BlacklistGateway>(BlacklistGateway);
