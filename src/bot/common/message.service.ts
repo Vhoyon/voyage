@@ -1,3 +1,4 @@
+import { bold } from '@discordjs/builders';
 import { Injectable } from '@nestjs/common';
 import { Message, MessageEmbed, MessageEmbedOptions, TextBasedChannels } from 'discord.js';
 
@@ -41,7 +42,7 @@ export class MessageService {
 				const additionalOptions = optionsOrType as MessageEmbedOptions | undefined;
 
 				return {
-					description: data,
+					description: bold(data),
 					...additionalOptions,
 				};
 			}
@@ -79,9 +80,24 @@ export class MessageService {
 		return message.edit({ embeds: [newEmbed] });
 	}
 
-	protected sendEmbed(context: ChannelContext, embed: MessageEmbed) {
-		const channel = context instanceof Message ? context.channel : context;
+	async replaceEmbed(message: Message, messageToReplace: Message, data: string | MessageEmbedOptions, type: EmbedType = 'regular') {
+		const newEmbed = this.createEmbed(data, undefined, type);
 
-		return channel.send({ embeds: [embed] });
+		messageToReplace.delete();
+
+		return this.sendEmbed(message, newEmbed);
+	}
+
+	protected sendEmbed(context: ChannelContext, embed: MessageEmbed) {
+		if (context instanceof Message) {
+			return context.reply({
+				embeds: [embed],
+				allowedMentions: {
+					repliedUser: false,
+				},
+			});
+		} else {
+			return context.send({ embeds: [embed] });
+		}
 	}
 }

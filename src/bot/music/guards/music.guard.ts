@@ -1,3 +1,4 @@
+import { MessageService } from '$/bot/common/message.service';
 import { PrismaService } from '$common/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { DiscordGuard } from 'discord-nestjs';
@@ -8,7 +9,7 @@ export const BLACKLISTED_MESSAGE_RETENTION = 3;
 
 @Injectable()
 export class MusicGuard implements DiscordGuard {
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(private readonly prisma: PrismaService, private readonly messageService: MessageService) {}
 
 	async canActive(event: keyof ClientEvents, [message]: [Message]): Promise<boolean> {
 		const handlingEvents: (keyof ClientEvents)[] = ['message', 'messageCreate'];
@@ -28,7 +29,7 @@ export class MusicGuard implements DiscordGuard {
 
 		if (guild?.musicBlacklistedChannels.some((blChannel) => blChannel.channelId == message.channel.id)) {
 			const sendBlacklistedMessage = async () => {
-				const sentMessage = await message.channel.send(`You can't use any music command on this channel!`);
+				const sentMessage = await this.messageService.sendError(message, `You can't use any music command on this channel!`);
 
 				setTimeout(async () => {
 					sentMessage.delete();

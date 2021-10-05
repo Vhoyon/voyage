@@ -37,6 +37,7 @@
     "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
+    "@discordjs/builders": "0.6.0",
     "@discordjs/opus": "0.6.0",
     "@discordjs/voice": "0.6.0",
     "@nestjs/common": "8.0.6",
