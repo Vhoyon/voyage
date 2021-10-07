@@ -188,7 +188,7 @@ export class MusicService {
 				];
 
 				if (hadSongs) {
-					await this.messageService.replaceEmbed(message, botMessage, {
+					await this.messageService.replace(message, botMessage, {
 						title: `Added song ${inlineCode(song.name)} to the queue!`,
 						thumbnail: {
 							url: song.thumbnail,
@@ -196,7 +196,7 @@ export class MusicService {
 						fields: songFields,
 					});
 				} else {
-					await this.messageService.replaceEmbed(message, botMessage, {
+					await this.messageService.replace(message, botMessage, {
 						title: `Playing song ${inlineCode(song.name)}!`,
 						thumbnail: {
 							url: song.thumbnail,
@@ -232,19 +232,19 @@ export class MusicService {
 				];
 
 				if (hadSongs) {
-					await this.messageService.replaceEmbed(message, botMessage, {
+					await this.messageService.replace(message, botMessage, {
 						title: `Added playlist ${inlineCode(playlist.name)}!`,
 						fields: playlistFields,
 					});
 				} else {
-					await this.messageService.replaceEmbed(message, botMessage, {
+					await this.messageService.replace(message, botMessage, {
 						title: `Playing playlist ${inlineCode(playlist.name)}!`,
 						fields: playlistFields,
 					});
 				}
 			}
 		} catch (error) {
-			await this.messageService.replaceEmbed(
+			await this.messageService.replace(
 				message,
 				botMessage,
 				`Couldn't find a match for the query ${inlineCode(query)}. If you used a link, make sure the video / playlist is not private!`,

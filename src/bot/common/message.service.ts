@@ -96,7 +96,7 @@ export class MessageService {
 		return this.sendEmbed(context, embed, options);
 	}
 
-	async editEmbed(message: Message, data: string | SendableOptions) {
+	async edit(message: Message, data: string | SendableOptions) {
 		const [type, options] = typeof data != 'string' ? [data.type, data] : [];
 
 		const newEmbed = this.createEmbed(data, { type });
@@ -104,10 +104,10 @@ export class MessageService {
 		return message.edit({ embeds: [newEmbed], options });
 	}
 
-	async replaceEmbed(context: ChannelContext, messageToReplace: Message, data: SendableOptions): Promise<Message>;
-	async replaceEmbed(context: ChannelContext, messageToReplace: Message, message: string, type?: EmbedType): Promise<Message>;
+	async replace(context: ChannelContext, messageToReplace: Message, data: SendableOptions): Promise<Message>;
+	async replace(context: ChannelContext, messageToReplace: Message, message: string, type?: EmbedType): Promise<Message>;
 
-	async replaceEmbed(context: ChannelContext, messageToReplace: Message, data: string | SendableOptions, type?: EmbedType) {
+	async replace(context: ChannelContext, messageToReplace: Message, data: string | SendableOptions, type?: EmbedType) {
 		const [finalType, options] = typeof data != 'string' ? [data.type, data] : [type];
 
 		const newEmbed = this.createEmbed(data, { type: finalType });
