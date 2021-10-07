@@ -1,10 +1,15 @@
 import { bold } from '@discordjs/builders';
 import { Injectable } from '@nestjs/common';
-import { Message, MessageEmbed, MessageEmbedOptions, TextBasedChannels } from 'discord.js';
+import { Message, MessageEmbed, MessageEmbedOptions, MessageOptions, TextBasedChannels } from 'discord.js';
 
 export type ChannelContext = TextBasedChannels | Message;
 
 export type EmbedType = 'regular' | 'info' | 'error';
+
+export type SendableOptions = {
+	type?: EmbedType;
+} & MessageOptions &
+	MessageEmbedOptions;
 
 @Injectable()
 export class MessageService {
@@ -53,51 +58,59 @@ export class MessageService {
 		return new MessageEmbed({ ...defaultOptions, ...options });
 	}
 
-	async send(context: ChannelContext, embedOptions: MessageEmbedOptions): Promise<Message>;
-	async send(context: ChannelContext, message: string, embedOptions?: MessageEmbedOptions): Promise<Message>;
+	async send(context: ChannelContext, data: SendableOptions): Promise<Message>;
+	async send(context: ChannelContext, message: string, options?: SendableOptions): Promise<Message>;
 
-	async send(context: ChannelContext, data: string | MessageEmbedOptions, embedOptions?: MessageEmbedOptions) {
-		const embed = this.createEmbed(data, embedOptions);
+	async send(context: ChannelContext, data: string | SendableOptions, options?: SendableOptions) {
+		const [embedData, possibleOptions] = typeof data == 'string' ? [data, options] : [data];
 
-		return this.sendEmbed(context, embed);
+		const embed = this.createEmbed(embedData, possibleOptions);
+
+		return this.sendEmbed(context, embed, options);
 	}
 
-	async sendInfo(context: ChannelContext, message: string, embedOptions?: MessageEmbedOptions) {
-		const embed = this.createEmbed(message, embedOptions, 'info');
+	async sendInfo(context: ChannelContext, message: string, options?: SendableOptions) {
+		const embed = this.createEmbed(message, options, 'info');
 
-		return this.sendEmbed(context, embed);
+		return this.sendEmbed(context, embed, options);
 	}
 
-	async sendError(context: ChannelContext, error: string, embedOptions?: MessageEmbedOptions) {
-		const embed = this.createEmbed(error, embedOptions, 'error');
+	async sendError(context: ChannelContext, error: string, options?: SendableOptions) {
+		const embed = this.createEmbed(error, options, 'error');
 
-		return this.sendEmbed(context, embed);
+		return this.sendEmbed(context, embed, options);
 	}
 
-	async editEmbed(message: Message, data: string | MessageEmbedOptions, type: EmbedType = 'regular') {
+	async editEmbed(message: Message, data: string | SendableOptions) {
+		const [type, options] = typeof data != 'string' ? [data.type, data] : [];
+
 		const newEmbed = this.createEmbed(data, undefined, type);
 
-		return message.edit({ embeds: [newEmbed] });
+		return message.edit({ embeds: [newEmbed], options });
 	}
 
-	async replaceEmbed(message: Message, messageToReplace: Message, data: string | MessageEmbedOptions, type: EmbedType = 'regular') {
-		const newEmbed = this.createEmbed(data, undefined, type);
+	async replaceEmbed(message: Message, messageToReplace: Message, data: string | MessageEmbedOptions, type?: EmbedType) {
+		const newEmbed = this.createEmbed(data, undefined, type ?? 'regular');
 
 		messageToReplace.delete();
 
 		return this.sendEmbed(message, newEmbed);
 	}
 
-	protected sendEmbed(context: ChannelContext, embed: MessageEmbed) {
+	protected sendEmbed(context: ChannelContext, embed: MessageEmbed, payload?: MessageOptions) {
 		if (context instanceof Message) {
 			return context.reply({
 				embeds: [embed],
 				allowedMentions: {
 					repliedUser: false,
 				},
+				...payload,
 			});
 		} else {
-			return context.send({ embeds: [embed] });
+			return context.send({
+				embeds: [embed],
+				...payload,
+			});
 		}
 	}
 }
