@@ -1,12 +1,13 @@
 import { bold } from '@discordjs/builders';
 import { Injectable } from '@nestjs/common';
 import { DMChannel, Message, MessageEmbed, MessageEmbedOptions, MessageOptions, PartialDMChannel, TextBasedChannels } from 'discord.js';
+import { InformError } from './error/inform-error';
 
 export type ChannelContext = Message | TextBasedChannels;
 
 export type GuildChannelsContext = Exclude<ChannelContext, PartialDMChannel | DMChannel>;
 
-export type EmbedType = 'regular' | 'info' | 'error';
+export type EmbedType = 'regular' | 'info' | 'error' | 'internal_error';
 
 export type CustomEmbedOptions = {
 	type?: EmbedType;
@@ -20,7 +21,7 @@ export class MessageService {
 	createEmbed(data: string, options?: CustomEmbedOptions): MessageEmbed;
 	/**
 	 * This method is mostly used internally to allow for multiple scenarios.
-	 * If the `data` parameter is a {@link CustomEmbedOptions}, then the `options` parameter is ignored.
+	 * If the `data` parameter is a {@link CustomEmbedOptions}, it will override the data in the `options` parameter.
 	 *
 	 * @param data
 	 * @param options
@@ -45,6 +46,12 @@ export class MessageService {
 					color: 'RED',
 				};
 				break;
+			case 'internal_error':
+				defaultOptions = {
+					title: 'Internal Error!',
+					color: 'DARK_RED',
+				};
+				break;
 			case 'regular':
 			default:
 				defaultOptions = {
@@ -61,7 +68,7 @@ export class MessageService {
 				};
 			}
 
-			return data;
+			return { ...options, ...data };
 		})();
 
 		return new MessageEmbed({ ...defaultOptions, ...finalOptions });
@@ -69,6 +76,7 @@ export class MessageService {
 
 	async send(context: ChannelContext, data: SendableOptions): Promise<Message>;
 	async send(context: ChannelContext, message: string, options?: SendableOptions): Promise<Message>;
+	async send(context: ChannelContext, data: string | SendableOptions, options?: SendableOptions): Promise<Message>;
 
 	async send(context: ChannelContext, data: string | SendableOptions, options?: SendableOptions) {
 		const [embedData, possibleOptions] = typeof data == 'string' ? [data, options] : [data];
@@ -87,9 +95,20 @@ export class MessageService {
 		return this.sendEmbed(context, embed, options);
 	}
 
-	async sendError(context: ChannelContext, error: string, options?: SendableOptions) {
+	async sendInternalError(context: ChannelContext, error: string, options?: SendableOptions) {
 		const embed = this.createEmbed(error, {
-			type: 'error',
+			type: 'internal_error',
+			...options,
+		});
+
+		return this.sendEmbed(context, embed, options);
+	}
+
+	async sendError(context: ChannelContext, error: string | InformError, options?: SendableOptions) {
+		const [data, type] = typeof error == 'string' ? [error, 'error' as EmbedType] : [error.message, error.type];
+
+		const embed = this.createEmbed(data, {
+			type,
 			...options,
 		});
 
