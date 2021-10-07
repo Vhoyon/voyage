@@ -1,3 +1,4 @@
+import { InformErrorInfo, InformInternalError } from '$/bot/common/error/inform-error';
 import { MessageService } from '$/bot/common/message.service';
 import { PrismaService } from '$common/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
@@ -24,9 +25,9 @@ export class BlacklistService {
 				},
 			});
 
-			await this.messageService.send(message, `Blacklisted this channel from accepting music commands!`);
+			return `Blacklisted this channel from accepting music commands!`;
 		} catch (error) {
-			await this.messageService.sendInfo(message, `This channel was already blacklisted!`);
+			throw new InformErrorInfo(`This channel was already blacklisted!`);
 		}
 	}
 
@@ -34,7 +35,7 @@ export class BlacklistService {
 		const textChannel = message.channel;
 
 		try {
-			await this.prisma.musicBlacklistedChannel.deleteMany({
+			const { count } = await this.prisma.musicBlacklistedChannel.deleteMany({
 				where: {
 					channelId: textChannel.id,
 					guild: {
@@ -43,9 +44,13 @@ export class BlacklistService {
 				},
 			});
 
-			await this.messageService.send(message, `Unblocked this channel for accepting music commands!`);
+			if (count > 0) {
+				return `Unblocked this channel for accepting music commands!`;
+			} else {
+				throw new InformErrorInfo(`This channel was already blacklisted!`);
+			}
 		} catch (error) {
-			await this.messageService.sendInfo(message, `This channel was already blacklisted!`);
+			throw new InformInternalError(`An error happened while deleting the blacklisted channel from the database!`);
 		}
 	}
 }

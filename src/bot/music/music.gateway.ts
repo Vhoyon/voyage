@@ -2,6 +2,7 @@ import { Controller, Logger } from '@nestjs/common';
 import { Content, Context, OnCommand, TransformPipe, UseGuards, UsePipes, ValidationPipe } from 'discord-nestjs';
 import { Message } from 'discord.js';
 import { VParsedCommand } from 'vcommand-parser';
+import { InformError } from '../common/error/inform-error';
 import { MessageIsFromTextChannelGuard } from '../common/guards/message-is-from-textchannel.guard';
 import { MessageService } from '../common/message.service';
 import { QueueDto } from './dtos/queue.dto';
@@ -54,7 +55,14 @@ export class MusicGateway {
 			return;
 		}
 
-		await this.musicService.skip(message);
+		try {
+			this.musicService.skip(message);
+		} catch (error) {
+			if (error instanceof InformError) {
+				await this.messageService.sendError(message, error);
+				return;
+			}
+		}
 	}
 
 	@OnCommand({ name: 'volume' })
@@ -85,7 +93,15 @@ export class MusicGateway {
 			return;
 		}
 
-		await this.musicService.disconnect(message);
+		try {
+			const reply = this.musicService.disconnect(message);
+
+			await this.messageService.send(message, reply);
+		} catch (error) {
+			if (error instanceof InformError) {
+				await this.messageService.sendError(message, error);
+			}
+		}
 	}
 
 	@OnCommand({ name: 'pause' })
@@ -97,7 +113,15 @@ export class MusicGateway {
 			return;
 		}
 
-		await this.musicService.pause(message);
+		try {
+			const reply = this.musicService.pause(message);
+
+			await this.messageService.send(message, reply);
+		} catch (error) {
+			if (error instanceof InformError) {
+				await this.messageService.sendError(message, error);
+			}
+		}
 	}
 
 	@OnCommand({ name: 'resume' })
@@ -109,7 +133,15 @@ export class MusicGateway {
 			return;
 		}
 
-		await this.musicService.resume(message);
+		try {
+			const reply = this.musicService.resume(message);
+
+			await this.messageService.send(message, reply);
+		} catch (error) {
+			if (error instanceof InformError) {
+				await this.messageService.sendError(message, error);
+			}
+		}
 	}
 
 	@OnCommand({ name: 'seek' })
@@ -126,7 +158,15 @@ export class MusicGateway {
 			return;
 		}
 
-		await this.musicService.seek(parsed.content, message);
+		try {
+			const reply = await this.musicService.seek(parsed.content, message);
+
+			await this.messageService.send(message, reply);
+		} catch (error) {
+			if (error instanceof InformError) {
+				await this.messageService.sendError(message, error);
+			}
+		}
 	}
 
 	@OnCommand({ name: 'loop' })
@@ -138,7 +178,15 @@ export class MusicGateway {
 			return;
 		}
 
-		await this.musicService.loop(message);
+		try {
+			const reply = this.musicService.loop(message);
+
+			await this.messageService.send(message, reply);
+		} catch (error) {
+			if (error instanceof InformError) {
+				await this.messageService.sendError(message, error);
+			}
+		}
 	}
 
 	@OnCommand({ name: 'loopall' })
@@ -150,7 +198,15 @@ export class MusicGateway {
 			return;
 		}
 
-		await this.musicService.loopAll(message);
+		try {
+			const reply = this.musicService.loopAll(message);
+
+			await this.messageService.send(message, reply);
+		} catch (error) {
+			if (error instanceof InformError) {
+				await this.messageService.sendError(message, error);
+			}
+		}
 	}
 
 	@OnCommand({ name: 'unloop' })
@@ -162,7 +218,15 @@ export class MusicGateway {
 			return;
 		}
 
-		await this.musicService.unloop(message);
+		try {
+			const reply = this.musicService.unloop(message);
+
+			await this.messageService.send(message, reply);
+		} catch (error) {
+			if (error instanceof InformError) {
+				await this.messageService.sendError(message, error);
+			}
+		}
 	}
 
 	@OnCommand({ name: 'shuffle' })
@@ -174,7 +238,15 @@ export class MusicGateway {
 			return;
 		}
 
-		await this.musicService.shuffle(message);
+		try {
+			const reply = this.musicService.shuffle(message);
+
+			await this.messageService.send(message, reply);
+		} catch (error) {
+			if (error instanceof InformError) {
+				await this.messageService.sendError(message, error);
+			}
+		}
 	}
 
 	@OnCommand({ name: 'queue' })
@@ -187,7 +259,15 @@ export class MusicGateway {
 			return;
 		}
 
-		await this.musicService.viewQueue(message, count);
+		try {
+			const reply = this.musicService.viewQueue(message, count);
+
+			await this.messageService.send(message, reply);
+		} catch (error) {
+			if (error instanceof InformError) {
+				await this.messageService.sendError(message, error);
+			}
+		}
 	}
 
 	@OnCommand({ name: 'np' })
@@ -199,6 +279,14 @@ export class MusicGateway {
 			return;
 		}
 
-		await this.musicService.nowPlaying(message);
+		try {
+			const reply = this.musicService.nowPlaying(message);
+
+			await this.messageService.send(message, reply);
+		} catch (error) {
+			if (error instanceof InformError) {
+				await this.messageService.sendError(message, error);
+			}
+		}
 	}
 }
