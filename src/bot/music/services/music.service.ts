@@ -11,6 +11,8 @@ import { MAXIMUM as VOLUME_MAXIMUM } from '../dtos/volume.dto';
 
 export const VOLUME_LOG = 15;
 
+export const DEFAULT_VIEW_QUEUED_SONG = 10;
+
 export type QueueData = {
 	textChannel: TextChannel;
 	isPaused?: boolean;
@@ -440,8 +442,7 @@ export class MusicService {
 		await this.messageService.send(context, `Shuffled the queue!`);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-magic-numbers
-	async viewQueue(context: GuildChannelsContext, nbOfSongsToDisplay = 10) {
+	async viewQueue(context: GuildChannelsContext, nbOfSongsToDisplay = DEFAULT_VIEW_QUEUED_SONG) {
 		const queue = this.getQueue(context);
 
 		if (!queue?.isPlaying) {
