@@ -1,4 +1,4 @@
-import { MessageService } from '$/bot/common/message.service';
+import { GuildChannelsContext, MessageService } from '$/bot/common/message.service';
 import { EnvironmentConfig } from '$common/configs/env.validation';
 import { PrismaService } from '$common/prisma/prisma.service';
 import { parseMsIntoTime, parseTimeIntoSeconds } from '$common/utils/funcs';
@@ -97,7 +97,7 @@ export class MusicService {
 			});
 	}
 
-	protected getQueue(of: Message | Queue) {
+	protected getQueue(of: GuildChannelsContext | Queue) {
 		if (of instanceof Queue) {
 			return of;
 		}
@@ -251,10 +251,10 @@ export class MusicService {
 		}
 	}
 
-	async setVolume(of: Message | Queue, volume: number) {
+	async setVolume(of: GuildChannelsContext | Queue, volume: number) {
 		const queue = this.getQueue(of);
 
-		const guildId = of instanceof Message ? of.guild!.id : of.guild.id;
+		const guildId = of.guild!.id;
 
 		try {
 			await this.prisma.musicSetting.updateMany({
@@ -279,17 +279,17 @@ export class MusicService {
 		return !!queue?.isPlaying;
 	}
 
-	async skip(message: Message) {
-		const queue = this.getQueue(message);
+	async skip(context: GuildChannelsContext) {
+		const queue = this.getQueue(context);
 
 		if (!queue?.isPlaying) {
-			await this.messageService.sendError(message, `Play a song first before trying to skip it!`);
+			await this.messageService.sendError(context, `Play a song first before trying to skip it!`);
 			return;
 		}
 
 		if (queue.repeatMode == RepeatMode.SONG) {
 			await this.messageService.sendError(
-				message,
+				context,
 				`Cannot skip currently looping song ${inlineCode(queue.nowPlaying.name)}. Use the unloop command first!`,
 			);
 			return;
@@ -300,8 +300,8 @@ export class MusicService {
 		(songSkipped.data as SongData).skipped = true;
 	}
 
-	async disconnect(message: Message) {
-		const queue = this.getQueue(message);
+	async disconnect(context: GuildChannelsContext) {
+		const queue = this.getQueue(context);
 
 		if (!queue) {
 			// await this.messageService.sendError(message, `I'm not even playing a song :/`);
@@ -310,11 +310,11 @@ export class MusicService {
 
 		queue.destroy(true);
 
-		await this.messageService.send(message, `Adios!`);
+		await this.messageService.send(context, `Adios!`);
 	}
 
-	async pause(message: Message) {
-		const queue = this.getQueue(message);
+	async pause(context: GuildChannelsContext) {
+		const queue = this.getQueue(context);
 
 		if (!queue) {
 			// await this.messageService.sendError(message, `I'm not even playing a song :/`);
@@ -324,18 +324,18 @@ export class MusicService {
 		const wasPaused = (queue.data as QueueData).isPaused;
 
 		if (wasPaused) {
-			await this.messageService.sendError(message, `The player is already paused! To resume the song, use the resume command!`);
+			await this.messageService.sendError(context, `The player is already paused! To resume the song, use the resume command!`);
 			return;
 		}
 
 		queue.setPaused(true);
 		(queue.data as QueueData).isPaused = true;
 
-		await this.messageService.send(message, `Paused ${inlineCode(queue.nowPlaying.name)}!`);
+		await this.messageService.send(context, `Paused ${inlineCode(queue.nowPlaying.name)}!`);
 	}
 
-	async resume(message: Message) {
-		const queue = this.getQueue(message);
+	async resume(context: GuildChannelsContext) {
+		const queue = this.getQueue(context);
 
 		if (!queue) {
 			// await this.messageService.sendError(message, `I'm not even playing a song :/`);
@@ -345,21 +345,21 @@ export class MusicService {
 		const wasPaused = (queue.data as QueueData).isPaused;
 
 		if (!wasPaused) {
-			await this.messageService.sendError(message, `There is no song to resume, play a song first!`);
+			await this.messageService.sendError(context, `There is no song to resume, play a song first!`);
 			return;
 		}
 
 		queue.setPaused(false);
 		(queue.data as QueueData).isPaused = false;
 
-		await this.messageService.send(message, `Resumed ${inlineCode(queue.nowPlaying.name)}!`);
+		await this.messageService.send(context, `Resumed ${inlineCode(queue.nowPlaying.name)}!`);
 	}
 
-	async seek(timestamp: string, message: Message) {
-		const queue = this.getQueue(message);
+	async seek(timestamp: string, context: GuildChannelsContext) {
+		const queue = this.getQueue(context);
 
 		if (!queue?.isPlaying) {
-			await this.messageService.sendError(message, `I cannot seek through a song when nothing is playing...`);
+			await this.messageService.sendError(context, `I cannot seek through a song when nothing is playing...`);
 			return;
 		}
 
@@ -368,7 +368,7 @@ export class MusicService {
 
 		if (seekTimeMS > queue.nowPlaying.millisecons) {
 			await this.messageService.sendError(
-				message,
+				context,
 				`You are trying to seek to a time greater than the song itself (${inlineCode(
 					queue.nowPlaying.duration,
 				)}). If you want to skip the song, use the skip command!`,
@@ -379,73 +379,73 @@ export class MusicService {
 		const seekedSong = await queue.seek(seekTimeMS);
 
 		if (seekedSong == true) {
-			await this.messageService.send(message, `Seeked current song to ${timestamp}!`);
+			await this.messageService.send(context, `Seeked current song to ${timestamp}!`);
 		}
 	}
 
-	async loop(message: Message) {
-		const queue = this.getQueue(message);
+	async loop(context: GuildChannelsContext) {
+		const queue = this.getQueue(context);
 
 		if (!queue?.isPlaying) {
-			await this.messageService.sendError(message, `I cannot set a looping song when nothing is playing!`);
+			await this.messageService.sendError(context, `I cannot set a looping song when nothing is playing!`);
 			return;
 		}
 
 		if (queue.repeatMode == RepeatMode.SONG) {
-			await this.messageService.sendError(message, `This song is already looping!`);
+			await this.messageService.sendError(context, `This song is already looping!`);
 			return;
 		}
 
 		queue.setRepeatMode(RepeatMode.SONG);
 
-		await this.messageService.send(message, `Looping current song (${inlineCode(queue.nowPlaying.name)})!`);
+		await this.messageService.send(context, `Looping current song (${inlineCode(queue.nowPlaying.name)})!`);
 	}
 
-	async loopAll(message: Message) {
-		const queue = this.getQueue(message);
+	async loopAll(context: GuildChannelsContext) {
+		const queue = this.getQueue(context);
 
 		if (!queue?.isPlaying) {
-			await this.messageService.sendError(message, `I cannot loop the player when nothing is playing!`);
+			await this.messageService.sendError(context, `I cannot loop the player when nothing is playing!`);
 			return;
 		}
 
 		queue.setRepeatMode(RepeatMode.QUEUE);
 
-		await this.messageService.send(message, `Looping all song in the current playlist!`);
+		await this.messageService.send(context, `Looping all song in the current playlist!`);
 	}
 
-	async unloop(message: Message) {
-		const queue = this.getQueue(message);
+	async unloop(context: GuildChannelsContext) {
+		const queue = this.getQueue(context);
 
 		if (!queue?.isPlaying) {
-			await this.messageService.sendError(message, `I don't need to unloop anything : nothing is playing!`);
+			await this.messageService.sendError(context, `I don't need to unloop anything : nothing is playing!`);
 			return;
 		}
 
 		queue.setRepeatMode(RepeatMode.DISABLED);
 
-		await this.messageService.send(message, `Unlooped the current music playlist!`);
+		await this.messageService.send(context, `Unlooped the current music playlist!`);
 	}
 
-	async shuffle(message: Message) {
-		const queue = this.getQueue(message);
+	async shuffle(context: GuildChannelsContext) {
+		const queue = this.getQueue(context);
 
 		if (!queue?.isPlaying) {
-			await this.messageService.sendError(message, `I cannot shuffle the queue when nothing is playing!`);
+			await this.messageService.sendError(context, `I cannot shuffle the queue when nothing is playing!`);
 			return;
 		}
 
 		queue.shuffle();
 
-		await this.messageService.send(message, `Shuffled the queue!`);
+		await this.messageService.send(context, `Shuffled the queue!`);
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-magic-numbers
-	async viewQueue(message: Message, nbOfSongsToDisplay = 10) {
-		const queue = this.getQueue(message);
+	async viewQueue(context: GuildChannelsContext, nbOfSongsToDisplay = 10) {
+		const queue = this.getQueue(context);
 
 		if (!queue?.isPlaying) {
-			await this.messageService.sendError(message, `No queue here!`);
+			await this.messageService.sendError(context, `No queue here!`);
 			return;
 		}
 
@@ -453,7 +453,7 @@ export class MusicService {
 			.slice(0, nbOfSongsToDisplay)
 			.map((song, i) => `${bold((i + 1).toString())} : ${inlineCode(song.name)}`);
 
-		await this.messageService.send(message, {
+		await this.messageService.send(context, {
 			title: `Current queue`,
 			description: formattedSongs.join('\n'),
 			fields: [
@@ -466,11 +466,11 @@ export class MusicService {
 		});
 	}
 
-	async nowPlaying(message: Message) {
-		const queue = this.getQueue(message);
+	async nowPlaying(context: GuildChannelsContext) {
+		const queue = this.getQueue(context);
 
 		if (!queue?.isPlaying) {
-			await this.messageService.sendError(message, `Nothing is currently playing!`);
+			await this.messageService.sendError(context, `Nothing is currently playing!`);
 			return;
 		}
 
@@ -495,7 +495,7 @@ export class MusicService {
 				break;
 		}
 
-		await this.messageService.send(message, {
+		await this.messageService.send(context, {
 			title: `Now playing : ${inlineCode(songData.title)}!`,
 			thumbnail: {
 				url: song.thumbnail,

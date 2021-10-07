@@ -1,8 +1,10 @@
 import { bold } from '@discordjs/builders';
 import { Injectable } from '@nestjs/common';
-import { Message, MessageEmbed, MessageEmbedOptions, MessageOptions, TextBasedChannels } from 'discord.js';
+import { DMChannel, Message, MessageEmbed, MessageEmbedOptions, MessageOptions, PartialDMChannel, TextBasedChannels } from 'discord.js';
 
-export type ChannelContext = TextBasedChannels | Message;
+export type ChannelContext = Message | TextBasedChannels;
+
+export type GuildChannelsContext = Exclude<ChannelContext, PartialDMChannel | DMChannel>;
 
 export type EmbedType = 'regular' | 'info' | 'error';
 
