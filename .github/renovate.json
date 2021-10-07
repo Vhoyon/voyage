@@ -1,11 +1,12 @@
 {
 	"extends": [
-		"config:base"
+		"config:base",
+		":semanticCommitTypeAll(deps)",
+		":semanticCommitScopeDisabled"
 	],
 	"labels": [
 		"dependencies"
 	],
-	"commitMessagePrefix": "deps(renovate): ",
 	"automergeType": "branch",
 	"packageRules": [
 		{
