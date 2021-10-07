@@ -8,20 +8,29 @@ export type GuildChannelsContext = Exclude<ChannelContext, PartialDMChannel | DM
 
 export type EmbedType = 'regular' | 'info' | 'error';
 
-export type SendableOptions = {
+export type CustomEmbedOptions = {
 	type?: EmbedType;
-} & MessageOptions &
-	MessageEmbedOptions;
+} & MessageEmbedOptions;
+
+export type SendableOptions = CustomEmbedOptions & MessageOptions;
 
 @Injectable()
 export class MessageService {
-	createEmbed(data: MessageEmbedOptions, type?: EmbedType): MessageEmbed;
-	createEmbed(data: string | MessageEmbedOptions, embedOptions?: MessageEmbedOptions, type?: EmbedType): MessageEmbed;
+	createEmbed(data: CustomEmbedOptions): MessageEmbed;
+	createEmbed(data: string, options?: CustomEmbedOptions): MessageEmbed;
+	/**
+	 * This method is mostly used internally to allow for multiple scenarios.
+	 * If the `data` parameter is a {@link CustomEmbedOptions}, then the `options` parameter is ignored.
+	 *
+	 * @param data
+	 * @param options
+	 */
+	createEmbed(data: string | CustomEmbedOptions, options?: CustomEmbedOptions): MessageEmbed;
 
-	createEmbed(data: string | MessageEmbedOptions, optionsOrType?: MessageEmbedOptions | EmbedType, type?: EmbedType) {
+	createEmbed(data: string | CustomEmbedOptions, options?: CustomEmbedOptions) {
 		let defaultOptions: MessageEmbedOptions;
 
-		const parsedType: EmbedType = (typeof optionsOrType == 'string' ? optionsOrType : type) ?? 'regular';
+		const parsedType: EmbedType = (typeof data == 'string' ? options?.type : data.type) ?? 'regular';
 
 		switch (parsedType) {
 			case 'info':
@@ -44,20 +53,18 @@ export class MessageService {
 				break;
 		}
 
-		const options: MessageEmbedOptions = (() => {
+		const finalOptions: CustomEmbedOptions = (() => {
 			if (typeof data == 'string') {
-				const additionalOptions = optionsOrType as MessageEmbedOptions | undefined;
-
 				return {
 					description: bold(data),
-					...additionalOptions,
+					...options,
 				};
 			}
 
 			return data;
 		})();
 
-		return new MessageEmbed({ ...defaultOptions, ...options });
+		return new MessageEmbed({ ...defaultOptions, ...finalOptions });
 	}
 
 	async send(context: ChannelContext, data: SendableOptions): Promise<Message>;
@@ -72,13 +79,19 @@ export class MessageService {
 	}
 
 	async sendInfo(context: ChannelContext, message: string, options?: SendableOptions) {
-		const embed = this.createEmbed(message, options, 'info');
+		const embed = this.createEmbed(message, {
+			type: 'info',
+			...options,
+		});
 
 		return this.sendEmbed(context, embed, options);
 	}
 
 	async sendError(context: ChannelContext, error: string, options?: SendableOptions) {
-		const embed = this.createEmbed(error, options, 'error');
+		const embed = this.createEmbed(error, {
+			type: 'error',
+			...options,
+		});
 
 		return this.sendEmbed(context, embed, options);
 	}
@@ -86,17 +99,22 @@ export class MessageService {
 	async editEmbed(message: Message, data: string | SendableOptions) {
 		const [type, options] = typeof data != 'string' ? [data.type, data] : [];
 
-		const newEmbed = this.createEmbed(data, undefined, type);
+		const newEmbed = this.createEmbed(data, { type });
 
 		return message.edit({ embeds: [newEmbed], options });
 	}
 
-	async replaceEmbed(message: Message, messageToReplace: Message, data: string | MessageEmbedOptions, type?: EmbedType) {
-		const newEmbed = this.createEmbed(data, undefined, type ?? 'regular');
+	async replaceEmbed(context: ChannelContext, messageToReplace: Message, data: SendableOptions): Promise<Message>;
+	async replaceEmbed(context: ChannelContext, messageToReplace: Message, message: string, type?: EmbedType): Promise<Message>;
+
+	async replaceEmbed(context: ChannelContext, messageToReplace: Message, data: string | SendableOptions, type?: EmbedType) {
+		const [finalType, options] = typeof data != 'string' ? [data.type, data] : [type];
+
+		const newEmbed = this.createEmbed(data, { type: finalType });
 
 		messageToReplace.delete();
 
-		return this.sendEmbed(message, newEmbed);
+		return this.sendEmbed(context, newEmbed, options);
 	}
 
 	protected sendEmbed(context: ChannelContext, embed: MessageEmbed, payload?: MessageOptions) {
