@@ -6,7 +6,7 @@ import { bold, inlineCode } from '@discordjs/builders';
 import { Injectable, Logger } from '@nestjs/common';
 import { Player, Queue, RepeatMode } from 'discord-music-player';
 import { DiscordClientProvider } from 'discord-nestjs';
-import { Message, TextChannel, User } from 'discord.js';
+import { EmbedFieldData, Message, TextChannel, User } from 'discord.js';
 import { MAXIMUM as VOLUME_MAXIMUM } from '../dtos/volume.dto';
 
 export const VOLUME_LOG = 15;
@@ -167,29 +167,31 @@ export class MusicService {
 
 				song.setData(createSongData());
 
+				const songFields: EmbedFieldData[] = [
+					{
+						name: 'Author',
+						value: inlineCode(song.author),
+						inline: true,
+					},
+					{
+						name: 'Duration',
+						value: inlineCode(song.duration),
+						inline: true,
+					},
+					{
+						name: 'Volume',
+						value: `${guildMusicSettings.volume}/${VOLUME_MAXIMUM}`,
+						inline: true,
+					},
+				];
+
 				if (hadSongs) {
 					await this.messageService.replaceEmbed(message, botMessage, {
 						title: `Added song ${inlineCode(song.name)} to the queue!`,
 						thumbnail: {
 							url: song.thumbnail,
 						},
-						fields: [
-							{
-								name: 'Requested by',
-								value: message.author.tag,
-								inline: true,
-							},
-							{
-								name: 'Author',
-								value: inlineCode(song.author),
-								inline: true,
-							},
-							{
-								name: 'Duration',
-								value: inlineCode(song.duration),
-								inline: true,
-							},
-						],
+						fields: songFields,
 					});
 				} else {
 					await this.messageService.replaceEmbed(message, botMessage, {
@@ -197,23 +199,7 @@ export class MusicService {
 						thumbnail: {
 							url: song.thumbnail,
 						},
-						fields: [
-							{
-								name: 'Requested by',
-								value: message.author.tag,
-								inline: true,
-							},
-							{
-								name: 'Author',
-								value: inlineCode(song.author),
-								inline: true,
-							},
-							{
-								name: 'Duration',
-								value: inlineCode(song.duration),
-								inline: true,
-							},
-						],
+						fields: songFields,
 					});
 				}
 			} else {
@@ -225,47 +211,33 @@ export class MusicService {
 
 				const formattedTotalDuration = parseMsIntoTime(totalDuration);
 
+				const playlistFields: EmbedFieldData[] = [
+					{
+						name: 'Songs Count',
+						value: inlineCode(playlist.songs.length.toString()),
+						inline: true,
+					},
+					{
+						name: 'Total Duration',
+						value: inlineCode(formattedTotalDuration),
+						inline: true,
+					},
+					{
+						name: 'Volume',
+						value: `${guildMusicSettings.volume}/${VOLUME_MAXIMUM}`,
+						inline: true,
+					},
+				];
+
 				if (hadSongs) {
 					await this.messageService.replaceEmbed(message, botMessage, {
 						title: `Added playlist ${inlineCode(playlist.name)}!`,
-						fields: [
-							{
-								name: 'Requested by',
-								value: message.author.tag,
-								inline: true,
-							},
-							{
-								name: 'Songs Count',
-								value: inlineCode(playlist.songs.length.toString()),
-								inline: true,
-							},
-							{
-								name: 'Total Duration',
-								value: inlineCode(formattedTotalDuration),
-								inline: true,
-							},
-						],
+						fields: playlistFields,
 					});
 				} else {
 					await this.messageService.replaceEmbed(message, botMessage, {
 						title: `Playing playlist ${inlineCode(playlist.name)}!`,
-						fields: [
-							{
-								name: 'Requested by',
-								value: message.author.tag,
-								inline: true,
-							},
-							{
-								name: 'Songs Count',
-								value: inlineCode(playlist.songs.length.toString()),
-								inline: true,
-							},
-							{
-								name: 'Total Duration',
-								value: inlineCode(formattedTotalDuration),
-								inline: true,
-							},
-						],
+						fields: playlistFields,
 					});
 				}
 			}
@@ -536,7 +508,7 @@ export class MusicService {
 				},
 				{
 					name: 'Author',
-					value: song.author,
+					value: inlineCode(song.author),
 					inline: true,
 				},
 				{
