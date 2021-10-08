@@ -1,9 +1,18 @@
 import { bold } from '@discordjs/builders';
 import { Injectable } from '@nestjs/common';
-import { DMChannel, Message, MessageEmbed, MessageEmbedOptions, MessageOptions, PartialDMChannel, TextBasedChannels } from 'discord.js';
+import {
+	DMChannel,
+	Interaction,
+	Message,
+	MessageEmbed,
+	MessageEmbedOptions,
+	MessageOptions,
+	PartialDMChannel,
+	TextBasedChannels,
+} from 'discord.js';
 import { InformError } from './error/inform-error';
 
-export type ChannelContext = Message | TextBasedChannels;
+export type ChannelContext = Message | TextBasedChannels | Interaction;
 
 export type GuildChannelsContext = Exclude<ChannelContext, PartialDMChannel | DMChannel>;
 
@@ -136,7 +145,7 @@ export class MessageService {
 		return this.sendEmbed(context, newEmbed, options);
 	}
 
-	protected sendEmbed(context: ChannelContext, embed: MessageEmbed, payload?: MessageOptions) {
+	protected async sendEmbed(context: ChannelContext, embed: MessageEmbed, payload?: MessageOptions) {
 		if (context instanceof Message) {
 			return context.reply({
 				embeds: [embed],
@@ -145,6 +154,22 @@ export class MessageService {
 				},
 				...payload,
 			});
+		} else if (context instanceof Interaction) {
+			const interactionEmbed = embed.addField('Request by', context.user.tag, true);
+
+			if (context.isButton()) {
+				await context.reply({
+					embeds: [interactionEmbed],
+					...payload,
+				});
+
+				return undefined;
+			} else {
+				return context.channel?.send({
+					embeds: [interactionEmbed],
+					...payload,
+				});
+			}
 		} else {
 			return context.send({
 				embeds: [embed],

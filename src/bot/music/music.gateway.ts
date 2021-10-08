@@ -1,6 +1,6 @@
 import { Controller, Logger } from '@nestjs/common';
-import { Content, Context, OnCommand, TransformPipe, UseGuards, UsePipes, ValidationPipe } from 'discord-nestjs';
-import { Message } from 'discord.js';
+import { Content, Context, On, OnCommand, TransformPipe, UseGuards, UsePipes, ValidationPipe } from 'discord-nestjs';
+import { Interaction, Message, TextChannel } from 'discord.js';
 import { VParsedCommand } from 'vcommand-parser';
 import { InformError } from '../common/error/inform-error';
 import { MessageIsFromTextChannelGuard } from '../common/guards/message-is-from-textchannel.guard';
@@ -8,6 +8,7 @@ import { MessageService } from '../common/message.service';
 import { QueueDto } from './dtos/queue.dto';
 import { VolumeDto } from './dtos/volume.dto';
 import { MusicGuard } from './guards/music.guard';
+import { MusicInteractionConstant } from './music.constant';
 import { MusicService } from './services/music.service';
 
 @Controller()
@@ -43,6 +44,27 @@ export class MusicGateway {
 		} catch (error) {
 			this.logger.error(error, error instanceof TypeError ? error.stack : undefined);
 			await this.messageService.sendError(message, `An error happened!`);
+		}
+	}
+
+	@On({ event: 'interactionCreate' })
+	async onPlayPauseInteraction(@Context() [interaction]: [Interaction]) {
+		if (!interaction.isButton() || !interaction.channel || !(interaction.channel instanceof TextChannel)) {
+			return;
+		}
+
+		if (interaction.customId != MusicInteractionConstant.PLAY_PAUSE) {
+			return;
+		}
+
+		try {
+			const reply = this.musicService.togglePause(interaction.channel);
+
+			await this.messageService.send(interaction, reply);
+		} catch (error) {
+			if (error instanceof InformError) {
+				await this.messageService.sendError(interaction.channel, error);
+			}
 		}
 	}
 

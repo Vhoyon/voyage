@@ -7,8 +7,9 @@ import { bold, inlineCode } from '@discordjs/builders';
 import { Injectable, Logger } from '@nestjs/common';
 import { Player, Queue, RepeatMode } from 'discord-music-player';
 import { DiscordClientProvider } from 'discord-nestjs';
-import { EmbedFieldData, Message, TextChannel, User } from 'discord.js';
+import { EmbedFieldData, EmojiIdentifierResolvable, Message, MessageActionRow, MessageButton, TextChannel, User } from 'discord.js';
 import { MAXIMUM as VOLUME_MAXIMUM } from '../dtos/volume.dto';
+import { MusicInteractionConstant } from '../music.constant';
 
 export const VOLUME_LOG = 15;
 
@@ -24,6 +25,8 @@ export type SongData = {
 	requester: User;
 	skipped?: boolean;
 };
+
+export type MusicContext = GuildChannelsContext | Queue;
 
 @Injectable()
 export class MusicService {
@@ -100,7 +103,7 @@ export class MusicService {
 			});
 	}
 
-	protected getQueue(of: GuildChannelsContext | Queue) {
+	protected getQueue(of: MusicContext) {
 		if (of instanceof Queue) {
 			return of;
 		}
@@ -164,6 +167,31 @@ export class MusicService {
 
 		const hadSongs = queue.songs.length;
 
+		const interactions: { id: string; emoji: EmojiIdentifierResolvable }[] = [
+			{
+				id: MusicInteractionConstant.PLAY_PAUSE,
+				emoji: '⏯',
+			},
+			// {
+			// 	id: MusicInteractionConstant.SKIP,
+			// 	emoji: '⏩',
+			// },
+		];
+
+		const row = new MessageActionRow({
+			components: interactions.map((i) => {
+				return new MessageButton({
+					style: 'SECONDARY',
+					customId: i.id,
+					emoji: i.emoji,
+				});
+			}),
+		});
+
+		const commonOptions: SendableOptions = {
+			components: [row],
+		};
+
 		try {
 			if (isQuerySong) {
 				const song = await queue.play(query);
@@ -190,6 +218,7 @@ export class MusicService {
 
 				if (hadSongs) {
 					await this.messageService.replace(message, botMessage, {
+						...commonOptions,
 						title: `Added song ${inlineCode(song.name)} to the queue!`,
 						thumbnail: {
 							url: song.thumbnail,
@@ -199,6 +228,7 @@ export class MusicService {
 					});
 				} else {
 					await this.messageService.replace(message, botMessage, {
+						...commonOptions,
 						title: `Playing song ${inlineCode(song.name)}!`,
 						thumbnail: {
 							url: song.thumbnail,
@@ -236,12 +266,14 @@ export class MusicService {
 
 				if (hadSongs) {
 					await this.messageService.replace(message, botMessage, {
+						...commonOptions,
 						title: `Added playlist ${inlineCode(playlist.name)}!`,
 						fields: playlistFields,
 						url: playlist.url,
 					});
 				} else {
 					await this.messageService.replace(message, botMessage, {
+						...commonOptions,
 						title: `Playing playlist ${inlineCode(playlist.name)}!`,
 						fields: playlistFields,
 						url: playlist.url,
@@ -258,7 +290,7 @@ export class MusicService {
 		}
 	}
 
-	async setVolume(of: GuildChannelsContext | Queue, volume: number) {
+	async setVolume(of: MusicContext, volume: number) {
 		const queue = this.getQueue(of);
 
 		const guildId = of.guild!.id;
@@ -286,7 +318,7 @@ export class MusicService {
 		return !!queue?.isPlaying;
 	}
 
-	skip(context: GuildChannelsContext) {
+	skip(context: MusicContext) {
 		const queue = this.getQueue(context);
 
 		if (!queue?.isPlaying) {
@@ -304,7 +336,7 @@ export class MusicService {
 		return songSkipped;
 	}
 
-	disconnect(context: GuildChannelsContext) {
+	disconnect(context: MusicContext) {
 		const queue = this.getQueue(context);
 
 		if (!queue) {
@@ -316,7 +348,7 @@ export class MusicService {
 		return `Adios!`;
 	}
 
-	pause(context: GuildChannelsContext) {
+	pause(context: MusicContext) {
 		const queue = this.getQueue(context);
 
 		if (!queue) {
@@ -335,7 +367,7 @@ export class MusicService {
 		return `Paused ${inlineCode(queue.nowPlaying.name)}!`;
 	}
 
-	resume(context: GuildChannelsContext) {
+	resume(context: MusicContext) {
 		const queue = this.getQueue(context);
 
 		if (!queue) {
@@ -354,7 +386,23 @@ export class MusicService {
 		return `Resumed ${inlineCode(queue.nowPlaying.name)}!`;
 	}
 
-	async seek(timestamp: string, context: GuildChannelsContext) {
+	togglePause(context: MusicContext) {
+		const queue = this.getQueue(context);
+
+		if (!queue) {
+			throw new InformError(`Play a song first!`);
+		}
+
+		const wasPaused = (queue.data as QueueData).isPaused;
+
+		if (wasPaused) {
+			return this.resume(queue);
+		} else {
+			return this.pause(queue);
+		}
+	}
+
+	async seek(timestamp: string, context: MusicContext) {
 		const queue = this.getQueue(context);
 
 		if (!queue?.isPlaying) {
@@ -377,7 +425,7 @@ export class MusicService {
 		return `Seeked current song to ${timestamp}!`;
 	}
 
-	loop(context: GuildChannelsContext) {
+	loop(context: MusicContext) {
 		const queue = this.getQueue(context);
 
 		if (!queue?.isPlaying) {
@@ -393,7 +441,7 @@ export class MusicService {
 		return `Looping current song (${inlineCode(queue.nowPlaying.name)})!`;
 	}
 
-	loopAll(context: GuildChannelsContext) {
+	loopAll(context: MusicContext) {
 		const queue = this.getQueue(context);
 
 		if (!queue?.isPlaying) {
@@ -405,7 +453,7 @@ export class MusicService {
 		return `Looping all song in the current playlist!`;
 	}
 
-	unloop(context: GuildChannelsContext) {
+	unloop(context: MusicContext) {
 		const queue = this.getQueue(context);
 
 		if (!queue?.isPlaying) {
@@ -417,7 +465,7 @@ export class MusicService {
 		return `Unlooped the current music playlist!`;
 	}
 
-	shuffle(context: GuildChannelsContext) {
+	shuffle(context: MusicContext) {
 		const queue = this.getQueue(context);
 
 		if (!queue?.isPlaying) {
@@ -429,7 +477,7 @@ export class MusicService {
 		return `Shuffled the queue!`;
 	}
 
-	viewQueue(context: GuildChannelsContext, nbOfSongsToDisplay = DEFAULT_VIEW_QUEUED_SONG) {
+	viewQueue(context: MusicContext, nbOfSongsToDisplay = DEFAULT_VIEW_QUEUED_SONG) {
 		const queue = this.getQueue(context);
 
 		if (!queue?.isPlaying) {
@@ -453,7 +501,7 @@ export class MusicService {
 		} as SendableOptions;
 	}
 
-	nowPlaying(context: GuildChannelsContext) {
+	nowPlaying(context: MusicContext) {
 		const queue = this.getQueue(context);
 
 		if (!queue?.isPlaying) {
