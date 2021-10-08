@@ -1,5 +1,34 @@
 # Changelog
 
+## [0.4.0](https://www.github.com/Vhoyon/voyage/compare/v0.3.0...v0.4.0) (2021-10-08)
+
+
+### Features
+
+* **music:** add player button interactions ([#8](https://www.github.com/Vhoyon/voyage/issues/8)) ([42ac4b9](https://www.github.com/Vhoyon/voyage/commit/42ac4b9a07be30efbb3cac0a754ab425a7470dd7))
+
+
+### Bug Fixes
+
+* **music:** set play command field to show volume ([7d34f7a](https://www.github.com/Vhoyon/voyage/commit/7d34f7afcb165faa9ee185f38667a3655413a8da))
+
+
+### Refactors
+
+* add const for viewing queue song count ([3605466](https://www.github.com/Vhoyon/voyage/commit/36054665bc904617a70f4747fffe7f857af14c2b))
+* allow message service to define MessageOptions ([b2b5d76](https://www.github.com/Vhoyon/voyage/commit/b2b5d761f8e278d0162d8c2bf78536e1f5986c27))
+* message.service's replaceEmbed now uses context ([19b7ed6](https://www.github.com/Vhoyon/voyage/commit/19b7ed621f568a42c1c719a0cde784420c57fb5c))
+* **MessageService:** (replace|edit)Embed => (replace|edit) ([34cc1cc](https://www.github.com/Vhoyon/voyage/commit/34cc1cccc9fb521be8bd4343aa0b35b13f3b91a6))
+* **MessageService:** add inform error handling and few tweaks ([90a2559](https://www.github.com/Vhoyon/voyage/commit/90a25593e390f74f0039889ae18908c450316f3f))
+* music service now accepts context params instead of message ([f14b79d](https://www.github.com/Vhoyon/voyage/commit/f14b79d3f3e3ea904b1e02fbb460fd169db697c9))
+* **music:** services now return data instead of sending messages ([63409e5](https://www.github.com/Vhoyon/voyage/commit/63409e54871eabff9923b7b06e74aeceddb41bce))
+
+
+### Miscellaneous
+
+* tweak renovate to properly use semantic commits ([ec88dfa](https://www.github.com/Vhoyon/voyage/commit/ec88dfa3b60419e6c1c4ed7ef7820c675bfae73e))
+* update renovate config to add schema ([94f6df3](https://www.github.com/Vhoyon/voyage/commit/94f6df3ecb1b1f29bbff28fcf6313eafb7f34170))
+
 ## [0.3.0](https://www.github.com/Vhoyon/voyage/compare/v0.2.2...v0.3.0) (2021-10-05)
 
 
