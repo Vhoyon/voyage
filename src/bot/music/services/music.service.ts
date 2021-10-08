@@ -185,8 +185,6 @@ export class MusicService {
 				];
 
 				if (hadSongs) {
-					(queue.data as QueueData).lastPlayedSong = song;
-
 					await this.messageService.replace(message, botMessage, {
 						...commonOptions,
 						title: `Added song ${inlineCode(song.name)} to the queue!`,
@@ -197,6 +195,8 @@ export class MusicService {
 						url: song.url,
 					});
 				} else {
+					(queue.data as QueueData).lastPlayedSong = song;
+
 					await this.messageService.replace(message, botMessage, {
 						...commonOptions,
 						title: `Playing song ${inlineCode(song.name)}!`,
@@ -237,8 +237,6 @@ export class MusicService {
 				];
 
 				if (hadSongs) {
-					(queue.data as QueueData).lastPlayedSong = playlist.songs[0];
-
 					await this.messageService.replace(message, botMessage, {
 						...commonOptions,
 						title: `Added playlist ${inlineCode(playlist.name)}!`,
@@ -246,6 +244,8 @@ export class MusicService {
 						url: playlist.url,
 					});
 				} else {
+					(queue.data as QueueData).lastPlayedSong = playlist.songs[0];
+
 					await this.messageService.replace(message, botMessage, {
 						...commonOptions,
 						title: `Playing playlist ${inlineCode(playlist.name)}!`,
@@ -353,12 +353,24 @@ export class MusicService {
 
 		const lastPlayedSong = (queue.data as QueueData).lastPlayedSong!;
 
-		const song = await queue.play(lastPlayedSong, {
+		const isSameSong = lastPlayedSong == queue.nowPlaying;
+
+		if (isSameSong) {
+			queue.songs.shift();
+		}
+
+		queue.songs = [lastPlayedSong, ...queue.songs];
+
+		await queue.play(lastPlayedSong, {
 			immediate: true,
 			data: lastPlayedSong.data,
 		});
 
-		return `Playing back ${inlineCode(song.name)}!`;
+		if (isSameSong) {
+			return `No more songs to go back to, starting song ${inlineCode(lastPlayedSong.name)} from the beginning!`;
+		} else {
+			return `Playing back ${inlineCode(lastPlayedSong.name)}!`;
+		}
 	}
 
 	skip(context: MusicContext) {
