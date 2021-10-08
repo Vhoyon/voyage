@@ -1,4 +1,3 @@
-import { MessageService } from '$/bot/common/message.service';
 import { PrismaModule } from '$common/prisma/prisma.module';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BlacklistService } from './blacklist.service';
@@ -9,7 +8,7 @@ describe('BlacklistService', () => {
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [PrismaModule],
-			providers: [BlacklistService, MessageService],
+			providers: [BlacklistService],
 		}).compile();
 
 		service = module.get<BlacklistService>(BlacklistService);

@@ -1,12 +1,11 @@
 import { InformErrorInfo, InformInternalError } from '$/bot/common/error/inform-error';
-import { MessageService } from '$/bot/common/message.service';
 import { PrismaService } from '$common/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { Message } from 'discord.js';
 
 @Injectable()
 export class BlacklistService {
-	constructor(private readonly prisma: PrismaService, private readonly messageService: MessageService) {}
+	constructor(private readonly prisma: PrismaService) {}
 
 	async blacklist(message: Message) {
 		const textChannel = message.channel;
