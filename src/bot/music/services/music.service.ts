@@ -7,7 +7,7 @@ import { bold, inlineCode } from '@discordjs/builders';
 import { Injectable, Logger } from '@nestjs/common';
 import { Player, Queue, RepeatMode } from 'discord-music-player';
 import { DiscordClientProvider } from 'discord-nestjs';
-import { EmbedFieldData, EmojiIdentifierResolvable, Message, MessageActionRow, MessageButton, TextChannel, User } from 'discord.js';
+import { EmbedFieldData, InteractionButtonOptions, Message, MessageActionRow, MessageButton, TextChannel, User } from 'discord.js';
 import { MAXIMUM as VOLUME_MAXIMUM } from '../dtos/volume.dto';
 import { MusicInteractionConstant } from '../music.constant';
 
@@ -167,23 +167,30 @@ export class MusicService {
 
 		const hadSongs = queue.songs.length;
 
-		const interactions: { id: string; emoji: EmojiIdentifierResolvable }[] = [
+		const interactions: Pick<InteractionButtonOptions, 'customId' | 'emoji'>[] = [
 			{
-				id: MusicInteractionConstant.PLAY_PAUSE,
+				customId: MusicInteractionConstant.PLAY_PAUSE,
 				emoji: '⏯',
 			},
-			// {
-			// 	id: MusicInteractionConstant.SKIP,
-			// 	emoji: '⏩',
-			// },
+			{
+				customId: MusicInteractionConstant.SKIP,
+				emoji: '⏩',
+			},
+			{
+				customId: MusicInteractionConstant.REPEAT,
+				emoji: '🔂',
+			},
+			{
+				customId: MusicInteractionConstant.DISCONNECT,
+				emoji: '⏹',
+			},
 		];
 
 		const row = new MessageActionRow({
-			components: interactions.map((i) => {
+			components: interactions.map((interaction) => {
 				return new MessageButton({
 					style: 'SECONDARY',
-					customId: i.id,
-					emoji: i.emoji,
+					...interaction,
 				});
 			}),
 		});

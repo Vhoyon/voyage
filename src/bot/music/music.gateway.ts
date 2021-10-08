@@ -63,7 +63,68 @@ export class MusicGateway {
 			await this.messageService.send(interaction, reply);
 		} catch (error) {
 			if (error instanceof InformError) {
-				await this.messageService.sendError(interaction.channel, error);
+				await this.messageService.sendError(interaction, error);
+			}
+		}
+	}
+
+	@On({ event: 'interactionCreate' })
+	async onSkipInteraction(@Context() [interaction]: [Interaction]) {
+		if (!interaction.isButton() || !interaction.channel || !(interaction.channel instanceof TextChannel)) {
+			return;
+		}
+
+		if (interaction.customId != MusicInteractionConstant.SKIP) {
+			return;
+		}
+
+		try {
+			this.musicService.skip(interaction);
+		} catch (error) {
+			if (error instanceof InformError) {
+				await this.messageService.sendError(interaction, error);
+			}
+		}
+	}
+
+	@On({ event: 'interactionCreate' })
+	async onRepeatInteraction(@Context() [interaction]: [Interaction]) {
+		if (!interaction.isButton() || !interaction.channel || !(interaction.channel instanceof TextChannel)) {
+			return;
+		}
+
+		if (interaction.customId != MusicInteractionConstant.REPEAT) {
+			return;
+		}
+
+		try {
+			const reply = this.musicService.loop(interaction.channel);
+
+			await this.messageService.send(interaction, reply);
+		} catch (error) {
+			if (error instanceof InformError) {
+				await this.messageService.sendError(interaction, error);
+			}
+		}
+	}
+
+	@On({ event: 'interactionCreate' })
+	async onDisconnectInteraction(@Context() [interaction]: [Interaction]) {
+		if (!interaction.isButton() || !interaction.channel || !(interaction.channel instanceof TextChannel)) {
+			return;
+		}
+
+		if (interaction.customId != MusicInteractionConstant.DISCONNECT) {
+			return;
+		}
+
+		try {
+			const reply = this.musicService.disconnect(interaction.channel);
+
+			await this.messageService.send(interaction, reply);
+		} catch (error) {
+			if (error instanceof InformError) {
+				await this.messageService.sendError(interaction, error);
 			}
 		}
 	}
