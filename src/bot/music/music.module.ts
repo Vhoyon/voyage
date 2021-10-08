@@ -4,12 +4,13 @@ import { discordModule } from '../bot.module';
 import { MessageService } from '../common/message.service';
 import { BlacklistGateway } from './blacklist.gateway';
 import { MusicGateway } from './music.gateway';
+import { PlayerGateway } from './player.gateway';
 import { BlacklistService } from './services/blacklist.service';
 import { MusicService } from './services/music.service';
 
 @Module({
 	imports: [PrismaModule, forwardRef(() => discordModule)],
-	controllers: [MusicGateway, BlacklistGateway],
+	controllers: [MusicGateway, BlacklistGateway, PlayerGateway],
 	providers: [MusicService, BlacklistService, MessageService],
 })
 export class MusicModule {}
