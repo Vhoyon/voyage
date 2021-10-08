@@ -1,5 +1,6 @@
+import { EnvironmentConfig } from '$common/configs/env.validation';
 import { bold } from '@discordjs/builders';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import {
 	DMChannel,
 	Interaction,
@@ -11,7 +12,7 @@ import {
 	PartialDMChannel,
 	TextBasedChannels,
 } from 'discord.js';
-import { InformError } from './error/inform-error';
+import { InformError, InformInternalError } from './error/inform-error';
 
 export type ChannelContext = Message | TextBasedChannels | Interaction;
 
@@ -27,6 +28,10 @@ export type SendableOptions = CustomEmbedOptions & (MessageOptions | Interaction
 
 @Injectable()
 export class MessageService {
+	private readonly logger = new Logger(MessageService.name);
+
+	constructor(private readonly env: EnvironmentConfig) {}
+
 	createEmbed(data: CustomEmbedOptions): MessageEmbed;
 	createEmbed(data: string, options?: CustomEmbedOptions): MessageEmbed;
 	/**
@@ -148,7 +153,9 @@ export class MessageService {
 
 	protected async sendEmbed(context: ChannelContext, embed: MessageEmbed, payload?: MessageOptions | InteractionReplyOptions) {
 		if (context instanceof Interaction) {
-			const interactionEmbed = embed.addField('Action requested by', context.user.tag, true);
+			const isEphemeral = payload && 'ephemeral' in payload && payload.ephemeral;
+
+			const interactionEmbed = isEphemeral ? embed : embed.addField('Action requested by', context.user.tag, true);
 
 			if (context.isButton()) {
 				await context.reply({
@@ -156,9 +163,26 @@ export class MessageService {
 					...payload,
 				});
 
-				return undefined;
+				if (!isEphemeral) {
+					const message = await context.fetchReply();
+
+					if (message instanceof Message) {
+						const timeout = this.env.DISCORD_INTERACTION_MESSAGE_TIMEOUT;
+
+						if (timeout > 0) {
+							setTimeout(() => message.delete().catch(), timeout * 1000);
+						}
+					}
+
+					return message;
+				}
 			} else {
-				return context.channel?.send({
+				if (!context.channel) {
+					this.logger.error('Interaction has no channel when trying to send reply to it.', undefined, context);
+					throw new InformInternalError('The interaction has no channel to send a message to!');
+				}
+
+				return context.channel.send({
 					embeds: [interactionEmbed],
 					...payload,
 				});
