@@ -5,10 +5,11 @@ import { PrismaService } from '$common/prisma/prisma.service';
 import { parseMsIntoTime, parseTimeIntoSeconds } from '$common/utils/funcs';
 import { bold, inlineCode } from '@discordjs/builders';
 import { Injectable, Logger } from '@nestjs/common';
-import { Player, Queue, RepeatMode } from 'discord-music-player';
+import { Player, Queue, RepeatMode, Song } from 'discord-music-player';
 import { DiscordClientProvider } from 'discord-nestjs';
-import { EmbedFieldData, Message, TextChannel, User } from 'discord.js';
+import { EmbedFieldData, InteractionButtonOptions, Message, MessageActionRow, MessageButton, TextChannel } from 'discord.js';
 import { MAXIMUM as VOLUME_MAXIMUM } from '../dtos/volume.dto';
+import { MusicInteractionConstant } from '../music.constant';
 
 export const VOLUME_LOG = 15;
 
@@ -17,13 +18,15 @@ export const DEFAULT_VIEW_QUEUED_SONG = 10;
 export type QueueData = {
 	textChannel: TextChannel;
 	isPaused?: boolean;
+	lastPlayedSong?: Song;
 };
 
 export type SongData = {
 	query: string;
-	requester: User;
 	skipped?: boolean;
 };
+
+export type MusicContext = GuildChannelsContext | Queue;
 
 @Injectable()
 export class MusicService {
@@ -64,23 +67,9 @@ export class MusicService {
 					this.logger.error(error);
 				}
 			})
-			.on('songChanged', async (queue, newSong, oldSong) => {
-				if ((oldSong.data as SongData).skipped) {
-					await this.messageService.send(
-						(queue.data as QueueData).textChannel,
-						`Skipped ${inlineCode(oldSong.name)}. Now playing ${inlineCode(newSong.name)}!`,
-					);
-				}
-			})
-			.on('queueEnd', async (queue) => {
-				const lastPlayedSong = queue.nowPlaying;
-
-				if ((lastPlayedSong.data as SongData).skipped) {
-					queue.destroy(true);
-					await this.messageService.send(
-						(queue.data as QueueData).textChannel,
-						`Skipped ${inlineCode(lastPlayedSong.name)}. No more songs are the the queue, goodbye!`,
-					);
+			.on('songChanged', async (queue, _newSong, oldSong) => {
+				if (queue.repeatMode != RepeatMode.SONG) {
+					(queue.data as QueueData).lastPlayedSong = oldSong;
 				}
 			})
 			.on('channelEmpty', async (queue) => {
@@ -100,7 +89,7 @@ export class MusicService {
 			});
 	}
 
-	protected getQueue(of: GuildChannelsContext | Queue) {
+	protected getQueue(of: MusicContext) {
 		if (of instanceof Queue) {
 			return of;
 		}
@@ -157,16 +146,23 @@ export class MusicService {
 
 		const createSongData = (): SongData => ({
 			query,
-			requester: message.author,
 		});
 
 		const botMessage = await this.messageService.send(message, bold(`Searching for ${inlineCode(query)}...`));
 
 		const hadSongs = queue.songs.length;
 
+		const playerButtons = this.createPlayerButtons();
+
+		const commonOptions: SendableOptions = {
+			components: [...playerButtons],
+		};
+
 		try {
 			if (isQuerySong) {
-				const song = await queue.play(query);
+				const song = await queue.play(query, {
+					requestedBy: message.author,
+				});
 
 				song.setData(createSongData());
 
@@ -190,6 +186,7 @@ export class MusicService {
 
 				if (hadSongs) {
 					await this.messageService.replace(message, botMessage, {
+						...commonOptions,
 						title: `Added song ${inlineCode(song.name)} to the queue!`,
 						thumbnail: {
 							url: song.thumbnail,
@@ -198,7 +195,10 @@ export class MusicService {
 						url: song.url,
 					});
 				} else {
+					(queue.data as QueueData).lastPlayedSong = song;
+
 					await this.messageService.replace(message, botMessage, {
+						...commonOptions,
 						title: `Playing song ${inlineCode(song.name)}!`,
 						thumbnail: {
 							url: song.thumbnail,
@@ -208,7 +208,9 @@ export class MusicService {
 					});
 				}
 			} else {
-				const playlist = await queue.playlist(query);
+				const playlist = await queue.playlist(query, {
+					requestedBy: message.author,
+				});
 
 				playlist.songs.forEach((s) => s.setData(createSongData()));
 
@@ -236,12 +238,16 @@ export class MusicService {
 
 				if (hadSongs) {
 					await this.messageService.replace(message, botMessage, {
+						...commonOptions,
 						title: `Added playlist ${inlineCode(playlist.name)}!`,
 						fields: playlistFields,
 						url: playlist.url,
 					});
 				} else {
+					(queue.data as QueueData).lastPlayedSong = playlist.songs[0];
+
 					await this.messageService.replace(message, botMessage, {
+						...commonOptions,
 						title: `Playing playlist ${inlineCode(playlist.name)}!`,
 						fields: playlistFields,
 						url: playlist.url,
@@ -258,7 +264,59 @@ export class MusicService {
 		}
 	}
 
-	async setVolume(of: GuildChannelsContext | Queue, volume: number) {
+	createPlayerButtons() {
+		const queueInteractions: Pick<InteractionButtonOptions, 'customId' | 'emoji'>[] = [
+			{
+				customId: MusicInteractionConstant.LAST_SONG,
+				emoji: '⏮',
+			},
+			{
+				customId: MusicInteractionConstant.PLAY_PAUSE,
+				emoji: '⏯',
+			},
+			{
+				customId: MusicInteractionConstant.SKIP,
+				emoji: '⏩',
+			},
+		];
+
+		const queueRow = new MessageActionRow({
+			components: queueInteractions.map((interaction) => {
+				return new MessageButton({
+					style: 'SECONDARY',
+					...interaction,
+				});
+			}),
+		});
+
+		const playerInteractions: Pick<InteractionButtonOptions, 'customId' | 'emoji'>[] = [
+			{
+				customId: MusicInteractionConstant.REPEAT,
+				emoji: '🔂',
+			},
+			{
+				customId: MusicInteractionConstant.REPEAT_ALL,
+				emoji: '🔁',
+			},
+			{
+				customId: MusicInteractionConstant.DISCONNECT,
+				emoji: '⏹',
+			},
+		];
+
+		const playerRow = new MessageActionRow({
+			components: playerInteractions.map((interaction) => {
+				return new MessageButton({
+					style: 'SECONDARY',
+					...interaction,
+				});
+			}),
+		});
+
+		return [queueRow, playerRow];
+	}
+
+	async setVolume(of: MusicContext, volume: number) {
 		const queue = this.getQueue(of);
 
 		const guildId = of.guild!.id;
@@ -286,7 +344,36 @@ export class MusicService {
 		return !!queue?.isPlaying;
 	}
 
-	skip(context: GuildChannelsContext) {
+	async playLastPlayedSong(context: MusicContext) {
+		const queue = this.getQueue(context);
+
+		if (!queue || !(queue.data as QueueData).lastPlayedSong) {
+			throw new InformError(`You need to at least play one song before I can play the last played song!`);
+		}
+
+		const lastPlayedSong = (queue.data as QueueData).lastPlayedSong!;
+
+		const isSameSong = lastPlayedSong == queue.nowPlaying;
+
+		if (isSameSong) {
+			queue.songs.shift();
+		}
+
+		queue.songs = [lastPlayedSong, ...queue.songs];
+
+		await queue.play(lastPlayedSong, {
+			immediate: true,
+			data: lastPlayedSong.data,
+		});
+
+		if (isSameSong) {
+			return `No more songs to go back to, starting song ${inlineCode(lastPlayedSong.name)} from the beginning!`;
+		} else {
+			return `Playing back ${inlineCode(lastPlayedSong.name)}!`;
+		}
+	}
+
+	skip(context: MusicContext) {
 		const queue = this.getQueue(context);
 
 		if (!queue?.isPlaying) {
@@ -297,14 +384,28 @@ export class MusicService {
 			throw new InformError(`Cannot skip currently looping song ${inlineCode(queue.nowPlaying.name)}. Use the unloop command first!`);
 		}
 
+		let nextSong: Song | undefined;
+
+		try {
+			nextSong = queue.songs[1];
+		} catch (error) {
+			// might be out of bounds here
+		}
+
 		const songSkipped = queue.skip();
 
 		(songSkipped.data as SongData).skipped = true;
 
-		return songSkipped;
+		if (nextSong) {
+			return `Skipped ${inlineCode(songSkipped.name)}. Now playing ${inlineCode(nextSong.name)}!`;
+		} else {
+			queue.destroy(true);
+
+			return `Skipped ${inlineCode(songSkipped.name)}. No more songs are in the queue, goodbye!`;
+		}
 	}
 
-	disconnect(context: GuildChannelsContext) {
+	disconnect(context: MusicContext) {
 		const queue = this.getQueue(context);
 
 		if (!queue) {
@@ -316,7 +417,7 @@ export class MusicService {
 		return `Adios!`;
 	}
 
-	pause(context: GuildChannelsContext) {
+	pause(context: MusicContext) {
 		const queue = this.getQueue(context);
 
 		if (!queue) {
@@ -335,7 +436,7 @@ export class MusicService {
 		return `Paused ${inlineCode(queue.nowPlaying.name)}!`;
 	}
 
-	resume(context: GuildChannelsContext) {
+	resume(context: MusicContext) {
 		const queue = this.getQueue(context);
 
 		if (!queue) {
@@ -354,7 +455,23 @@ export class MusicService {
 		return `Resumed ${inlineCode(queue.nowPlaying.name)}!`;
 	}
 
-	async seek(timestamp: string, context: GuildChannelsContext) {
+	togglePause(context: MusicContext) {
+		const queue = this.getQueue(context);
+
+		if (!queue) {
+			throw new InformError(`Play a song first!`);
+		}
+
+		const wasPaused = (queue.data as QueueData).isPaused;
+
+		if (wasPaused) {
+			return this.resume(queue);
+		} else {
+			return this.pause(queue);
+		}
+	}
+
+	async seek(timestamp: string, context: MusicContext) {
 		const queue = this.getQueue(context);
 
 		if (!queue?.isPlaying) {
@@ -377,7 +494,7 @@ export class MusicService {
 		return `Seeked current song to ${timestamp}!`;
 	}
 
-	loop(context: GuildChannelsContext) {
+	loop(context: MusicContext) {
 		const queue = this.getQueue(context);
 
 		if (!queue?.isPlaying) {
@@ -393,7 +510,7 @@ export class MusicService {
 		return `Looping current song (${inlineCode(queue.nowPlaying.name)})!`;
 	}
 
-	loopAll(context: GuildChannelsContext) {
+	loopAll(context: MusicContext) {
 		const queue = this.getQueue(context);
 
 		if (!queue?.isPlaying) {
@@ -405,7 +522,7 @@ export class MusicService {
 		return `Looping all song in the current playlist!`;
 	}
 
-	unloop(context: GuildChannelsContext) {
+	unloop(context: MusicContext) {
 		const queue = this.getQueue(context);
 
 		if (!queue?.isPlaying) {
@@ -417,7 +534,7 @@ export class MusicService {
 		return `Unlooped the current music playlist!`;
 	}
 
-	shuffle(context: GuildChannelsContext) {
+	shuffle(context: MusicContext) {
 		const queue = this.getQueue(context);
 
 		if (!queue?.isPlaying) {
@@ -429,7 +546,7 @@ export class MusicService {
 		return `Shuffled the queue!`;
 	}
 
-	viewQueue(context: GuildChannelsContext, nbOfSongsToDisplay = DEFAULT_VIEW_QUEUED_SONG) {
+	viewQueue(context: MusicContext, nbOfSongsToDisplay = DEFAULT_VIEW_QUEUED_SONG) {
 		const queue = this.getQueue(context);
 
 		if (!queue?.isPlaying) {
@@ -453,7 +570,7 @@ export class MusicService {
 		} as SendableOptions;
 	}
 
-	nowPlaying(context: GuildChannelsContext) {
+	nowPlaying(context: MusicContext) {
 		const queue = this.getQueue(context);
 
 		if (!queue?.isPlaying) {
@@ -461,8 +578,6 @@ export class MusicService {
 		}
 
 		const song = queue.nowPlaying;
-
-		const songData = { title: song.name, ...(song.data as SongData) };
 
 		const progressBar = queue.createProgressBar().prettier;
 
@@ -481,15 +596,18 @@ export class MusicService {
 				break;
 		}
 
+		const playerButtons = this.createPlayerButtons();
+
 		return {
-			title: `Now playing : ${inlineCode(songData.title)}!`,
+			title: `Now playing : ${inlineCode(song.name)}!`,
 			thumbnail: {
 				url: song.thumbnail,
 			},
+			components: [...playerButtons],
 			fields: [
 				{
 					name: 'Requester',
-					value: songData.requester.tag,
+					value: song.requestedBy!.tag,
 					inline: true,
 				},
 				{

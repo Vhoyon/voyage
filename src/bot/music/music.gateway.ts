@@ -56,11 +56,12 @@ export class MusicGateway {
 		}
 
 		try {
-			this.musicService.skip(message);
+			const reply = this.musicService.skip(message);
+
+			await this.messageService.send(message, reply);
 		} catch (error) {
 			if (error instanceof InformError) {
 				await this.messageService.sendError(message, error);
-				return;
 			}
 		}
 	}

@@ -16,6 +16,8 @@ export const DEFAULT_DISCORD_PREFIX = '!';
 export const DEFAULT_DISCORD_MUSIC_DISCONNECT_TIMEOUT = 60;
 export const DEFAULT_DISCORD_MUSIC_ALONE_DISCONNECT_TIMEOUT = 15;
 
+export const DEFAULT_DISCORD_INTERACTION_MESSAGE_TIMEOUT = 10;
+
 export class EnvironmentConfig {
 	@IsEnum(Environment)
 	readonly NODE_ENV: Environment = Environment.Development;
@@ -46,6 +48,11 @@ export class EnvironmentConfig {
 	@Type(() => Number)
 	@IsNumber()
 	readonly DISCORD_MUSIC_DISCONNECT_TIMEOUT: number = DEFAULT_DISCORD_MUSIC_DISCONNECT_TIMEOUT;
+
+	@IsOptional()
+	@Type(() => Number)
+	@IsNumber()
+	readonly DISCORD_INTERACTION_MESSAGE_TIMEOUT: number = DEFAULT_DISCORD_INTERACTION_MESSAGE_TIMEOUT;
 
 	@IsString()
 	readonly YOUTUBE_API_KEY!: string;

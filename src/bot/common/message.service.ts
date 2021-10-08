@@ -1,9 +1,20 @@
+import { EnvironmentConfig } from '$common/configs/env.validation';
 import { bold } from '@discordjs/builders';
-import { Injectable } from '@nestjs/common';
-import { DMChannel, Message, MessageEmbed, MessageEmbedOptions, MessageOptions, PartialDMChannel, TextBasedChannels } from 'discord.js';
-import { InformError } from './error/inform-error';
+import { Injectable, Logger } from '@nestjs/common';
+import {
+	DMChannel,
+	Interaction,
+	InteractionReplyOptions,
+	Message,
+	MessageEmbed,
+	MessageEmbedOptions,
+	MessageOptions,
+	PartialDMChannel,
+	TextBasedChannels,
+} from 'discord.js';
+import { InformError, InformInternalError } from './error/inform-error';
 
-export type ChannelContext = Message | TextBasedChannels;
+export type ChannelContext = Message | TextBasedChannels | Interaction;
 
 export type GuildChannelsContext = Exclude<ChannelContext, PartialDMChannel | DMChannel>;
 
@@ -13,10 +24,14 @@ export type CustomEmbedOptions = {
 	type?: EmbedType;
 } & MessageEmbedOptions;
 
-export type SendableOptions = CustomEmbedOptions & MessageOptions;
+export type SendableOptions = CustomEmbedOptions & (MessageOptions | InteractionReplyOptions);
 
 @Injectable()
 export class MessageService {
+	private readonly logger = new Logger(MessageService.name);
+
+	constructor(private readonly env: EnvironmentConfig) {}
+
 	createEmbed(data: CustomEmbedOptions): MessageEmbed;
 	createEmbed(data: string, options?: CustomEmbedOptions): MessageEmbed;
 	/**
@@ -79,11 +94,11 @@ export class MessageService {
 	async send(context: ChannelContext, data: string | SendableOptions, options?: SendableOptions): Promise<Message>;
 
 	async send(context: ChannelContext, data: string | SendableOptions, options?: SendableOptions) {
-		const [embedData, possibleOptions] = typeof data == 'string' ? [data, options] : [data];
+		const embed = this.createEmbed(data, options);
 
-		const embed = this.createEmbed(embedData, possibleOptions);
+		const finalOptions = typeof data == 'string' ? options : { ...options, ...data };
 
-		return this.sendEmbed(context, embed, options);
+		return this.sendEmbed(context, embed, finalOptions);
 	}
 
 	async sendInfo(context: ChannelContext, message: string, options?: SendableOptions) {
@@ -112,7 +127,7 @@ export class MessageService {
 			...options,
 		});
 
-		return this.sendEmbed(context, embed, options);
+		return this.sendEmbed(context, embed, { ephemeral: true, ...options });
 	}
 
 	async edit(message: Message, data: string | SendableOptions) {
@@ -136,8 +151,43 @@ export class MessageService {
 		return this.sendEmbed(context, newEmbed, options);
 	}
 
-	protected sendEmbed(context: ChannelContext, embed: MessageEmbed, payload?: MessageOptions) {
-		if (context instanceof Message) {
+	protected async sendEmbed(context: ChannelContext, embed: MessageEmbed, payload?: MessageOptions | InteractionReplyOptions) {
+		if (context instanceof Interaction) {
+			const isEphemeral = payload && 'ephemeral' in payload && payload.ephemeral;
+
+			const interactionEmbed = isEphemeral ? embed : embed.addField('Action requested by', context.user.tag, true);
+
+			if (context.isButton()) {
+				await context.reply({
+					embeds: [interactionEmbed],
+					...payload,
+				});
+
+				if (!isEphemeral) {
+					const message = await context.fetchReply();
+
+					if (message instanceof Message) {
+						const timeout = this.env.DISCORD_INTERACTION_MESSAGE_TIMEOUT;
+
+						if (timeout > 0) {
+							setTimeout(() => message.delete().catch(), timeout * 1000);
+						}
+					}
+
+					return message;
+				}
+			} else {
+				if (!context.channel) {
+					this.logger.error('Interaction has no channel when trying to send reply to it.', undefined, context);
+					throw new InformInternalError('The interaction has no channel to send a message to!');
+				}
+
+				return context.channel.send({
+					embeds: [interactionEmbed],
+					...payload,
+				});
+			}
+		} else if (context instanceof Message) {
 			return context.reply({
 				embeds: [embed],
 				allowedMentions: {
