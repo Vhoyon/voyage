@@ -155,7 +155,7 @@ export class MessageService {
 				...payload,
 			});
 		} else if (context instanceof Interaction) {
-			const interactionEmbed = embed.addField('Request by', context.user.tag, true);
+			const interactionEmbed = embed.addField('Action requested by', context.user.tag, true);
 
 			if (context.isButton()) {
 				await context.reply({
