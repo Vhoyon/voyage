@@ -89,11 +89,11 @@ export class MessageService {
 	async send(context: ChannelContext, data: string | SendableOptions, options?: SendableOptions): Promise<Message>;
 
 	async send(context: ChannelContext, data: string | SendableOptions, options?: SendableOptions) {
-		const [embedData, possibleOptions] = typeof data == 'string' ? [data, options] : [data];
+		const embed = this.createEmbed(data, options);
 
-		const embed = this.createEmbed(embedData, possibleOptions);
+		const finalOptions = typeof data == 'string' ? options : { ...options, ...data };
 
-		return this.sendEmbed(context, embed, options);
+		return this.sendEmbed(context, embed, finalOptions);
 	}
 
 	async sendInfo(context: ChannelContext, message: string, options?: SendableOptions) {
