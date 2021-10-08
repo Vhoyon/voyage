@@ -584,11 +584,14 @@ export class MusicService {
 				break;
 		}
 
+		const playerButtons = this.createPlayerButtons();
+
 		return {
 			title: `Now playing : ${inlineCode(song.name)}!`,
 			thumbnail: {
 				url: song.thumbnail,
 			},
+			components: [...playerButtons],
 			fields: [
 				{
 					name: 'Requester',
