@@ -180,7 +180,7 @@ export class MusicGateway {
 		}
 
 		try {
-			const reply = this.musicService.loop(message);
+			const reply = this.musicService.toggleLoop(message);
 
 			await this.messageService.send(message, reply);
 		} catch (error) {
@@ -200,7 +200,7 @@ export class MusicGateway {
 		}
 
 		try {
-			const reply = this.musicService.loopAll(message);
+			const reply = this.musicService.toggleLoopAll(message);
 
 			await this.messageService.send(message, reply);
 		} catch (error) {

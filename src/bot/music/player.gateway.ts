@@ -86,7 +86,7 @@ export class PlayerGateway {
 		}
 
 		try {
-			const reply = this.musicService.loop(interaction);
+			const reply = this.musicService.toggleLoop(interaction);
 
 			await this.messageService.send(interaction, reply);
 		} catch (error) {
@@ -107,7 +107,7 @@ export class PlayerGateway {
 		}
 
 		try {
-			const reply = this.musicService.loopAll(interaction);
+			const reply = this.musicService.toggleLoopAll(interaction);
 
 			await this.messageService.send(interaction, reply);
 		} catch (error) {

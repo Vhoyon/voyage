@@ -494,32 +494,40 @@ export class MusicService {
 		return `Seeked current song to ${timestamp}!`;
 	}
 
-	loop(context: MusicContext) {
+	toggleLoop(context: MusicContext) {
 		const queue = this.getQueue(context);
 
 		if (!queue?.isPlaying) {
 			throw new InformError(`I cannot set a looping song when nothing is playing!`);
 		}
 
-		if (queue.repeatMode == RepeatMode.SONG) {
-			throw new InformError(`This song is already looping!`);
+		if (queue.repeatMode != RepeatMode.SONG) {
+			queue.setRepeatMode(RepeatMode.SONG);
+
+			return `Looping current song (${inlineCode(queue.nowPlaying.name)})!`;
+		} else {
+			queue.setRepeatMode(RepeatMode.DISABLED);
+
+			return `Disabled looping!`;
 		}
-
-		queue.setRepeatMode(RepeatMode.SONG);
-
-		return `Looping current song (${inlineCode(queue.nowPlaying.name)})!`;
 	}
 
-	loopAll(context: MusicContext) {
+	toggleLoopAll(context: MusicContext) {
 		const queue = this.getQueue(context);
 
 		if (!queue?.isPlaying) {
 			throw new InformError(`I cannot loop the player when nothing is playing!`);
 		}
 
-		queue.setRepeatMode(RepeatMode.QUEUE);
+		if (queue.repeatMode != RepeatMode.QUEUE) {
+			queue.setRepeatMode(RepeatMode.QUEUE);
 
-		return `Looping all song in the current playlist!`;
+			return `Looping all song in the current playlist!`;
+		} else {
+			queue.setRepeatMode(RepeatMode.DISABLED);
+
+			return `Disabled looping!`;
+		}
 	}
 
 	unloop(context: MusicContext) {
