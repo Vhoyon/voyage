@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import {
 	DMChannel,
 	Interaction,
+	InteractionReplyOptions,
 	Message,
 	MessageEmbed,
 	MessageEmbedOptions,
@@ -22,7 +23,7 @@ export type CustomEmbedOptions = {
 	type?: EmbedType;
 } & MessageEmbedOptions;
 
-export type SendableOptions = CustomEmbedOptions & MessageOptions;
+export type SendableOptions = CustomEmbedOptions & (MessageOptions | InteractionReplyOptions);
 
 @Injectable()
 export class MessageService {
@@ -121,7 +122,7 @@ export class MessageService {
 			...options,
 		});
 
-		return this.sendEmbed(context, embed, options);
+		return this.sendEmbed(context, embed, { ephemeral: true, ...options });
 	}
 
 	async edit(message: Message, data: string | SendableOptions) {
@@ -145,16 +146,8 @@ export class MessageService {
 		return this.sendEmbed(context, newEmbed, options);
 	}
 
-	protected async sendEmbed(context: ChannelContext, embed: MessageEmbed, payload?: MessageOptions) {
-		if (context instanceof Message) {
-			return context.reply({
-				embeds: [embed],
-				allowedMentions: {
-					repliedUser: false,
-				},
-				...payload,
-			});
-		} else if (context instanceof Interaction) {
+	protected async sendEmbed(context: ChannelContext, embed: MessageEmbed, payload?: MessageOptions | InteractionReplyOptions) {
+		if (context instanceof Interaction) {
 			const interactionEmbed = embed.addField('Action requested by', context.user.tag, true);
 
 			if (context.isButton()) {
@@ -170,6 +163,14 @@ export class MessageService {
 					...payload,
 				});
 			}
+		} else if (context instanceof Message) {
+			return context.reply({
+				embeds: [embed],
+				allowedMentions: {
+					repliedUser: false,
+				},
+				...payload,
+			});
 		} else {
 			return context.send({
 				embeds: [embed],

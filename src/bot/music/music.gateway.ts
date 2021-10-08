@@ -48,6 +48,27 @@ export class MusicGateway {
 	}
 
 	@On({ event: 'interactionCreate' })
+	async onLastPlayedInteraction(@Context() [interaction]: [Interaction]) {
+		if (!interaction.isButton() || !interaction.channel || !(interaction.channel instanceof TextChannel)) {
+			return;
+		}
+
+		if (interaction.customId != MusicInteractionConstant.LAST_SONG) {
+			return;
+		}
+
+		try {
+			const reply = await this.musicService.playLastPlayedSong(interaction);
+
+			await this.messageService.send(interaction, reply);
+		} catch (error) {
+			if (error instanceof InformError) {
+				await this.messageService.sendError(interaction, error);
+			}
+		}
+	}
+
+	@On({ event: 'interactionCreate' })
 	async onPlayPauseInteraction(@Context() [interaction]: [Interaction]) {
 		if (!interaction.isButton() || !interaction.channel || !(interaction.channel instanceof TextChannel)) {
 			return;
@@ -58,7 +79,7 @@ export class MusicGateway {
 		}
 
 		try {
-			const reply = this.musicService.togglePause(interaction.channel);
+			const reply = this.musicService.togglePause(interaction);
 
 			await this.messageService.send(interaction, reply);
 		} catch (error) {
@@ -79,7 +100,9 @@ export class MusicGateway {
 		}
 
 		try {
-			this.musicService.skip(interaction);
+			const reply = this.musicService.skip(interaction);
+
+			await this.messageService.send(interaction, reply);
 		} catch (error) {
 			if (error instanceof InformError) {
 				await this.messageService.sendError(interaction, error);
@@ -98,7 +121,28 @@ export class MusicGateway {
 		}
 
 		try {
-			const reply = this.musicService.loop(interaction.channel);
+			const reply = this.musicService.loop(interaction);
+
+			await this.messageService.send(interaction, reply);
+		} catch (error) {
+			if (error instanceof InformError) {
+				await this.messageService.sendError(interaction, error);
+			}
+		}
+	}
+
+	@On({ event: 'interactionCreate' })
+	async onRepeatAllInteraction(@Context() [interaction]: [Interaction]) {
+		if (!interaction.isButton() || !interaction.channel || !(interaction.channel instanceof TextChannel)) {
+			return;
+		}
+
+		if (interaction.customId != MusicInteractionConstant.REPEAT_ALL) {
+			return;
+		}
+
+		try {
+			const reply = this.musicService.loopAll(interaction);
 
 			await this.messageService.send(interaction, reply);
 		} catch (error) {
@@ -119,7 +163,7 @@ export class MusicGateway {
 		}
 
 		try {
-			const reply = this.musicService.disconnect(interaction.channel);
+			const reply = this.musicService.disconnect(interaction);
 
 			await this.messageService.send(interaction, reply);
 		} catch (error) {
@@ -139,11 +183,12 @@ export class MusicGateway {
 		}
 
 		try {
-			this.musicService.skip(message);
+			const reply = this.musicService.skip(message);
+
+			await this.messageService.send(message, reply);
 		} catch (error) {
 			if (error instanceof InformError) {
 				await this.messageService.sendError(message, error);
-				return;
 			}
 		}
 	}
