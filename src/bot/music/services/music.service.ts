@@ -152,10 +152,10 @@ export class MusicService {
 
 		const hadSongs = queue.songs.length;
 
-		const rows = this.createPlayerButtons();
+		const playerButtons = this.createPlayerButtons();
 
 		const commonOptions: SendableOptions = {
-			components: [...rows],
+			components: [...playerButtons],
 		};
 
 		try {
