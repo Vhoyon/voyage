@@ -32,10 +32,7 @@ export class MusicGuard implements DiscordGuard {
 				const sentMessage = await this.messageService.sendError(message, `You can't use any music command on this channel!`);
 
 				setTimeout(async () => {
-					if (sentMessage instanceof Message) {
-						sentMessage.delete();
-					}
-
+					sentMessage.delete();
 					message.delete();
 				}, BLACKLISTED_MESSAGE_RETENTION * 1000);
 			};
