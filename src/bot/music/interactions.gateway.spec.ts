@@ -3,20 +3,20 @@ import { PrismaModule } from '$common/prisma/prisma.module';
 import { Test, TestingModule } from '@nestjs/testing';
 import { discordModule } from '../bot.module';
 import { MessageService } from '../common/message.service';
-import { PlayerGateway } from './player.gateway';
+import { InteractionsGateway } from './interactions.gateway';
 import { MusicService } from './services/music.service';
 
 describe('PlayerGateway', () => {
-	let gateway: PlayerGateway;
+	let gateway: InteractionsGateway;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ConfigModule, PrismaModule, discordModule],
-			controllers: [PlayerGateway],
+			controllers: [InteractionsGateway],
 			providers: [MusicService, MessageService],
 		}).compile();
 
-		gateway = module.get<PlayerGateway>(PlayerGateway);
+		gateway = module.get<InteractionsGateway>(InteractionsGateway);
 	});
 
 	it('should be defined', () => {

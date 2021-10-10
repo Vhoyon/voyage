@@ -7,8 +7,8 @@ import { MusicInteractionConstant } from './music.constant';
 import { MusicService } from './services/music.service';
 
 @Controller()
-export class PlayerGateway {
-	private readonly logger = new Logger(PlayerGateway.name);
+export class InteractionsGateway {
+	private readonly logger = new Logger(InteractionsGateway.name);
 
 	constructor(private readonly musicService: MusicService, private readonly messageService: MessageService) {}
 
