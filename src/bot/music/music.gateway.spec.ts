@@ -5,6 +5,7 @@ import { discordModule } from '../bot.module';
 import { MessageService } from '../common/message.service';
 import { MusicGateway } from './music.gateway';
 import { MusicService } from './services/music.service';
+import { PlayerService } from './services/player.service';
 
 describe('MusicGateway', () => {
 	let gateway: MusicGateway;
@@ -13,7 +14,7 @@ describe('MusicGateway', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ConfigModule, PrismaModule, discordModule],
 			controllers: [MusicGateway],
-			providers: [MusicService, MessageService],
+			providers: [MusicService, MessageService, PlayerService],
 		}).compile();
 
 		gateway = module.get<MusicGateway>(MusicGateway);

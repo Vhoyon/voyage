@@ -1,104 +1,29 @@
 import { InformError } from '$/bot/common/error/inform-error';
-import { GuildChannelsContext, MessageService, SendableOptions } from '$/bot/common/message.service';
-import { EnvironmentConfig } from '$common/configs/env.validation';
+import { MessageService, SendableOptions } from '$/bot/common/message.service';
 import { PrismaService } from '$common/prisma/prisma.service';
 import { parseMsIntoTime, parseTimeIntoSeconds } from '$common/utils/funcs';
 import { bold, inlineCode } from '@discordjs/builders';
 import { Injectable, Logger } from '@nestjs/common';
-import { Player, Queue, RepeatMode, Song } from 'discord-music-player';
-import { DiscordClientProvider } from 'discord-nestjs';
-import { EmbedFieldData, InteractionButtonOptions, Message, MessageActionRow, MessageButton, TextChannel } from 'discord.js';
+import { RepeatMode, Song } from 'discord-music-player';
+import { EmbedFieldData, InteractionButtonOptions, Message, MessageActionRow, MessageButton } from 'discord.js';
 import { MAXIMUM as VOLUME_MAXIMUM } from '../dtos/volume.dto';
 import { MusicInteractionConstant } from '../music.constant';
-
-export const VOLUME_LOG = 15;
+import { MusicContext, PlayerService, PlayerType, QueueData, SongData } from './player.service';
 
 export const DEFAULT_VIEW_QUEUED_SONG = 10;
-
-export type QueueData = {
-	textChannel: TextChannel;
-	isPaused?: boolean;
-	lastPlayedSong?: Song;
-};
-
-export type SongData = {
-	query: string;
-	skipped?: boolean;
-};
-
-export type MusicContext = GuildChannelsContext | Queue;
 
 @Injectable()
 export class MusicService {
 	private readonly logger = new Logger(MusicService.name);
 
-	private readonly player;
-
 	constructor(
-		readonly discordProvider: DiscordClientProvider,
-		readonly env: EnvironmentConfig,
+		private readonly player: PlayerService,
 		private readonly prisma: PrismaService,
 		private readonly messageService: MessageService,
 	) {
-		this.player = new Player(discordProvider.getClient(), {
-			deafenOnJoin: true,
-			leaveOnEnd: true,
-			leaveOnEmpty: true,
-			timeout: env.DISCORD_MUSIC_DISCONNECT_TIMEOUT * 1000,
+		this.player.on('channelEmpty', async (queue) => {
+			this.messageService.sendInfo((queue.data as QueueData).textChannel, `Nobody's listening to me anymore, cya!`);
 		});
-
-		this.player
-			.on('songChanged', async (queue, newSong) => {
-				try {
-					await this.prisma.musicSetting.updateMany({
-						data: {
-							lastSongPlayed: (newSong.data as SongData).query,
-							nbOfSongsPlayed: {
-								increment: 1,
-							},
-						},
-						where: {
-							guild: {
-								guildId: queue.guild.id,
-							},
-						},
-					});
-				} catch (error) {
-					this.logger.error(error);
-				}
-			})
-			.on('songChanged', async (queue, _newSong, oldSong) => {
-				if (queue.repeatMode != RepeatMode.SONG) {
-					(queue.data as QueueData).lastPlayedSong = oldSong;
-				}
-			})
-			.on('channelEmpty', async (queue) => {
-				this.messageService.sendInfo((queue.data as QueueData).textChannel, `Nobody's listening to me anymore, cya!`);
-			})
-			.on('error', (error, queue) => {
-				if (typeof error == 'string') {
-					if (error == 'Status code: 410') {
-						this.messageService.sendError(
-							(queue.data as QueueData).textChannel,
-							`Couldn't play the given query. If you used a link, make sure the video / playlist is not private or age restricted!`,
-						);
-					} else {
-						this.logger.error(`Error: "${error}" in guild named "${queue.guild?.name}"`);
-					}
-				}
-			});
-	}
-
-	protected getQueue(of: MusicContext) {
-		if (of instanceof Queue) {
-			return of;
-		}
-
-		if (!of.guild) {
-			return null;
-		}
-
-		return this.player.getQueue(of.guild.id);
 	}
 
 	async play(query: string, message: Message) {
@@ -109,36 +34,7 @@ export class MusicService {
 			return;
 		}
 
-		let queue = this.getQueue(message);
-
-		let guildMusicSettings = await this.prisma.musicSetting.findFirst({
-			where: {
-				guild: {
-					guildId: message.guild.id,
-				},
-			},
-		});
-
-		if (!guildMusicSettings) {
-			guildMusicSettings = await this.prisma.musicSetting.create({
-				data: {
-					guild: {
-						connect: {
-							guildId: message.guild.id,
-						},
-					},
-				},
-			});
-		}
-
-		if (!queue) {
-			queue = this.player.createQueue(message.guild.id, {
-				data: {
-					textChannel: message.channel,
-				} as QueueData,
-				volume: guildMusicSettings.volume,
-			});
-		}
+		const { queue, musicSettings } = await this.player.getOrCreateQueueOf(message);
 
 		await queue.join(message.member.voice.channel);
 
@@ -179,7 +75,7 @@ export class MusicService {
 					},
 					{
 						name: 'Volume',
-						value: `${guildMusicSettings.volume}/${VOLUME_MAXIMUM}`,
+						value: `${musicSettings.volume}/${VOLUME_MAXIMUM}`,
 						inline: true,
 					},
 				];
@@ -231,7 +127,7 @@ export class MusicService {
 					},
 					{
 						name: 'Volume',
-						value: `${guildMusicSettings.volume}/${VOLUME_MAXIMUM}`,
+						value: `${musicSettings.volume}/${VOLUME_MAXIMUM}`,
 						inline: true,
 					},
 				];
@@ -317,7 +213,7 @@ export class MusicService {
 	}
 
 	async setVolume(of: MusicContext, volume: number) {
-		const queue = this.getQueue(of);
+		const queue = this.player.getQueueOf(of);
 
 		const guildId = of.guild!.id;
 
@@ -345,7 +241,7 @@ export class MusicService {
 	}
 
 	async playLastPlayedSong(context: MusicContext) {
-		const queue = this.getQueue(context);
+		const queue = this.player.getQueueOf(context);
 
 		if (!queue || !(queue.data as QueueData).lastPlayedSong) {
 			throw new InformError(`You need to at least play one song before I can play the last played song!`);
@@ -374,7 +270,7 @@ export class MusicService {
 	}
 
 	skip(context: MusicContext) {
-		const queue = this.getQueue(context);
+		const queue = this.player.getQueueOf(context);
 
 		if (!queue?.isPlaying) {
 			throw new InformError(`Play a song first before trying to skip it!`);
@@ -406,7 +302,7 @@ export class MusicService {
 	}
 
 	disconnect(context: MusicContext) {
-		const queue = this.getQueue(context);
+		const queue = this.player.getQueueOf(context);
 
 		if (!queue) {
 			throw new InformError(`I'm not even playing a song :/`);
@@ -418,7 +314,7 @@ export class MusicService {
 	}
 
 	pause(context: MusicContext) {
-		const queue = this.getQueue(context);
+		const queue = this.player.getQueueOf(context);
 
 		if (!queue) {
 			throw new InformError(`I'm not even playing a song :/`);
@@ -437,7 +333,7 @@ export class MusicService {
 	}
 
 	resume(context: MusicContext) {
-		const queue = this.getQueue(context);
+		const queue = this.player.getQueueOf(context);
 
 		if (!queue) {
 			throw new InformError(`There is no song to resume, play a song first!`);
@@ -456,7 +352,7 @@ export class MusicService {
 	}
 
 	togglePause(context: MusicContext) {
-		const queue = this.getQueue(context);
+		const queue = this.player.getQueueOf(context);
 
 		if (!queue) {
 			throw new InformError(`Play a song first!`);
@@ -472,7 +368,7 @@ export class MusicService {
 	}
 
 	async seek(timestamp: string, context: MusicContext) {
-		const queue = this.getQueue(context);
+		const queue = this.player.getQueueOf(context);
 
 		if (!queue?.isPlaying) {
 			throw new InformError(`I cannot seek through a song when nothing is playing...`);
@@ -495,7 +391,7 @@ export class MusicService {
 	}
 
 	toggleLoop(context: MusicContext) {
-		const queue = this.getQueue(context);
+		const queue = this.player.getQueueOf(context);
 
 		if (!queue?.isPlaying) {
 			throw new InformError(`I cannot set a looping song when nothing is playing!`);
@@ -513,7 +409,7 @@ export class MusicService {
 	}
 
 	toggleLoopAll(context: MusicContext) {
-		const queue = this.getQueue(context);
+		const queue = this.player.getQueueOf(context);
 
 		if (!queue?.isPlaying) {
 			throw new InformError(`I cannot loop the player when nothing is playing!`);
@@ -531,7 +427,7 @@ export class MusicService {
 	}
 
 	unloop(context: MusicContext) {
-		const queue = this.getQueue(context);
+		const queue = this.player.getQueueOf(context);
 
 		if (!queue?.isPlaying) {
 			throw new InformError(`I don't need to unloop anything : nothing is playing!`);
@@ -543,7 +439,7 @@ export class MusicService {
 	}
 
 	shuffle(context: MusicContext) {
-		const queue = this.getQueue(context);
+		const queue = this.player.getQueueOf(context);
 
 		if (!queue?.isPlaying) {
 			throw new InformError(`I cannot shuffle the queue when nothing is playing!`);
@@ -555,7 +451,7 @@ export class MusicService {
 	}
 
 	viewQueue(context: MusicContext, nbOfSongsToDisplay = DEFAULT_VIEW_QUEUED_SONG) {
-		const queue = this.getQueue(context);
+		const queue = this.player.getQueueOf(context);
 
 		if (!queue?.isPlaying) {
 			throw new InformError(`No queue here!`);
@@ -579,7 +475,7 @@ export class MusicService {
 	}
 
 	nowPlaying(context: MusicContext) {
-		const queue = this.getQueue(context);
+		const queue = this.player.getQueueOf(context);
 
 		if (!queue?.isPlaying) {
 			throw new InformError(`Nothing is currently playing!`);
