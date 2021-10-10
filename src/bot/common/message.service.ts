@@ -158,8 +158,15 @@ export class MessageService {
 		return message.edit({ embeds: [newEmbed], options });
 	}
 
-	async replace(context: ChannelContext, messageToReplace: Message, data: SendableOptions): Promise<Message>;
-	async replace(context: ChannelContext, messageToReplace: Message, message: string, type?: EmbedType): Promise<Message>;
+	async replace(context: CommandContext, messageToReplace: Message, data: SendableOptions): Promise<Message>;
+	async replace(context: CommandContext, messageToReplace: Message, message: string, type?: EmbedType): Promise<Message>;
+	async replace(context: InteractionContext, messageToReplace: Message, data: SendableOptions): Promise<Message | APIMessage | undefined>;
+	async replace(
+		context: InteractionContext,
+		messageToReplace: Message,
+		message: string,
+		type?: EmbedType,
+	): Promise<Message | APIMessage | undefined>;
 
 	async replace(context: ChannelContext, messageToReplace: Message, data: string | SendableOptions, type?: EmbedType) {
 		const [finalType, options] = typeof data != 'string' ? [data.type, data] : [type];
