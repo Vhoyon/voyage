@@ -10,7 +10,7 @@ describe('ConfigGateway', () => {
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
 			imports: [discordModule, PrismaModule],
-			providers: [DiscordConfigGateway],
+			controllers: [DiscordConfigGateway],
 		}).compile();
 
 		gateway = module.get<DiscordConfigGateway>(DiscordConfigGateway);

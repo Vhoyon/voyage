@@ -1,9 +1,9 @@
 import { PrismaService } from '$common/prisma/prisma.service';
-import { Injectable, Logger } from '@nestjs/common';
+import { Controller, Logger } from '@nestjs/common';
 import { Context, DiscordClientProvider, On, Once } from 'discord-nestjs';
 import { Guild } from 'discord.js';
 
-@Injectable()
+@Controller()
 export class DiscordConfigGateway {
 	private readonly logger = new Logger(DiscordConfigGateway.name);
 
