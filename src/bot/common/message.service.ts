@@ -147,10 +147,13 @@ export class MessageService {
 		return this.sendEmbed(context, embed, { ephemeral: true, ...options });
 	}
 
-	async edit(message: Message, data: string | SendableOptions) {
-		const [type, options] = typeof data != 'string' ? [data.type, data] : [];
+	async edit(message: Message, data: SendableOptions): Promise<Message>;
+	async edit(message: Message, text: string, type?: EmbedType): Promise<Message>;
 
-		const newEmbed = this.createEmbed(data, { type });
+	async edit(message: Message, data: string | SendableOptions, type?: EmbedType) {
+		const [finalType, options] = typeof data != 'string' ? [data.type, data] : [type];
+
+		const newEmbed = this.createEmbed(data, { type: finalType });
 
 		return message.edit({ embeds: [newEmbed], options });
 	}
