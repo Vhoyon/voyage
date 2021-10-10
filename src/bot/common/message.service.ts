@@ -1,6 +1,7 @@
 import { EnvironmentConfig } from '$common/configs/env.validation';
 import { bold } from '@discordjs/builders';
 import { Injectable, Logger } from '@nestjs/common';
+import { APIMessage } from 'discord-api-types';
 import {
 	DMChannel,
 	Interaction,
@@ -14,7 +15,10 @@ import {
 } from 'discord.js';
 import { InformError, InformInternalError } from './error/inform-error';
 
-export type ChannelContext = Message | TextBasedChannels | Interaction;
+export type CommandContext = Message | TextBasedChannels;
+export type InteractionContext = Interaction;
+
+export type ChannelContext = CommandContext | InteractionContext;
 
 export type GuildChannelsContext = Exclude<ChannelContext, PartialDMChannel | DMChannel>;
 
@@ -119,7 +123,20 @@ export class MessageService {
 		return this.sendEmbed(context, embed, options);
 	}
 
-	async sendError(context: ChannelContext, error: string | InformError, options?: SendableOptions) {
+	async sendError(context: CommandContext, error: string | InformError, options?: SendableOptions): Promise<Message>;
+	async sendError(context: CommandContext, error: unknown, options?: SendableOptions): Promise<Message | undefined>;
+	async sendError(
+		context: InteractionContext,
+		error: string | InformError,
+		options?: SendableOptions,
+	): Promise<Message | APIMessage | undefined>;
+	async sendError(context: InteractionContext, error: unknown, options?: SendableOptions): Promise<Message | APIMessage | undefined>;
+
+	async sendError(context: ChannelContext, error: string | InformError | unknown, options?: SendableOptions) {
+		if (!(typeof error == 'string' || error instanceof InformError)) {
+			return;
+		}
+
 		const [data, type] = typeof error == 'string' ? [error, 'error' as EmbedType] : [error.message, error.type];
 
 		const embed = this.createEmbed(data, {

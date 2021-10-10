@@ -2,7 +2,6 @@ import { Controller, Logger } from '@nestjs/common';
 import { Content, Context, OnCommand, TransformPipe, UseGuards, UsePipes, ValidationPipe } from 'discord-nestjs';
 import { Message } from 'discord.js';
 import { VParsedCommand } from 'vcommand-parser';
-import { InformError } from '../common/error/inform-error';
 import { MessageIsFromTextChannelGuard } from '../common/guards/message-is-from-textchannel.guard';
 import { MessageService } from '../common/message.service';
 import { QueueDto } from './dtos/queue.dto';
@@ -60,9 +59,7 @@ export class MusicGateway {
 
 			await this.messageService.send(message, reply);
 		} catch (error) {
-			if (error instanceof InformError) {
-				await this.messageService.sendError(message, error);
-			}
+			await this.messageService.sendError(message, error);
 		}
 	}
 
@@ -99,9 +96,7 @@ export class MusicGateway {
 
 			await this.messageService.send(message, reply);
 		} catch (error) {
-			if (error instanceof InformError) {
-				await this.messageService.sendError(message, error);
-			}
+			await this.messageService.sendError(message, error);
 		}
 	}
 
@@ -119,9 +114,7 @@ export class MusicGateway {
 
 			await this.messageService.send(message, reply);
 		} catch (error) {
-			if (error instanceof InformError) {
-				await this.messageService.sendError(message, error);
-			}
+			await this.messageService.sendError(message, error);
 		}
 	}
 
@@ -139,9 +132,7 @@ export class MusicGateway {
 
 			await this.messageService.send(message, reply);
 		} catch (error) {
-			if (error instanceof InformError) {
-				await this.messageService.sendError(message, error);
-			}
+			await this.messageService.sendError(message, error);
 		}
 	}
 
@@ -164,9 +155,7 @@ export class MusicGateway {
 
 			await this.messageService.send(message, reply);
 		} catch (error) {
-			if (error instanceof InformError) {
-				await this.messageService.sendError(message, error);
-			}
+			await this.messageService.sendError(message, error);
 		}
 	}
 
@@ -184,9 +173,7 @@ export class MusicGateway {
 
 			await this.messageService.send(message, reply);
 		} catch (error) {
-			if (error instanceof InformError) {
-				await this.messageService.sendError(message, error);
-			}
+			await this.messageService.sendError(message, error);
 		}
 	}
 
@@ -204,9 +191,7 @@ export class MusicGateway {
 
 			await this.messageService.send(message, reply);
 		} catch (error) {
-			if (error instanceof InformError) {
-				await this.messageService.sendError(message, error);
-			}
+			await this.messageService.sendError(message, error);
 		}
 	}
 
@@ -224,9 +209,7 @@ export class MusicGateway {
 
 			await this.messageService.send(message, reply);
 		} catch (error) {
-			if (error instanceof InformError) {
-				await this.messageService.sendError(message, error);
-			}
+			await this.messageService.sendError(message, error);
 		}
 	}
 
@@ -244,9 +227,7 @@ export class MusicGateway {
 
 			await this.messageService.send(message, reply);
 		} catch (error) {
-			if (error instanceof InformError) {
-				await this.messageService.sendError(message, error);
-			}
+			await this.messageService.sendError(message, error);
 		}
 	}
 
@@ -265,9 +246,7 @@ export class MusicGateway {
 
 			await this.messageService.send(message, reply);
 		} catch (error) {
-			if (error instanceof InformError) {
-				await this.messageService.sendError(message, error);
-			}
+			await this.messageService.sendError(message, error);
 		}
 	}
 
@@ -285,9 +264,7 @@ export class MusicGateway {
 
 			await this.messageService.send(message, reply);
 		} catch (error) {
-			if (error instanceof InformError) {
-				await this.messageService.sendError(message, error);
-			}
+			await this.messageService.sendError(message, error);
 		}
 	}
 }

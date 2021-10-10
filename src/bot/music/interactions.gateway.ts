@@ -1,7 +1,6 @@
 import { Controller, Logger } from '@nestjs/common';
 import { Context, On } from 'discord-nestjs';
 import { Interaction, TextChannel } from 'discord.js';
-import { InformError } from '../common/error/inform-error';
 import { MessageService } from '../common/message.service';
 import { MusicInteractionConstant } from './music.constant';
 import { MusicService } from './services/music.service';
@@ -27,9 +26,7 @@ export class InteractionsGateway {
 
 			await this.messageService.send(interaction, reply);
 		} catch (error) {
-			if (error instanceof InformError) {
-				await this.messageService.sendError(interaction, error);
-			}
+			await this.messageService.sendError(interaction, error);
 		}
 	}
 
@@ -48,9 +45,7 @@ export class InteractionsGateway {
 
 			await this.messageService.send(interaction, reply);
 		} catch (error) {
-			if (error instanceof InformError) {
-				await this.messageService.sendError(interaction, error);
-			}
+			await this.messageService.sendError(interaction, error);
 		}
 	}
 
@@ -69,9 +64,7 @@ export class InteractionsGateway {
 
 			await this.messageService.send(interaction, reply);
 		} catch (error) {
-			if (error instanceof InformError) {
-				await this.messageService.sendError(interaction, error);
-			}
+			await this.messageService.sendError(interaction, error);
 		}
 	}
 
@@ -90,9 +83,7 @@ export class InteractionsGateway {
 
 			await this.messageService.send(interaction, reply);
 		} catch (error) {
-			if (error instanceof InformError) {
-				await this.messageService.sendError(interaction, error);
-			}
+			await this.messageService.sendError(interaction, error);
 		}
 	}
 
@@ -111,9 +102,7 @@ export class InteractionsGateway {
 
 			await this.messageService.send(interaction, reply);
 		} catch (error) {
-			if (error instanceof InformError) {
-				await this.messageService.sendError(interaction, error);
-			}
+			await this.messageService.sendError(interaction, error);
 		}
 	}
 
@@ -132,9 +121,7 @@ export class InteractionsGateway {
 
 			await this.messageService.send(interaction, reply);
 		} catch (error) {
-			if (error instanceof InformError) {
-				await this.messageService.sendError(interaction, error);
-			}
+			await this.messageService.sendError(interaction, error);
 		}
 	}
 }
