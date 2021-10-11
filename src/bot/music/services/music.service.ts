@@ -5,10 +5,9 @@ import { parseMsIntoTime, parseTimeIntoSeconds } from '$common/utils/funcs';
 import { bold, inlineCode } from '@discordjs/builders';
 import { Injectable, Logger } from '@nestjs/common';
 import { RepeatMode, Song } from 'discord-music-player';
-import { EmbedFieldData, InteractionButtonOptions, Message, MessageActionRow, MessageButton } from 'discord.js';
+import { Message } from 'discord.js';
 import { MAXIMUM as VOLUME_MAXIMUM } from '../dtos/volume.dto';
-import { MusicInteractionConstant } from '../music.constant';
-import { MusicContext, PlayerService, QueueData, SongData } from './player.service';
+import { DynamicPlayerOptions, MusicContext, PlayerService, QueueData, SongData } from './player.service';
 
 export const DEFAULT_VIEW_QUEUED_SONG = 10;
 
@@ -26,7 +25,7 @@ export class MusicService {
 		});
 	}
 
-	async play(query: string, message: Message) {
+	async play(query: string, message: Message, dynamicPlayerOptions?: DynamicPlayerOptions) {
 		if (!message.guild) {
 			return;
 		}
@@ -48,8 +47,7 @@ export class MusicService {
 
 		const hadSongs = queue.songs.length;
 
-		const playerButtons = this.createPlayerButtons();
-
+		const playerButtons = this.player.createPlayerButtons();
 		const commonOptions: SendableOptions = {
 			components: [...playerButtons],
 		};
@@ -62,24 +60,6 @@ export class MusicService {
 
 				song.setData(createSongData());
 
-				const songFields: EmbedFieldData[] = [
-					{
-						name: 'Author',
-						value: inlineCode(song.author),
-						inline: true,
-					},
-					{
-						name: 'Duration',
-						value: inlineCode(song.duration),
-						inline: true,
-					},
-					{
-						name: 'Volume',
-						value: `${musicSettings.volume}/${VOLUME_MAXIMUM}`,
-						inline: true,
-					},
-				];
-
 				if (hadSongs) {
 					await this.messageService.replace(message, botMessage, {
 						...commonOptions,
@@ -87,21 +67,37 @@ export class MusicService {
 						thumbnail: {
 							url: song.thumbnail,
 						},
-						fields: songFields,
+						fields: [
+							{
+								name: 'Author',
+								value: inlineCode(song.author),
+								inline: true,
+							},
+							{
+								name: 'Duration',
+								value: inlineCode(song.duration),
+								inline: true,
+							},
+							{
+								name: 'Volume',
+								value: `${musicSettings.volume}/${VOLUME_MAXIMUM}`,
+								inline: true,
+							},
+						],
 						url: song.url,
 					});
 				} else {
 					(queue.data as QueueData).lastPlayedSong = song;
 
-					await this.messageService.replace(message, botMessage, {
-						...commonOptions,
-						title: `Playing song ${inlineCode(song.name)}!`,
-						thumbnail: {
-							url: song.thumbnail,
-						},
-						fields: songFields,
-						url: song.url,
+					const nowPlayingWidget = this.player.createNowPlayingWidget(queue, {
+						showStopDynamicPlayer: !!dynamicPlayerOptions?.type,
 					});
+
+					const playerMessage = await this.messageService.replace(message, botMessage, nowPlayingWidget);
+
+					if (dynamicPlayerOptions?.type) {
+						await this.player.setDynamic(queue, playerMessage, dynamicPlayerOptions);
+					}
 				}
 			} else {
 				const playlist = await queue.playlist(query, {
@@ -110,44 +106,44 @@ export class MusicService {
 
 				playlist.songs.forEach((s) => s.setData(createSongData()));
 
-				const totalDuration = playlist.songs.reduce((acc, song) => acc + song.millisecons, 0);
-
-				const formattedTotalDuration = parseMsIntoTime(totalDuration);
-
-				const playlistFields: EmbedFieldData[] = [
-					{
-						name: 'Songs Count',
-						value: inlineCode(playlist.songs.length.toString()),
-						inline: true,
-					},
-					{
-						name: 'Total Duration',
-						value: inlineCode(formattedTotalDuration),
-						inline: true,
-					},
-					{
-						name: 'Volume',
-						value: `${musicSettings.volume}/${VOLUME_MAXIMUM}`,
-						inline: true,
-					},
-				];
-
 				if (hadSongs) {
+					const totalDuration = playlist.songs.reduce((acc, song) => acc + song.millisecons, 0);
+					const formattedTotalDuration = parseMsIntoTime(totalDuration);
+
 					await this.messageService.replace(message, botMessage, {
 						...commonOptions,
 						title: `Added playlist ${inlineCode(playlist.name)}!`,
-						fields: playlistFields,
+						fields: [
+							{
+								name: 'Songs Count',
+								value: inlineCode(playlist.songs.length.toString()),
+								inline: true,
+							},
+							{
+								name: 'Total Duration',
+								value: inlineCode(formattedTotalDuration),
+								inline: true,
+							},
+							{
+								name: 'Volume',
+								value: `${musicSettings.volume}/${VOLUME_MAXIMUM}`,
+								inline: true,
+							},
+						],
 						url: playlist.url,
 					});
 				} else {
 					(queue.data as QueueData).lastPlayedSong = playlist.songs[0];
 
-					await this.messageService.replace(message, botMessage, {
-						...commonOptions,
-						title: `Playing playlist ${inlineCode(playlist.name)}!`,
-						fields: playlistFields,
-						url: playlist.url,
+					const nowPlayingWidget = this.player.createNowPlayingWidget(queue, {
+						showStopDynamicPlayer: !!dynamicPlayerOptions?.type,
 					});
+
+					const playerMessage = await this.messageService.replace(message, botMessage, nowPlayingWidget);
+
+					if (dynamicPlayerOptions?.type) {
+						await this.player.setDynamic(queue, playerMessage, dynamicPlayerOptions);
+					}
 				}
 			}
 		} catch (error) {
@@ -158,58 +154,6 @@ export class MusicService {
 				'error',
 			);
 		}
-	}
-
-	createPlayerButtons() {
-		const queueInteractions: Pick<InteractionButtonOptions, 'customId' | 'emoji'>[] = [
-			{
-				customId: MusicInteractionConstant.LAST_SONG,
-				emoji: '⏮',
-			},
-			{
-				customId: MusicInteractionConstant.PLAY_PAUSE,
-				emoji: '⏯',
-			},
-			{
-				customId: MusicInteractionConstant.SKIP,
-				emoji: '⏩',
-			},
-		];
-
-		const queueRow = new MessageActionRow({
-			components: queueInteractions.map((interaction) => {
-				return new MessageButton({
-					style: 'SECONDARY',
-					...interaction,
-				});
-			}),
-		});
-
-		const playerInteractions: Pick<InteractionButtonOptions, 'customId' | 'emoji'>[] = [
-			{
-				customId: MusicInteractionConstant.REPEAT,
-				emoji: '🔂',
-			},
-			{
-				customId: MusicInteractionConstant.REPEAT_ALL,
-				emoji: '🔁',
-			},
-			{
-				customId: MusicInteractionConstant.DISCONNECT,
-				emoji: '⏹',
-			},
-		];
-
-		const playerRow = new MessageActionRow({
-			components: playerInteractions.map((interaction) => {
-				return new MessageButton({
-					style: 'SECONDARY',
-					...interaction,
-				});
-			}),
-		});
-
-		return [queueRow, playerRow];
 	}
 
 	async setVolume(of: MusicContext, volume: number) {
@@ -237,7 +181,7 @@ export class MusicService {
 
 		queue?.setVolume(volume);
 
-		return !!queue?.isPlaying;
+		return !!this.player.hasQueueAndPlaying(queue);
 	}
 
 	async playLastPlayedSong(context: MusicContext) {
@@ -272,7 +216,7 @@ export class MusicService {
 	skip(context: MusicContext) {
 		const queue = this.player.getQueueOf(context);
 
-		if (!queue?.isPlaying) {
+		if (!this.player.hasQueueAndPlaying(queue)) {
 			throw new InformError(`Play a song first before trying to skip it!`);
 		}
 
@@ -295,20 +239,18 @@ export class MusicService {
 		if (nextSong) {
 			return `Skipped ${inlineCode(songSkipped.name)}. Now playing ${inlineCode(nextSong.name)}!`;
 		} else {
-			queue.destroy(true);
+			this.player.disconnect(queue);
 
 			return `Skipped ${inlineCode(songSkipped.name)}. No more songs are in the queue, goodbye!`;
 		}
 	}
 
-	disconnect(context: MusicContext) {
-		const queue = this.player.getQueueOf(context);
+	async disconnect(context: MusicContext) {
+		const didDisconnect = await this.player.disconnect(context);
 
-		if (!queue) {
+		if (!didDisconnect) {
 			throw new InformError(`I'm not even playing a song :/`);
 		}
-
-		queue.destroy(true);
 
 		return `Adios!`;
 	}
@@ -370,7 +312,7 @@ export class MusicService {
 	async seek(timestamp: string, context: MusicContext) {
 		const queue = this.player.getQueueOf(context);
 
-		if (!queue?.isPlaying) {
+		if (!this.player.hasQueueAndPlaying(queue)) {
 			throw new InformError(`I cannot seek through a song when nothing is playing...`);
 		}
 
@@ -393,7 +335,7 @@ export class MusicService {
 	toggleLoop(context: MusicContext) {
 		const queue = this.player.getQueueOf(context);
 
-		if (!queue?.isPlaying) {
+		if (!this.player.hasQueueAndPlaying(queue)) {
 			throw new InformError(`I cannot set a looping song when nothing is playing!`);
 		}
 
@@ -411,7 +353,7 @@ export class MusicService {
 	toggleLoopAll(context: MusicContext) {
 		const queue = this.player.getQueueOf(context);
 
-		if (!queue?.isPlaying) {
+		if (!this.player.hasQueueAndPlaying(queue)) {
 			throw new InformError(`I cannot loop the player when nothing is playing!`);
 		}
 
@@ -429,7 +371,7 @@ export class MusicService {
 	unloop(context: MusicContext) {
 		const queue = this.player.getQueueOf(context);
 
-		if (!queue?.isPlaying) {
+		if (!this.player.hasQueueAndPlaying(queue)) {
 			throw new InformError(`I don't need to unloop anything : nothing is playing!`);
 		}
 
@@ -441,7 +383,7 @@ export class MusicService {
 	shuffle(context: MusicContext) {
 		const queue = this.player.getQueueOf(context);
 
-		if (!queue?.isPlaying) {
+		if (!this.player.hasQueueAndPlaying(queue)) {
 			throw new InformError(`I cannot shuffle the queue when nothing is playing!`);
 		}
 
@@ -453,7 +395,7 @@ export class MusicService {
 	viewQueue(context: MusicContext, nbOfSongsToDisplay = DEFAULT_VIEW_QUEUED_SONG) {
 		const queue = this.player.getQueueOf(context);
 
-		if (!queue?.isPlaying) {
+		if (!this.player.hasQueueAndPlaying(queue)) {
 			throw new InformError(`No queue here!`);
 		}
 
@@ -474,72 +416,21 @@ export class MusicService {
 		} as SendableOptions;
 	}
 
-	nowPlaying(context: MusicContext) {
+	async nowPlaying(context: MusicContext, dynamicPlayerOptions?: DynamicPlayerOptions) {
 		const queue = this.player.getQueueOf(context);
 
-		if (!queue?.isPlaying) {
+		if (!this.player.hasQueueAndPlaying(queue)) {
 			throw new InformError(`Nothing is currently playing!`);
 		}
 
-		const song = queue.nowPlaying;
+		const nowPlayingWidget = this.player.createNowPlayingWidget(queue, {
+			showStopDynamicPlayer: !!dynamicPlayerOptions?.type,
+		});
 
-		const progressBar = queue.createProgressBar().prettier;
+		const message = await this.messageService.send((queue.data as QueueData).textChannel, nowPlayingWidget);
 
-		let repeatMode: string;
-
-		switch (queue.repeatMode) {
-			case RepeatMode.SONG:
-				repeatMode = 'Looping Song';
-				break;
-			case RepeatMode.QUEUE:
-				repeatMode = 'Looping Queue';
-				break;
-			case RepeatMode.DISABLED:
-			default:
-				repeatMode = 'Disabled';
-				break;
+		if (dynamicPlayerOptions?.type) {
+			await this.player.setDynamic(queue, message, dynamicPlayerOptions);
 		}
-
-		const playerButtons = this.createPlayerButtons();
-
-		return {
-			title: `Now playing : ${inlineCode(song.name)}!`,
-			thumbnail: {
-				url: song.thumbnail,
-			},
-			components: [...playerButtons],
-			fields: [
-				{
-					name: 'Requester',
-					value: song.requestedBy!.tag,
-					inline: true,
-				},
-				{
-					name: 'Author',
-					value: inlineCode(song.author),
-					inline: true,
-				},
-				{
-					name: 'Remaining songs',
-					value: queue.songs.length.toString(),
-					inline: true,
-				},
-				{
-					name: 'Repeat Mode',
-					value: repeatMode,
-					inline: true,
-				},
-				{
-					name: 'Volume',
-					value: `${queue.volume}/${VOLUME_MAXIMUM}`,
-					inline: true,
-				},
-				{
-					name: 'Progress',
-					value: inlineCode(progressBar),
-				},
-			],
-			url: song.url,
-		} as SendableOptions;
 	}
 }

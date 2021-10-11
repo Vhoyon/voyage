@@ -5,4 +5,5 @@ export enum MusicInteractionConstant {
 	REPEAT = 'voyage_i_music_repeat',
 	REPEAT_ALL = 'voyage_i_music_repeat_all',
 	DISCONNECT = 'voyage_i_music_disconnect',
+	STOP_DYNAMIC_PLAYER = 'voyage_i_music_stop_dynamic_player',
 }
