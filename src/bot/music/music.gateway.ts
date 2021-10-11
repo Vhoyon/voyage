@@ -8,6 +8,7 @@ import { QueueDto } from './dtos/queue.dto';
 import { VolumeDto } from './dtos/volume.dto';
 import { MusicGuard } from './guards/music.guard';
 import { MusicService } from './services/music.service';
+import { DynamicPlayerType } from './services/player.service';
 
 @Controller()
 @UseGuards(MessageIsFromTextChannelGuard, MusicGuard)
@@ -37,8 +38,15 @@ export class MusicGateway {
 			return;
 		}
 
+		const isUpdateable = parsed.getOption('u');
+		const isPinned = parsed.getOption('p');
+
+		const playerType = isPinned ? DynamicPlayerType.PINNED : isUpdateable && DynamicPlayerType.UPDATEABLE;
+
 		try {
-			await this.musicService.play(parsed.content, message);
+			await this.musicService.play(parsed.content, message, {
+				type: playerType,
+			});
 		} catch (error) {
 			this.logger.error(error, error instanceof TypeError ? error.stack : undefined);
 			await this.messageService.sendError(message, `An error happened!`);
@@ -92,7 +100,7 @@ export class MusicGateway {
 		}
 
 		try {
-			const reply = this.musicService.disconnect(message);
+			const reply = await this.musicService.disconnect(message);
 
 			await this.messageService.send(message, reply);
 		} catch (error) {
@@ -251,7 +259,7 @@ export class MusicGateway {
 	}
 
 	@OnCommand({ name: 'np' })
-	async onNowPlaying(@Context() [message]: [Message]) {
+	async onNowPlaying(@Content() parsed: VParsedCommand, @Context() [message]: [Message]) {
 		const voiceChannel = message.member?.voice?.channel;
 
 		if (!voiceChannel) {
@@ -259,10 +267,15 @@ export class MusicGateway {
 			return;
 		}
 
-		try {
-			const reply = this.musicService.nowPlaying(message);
+		const isUpdateable = parsed.getOption('u');
+		const isPinned = parsed.getOption('p');
 
-			await this.messageService.send(message, reply);
+		const playerType = isPinned ? DynamicPlayerType.PINNED : isUpdateable && DynamicPlayerType.UPDATEABLE;
+
+		try {
+			await this.musicService.nowPlaying(message, {
+				type: playerType,
+			});
 		} catch (error) {
 			await this.messageService.sendError(message, error);
 		}

@@ -4,12 +4,17 @@ import { Interaction, TextChannel } from 'discord.js';
 import { MessageService } from '../common/message.service';
 import { MusicInteractionConstant } from './music.constant';
 import { MusicService } from './services/music.service';
+import { PlayerService } from './services/player.service';
 
 @Controller()
 export class InteractionsGateway {
 	private readonly logger = new Logger(InteractionsGateway.name);
 
-	constructor(private readonly musicService: MusicService, private readonly messageService: MessageService) {}
+	constructor(
+		private readonly musicService: MusicService,
+		private readonly messageService: MessageService,
+		private readonly playerService: PlayerService,
+	) {}
 
 	@On({ event: 'interactionCreate' })
 	async onLastPlayedInteraction(@Context() [interaction]: [Interaction]) {
@@ -117,9 +122,32 @@ export class InteractionsGateway {
 		}
 
 		try {
-			const reply = this.musicService.disconnect(interaction);
+			const reply = await this.musicService.disconnect(interaction);
 
 			await this.messageService.send(interaction, reply);
+		} catch (error) {
+			await this.messageService.sendError(interaction, error);
+		}
+	}
+
+	@On({ event: 'interactionCreate' })
+	async onStopDynamicPlayerInteraction(@Context() [interaction]: [Interaction]) {
+		if (!interaction.isButton() || !interaction.channel || !(interaction.channel instanceof TextChannel)) {
+			return;
+		}
+
+		if (interaction.customId != MusicInteractionConstant.STOP_DYNAMIC_PLAYER) {
+			return;
+		}
+
+		try {
+			const possibleType = await this.playerService.clearDynamic(interaction);
+
+			if (possibleType) {
+				await this.messageService.send(interaction, `Stopped the dynamic player!`);
+			} else {
+				await this.messageService.sendError(interaction, `The player is already not dynamic!`);
+			}
 		} catch (error) {
 			await this.messageService.sendError(interaction, error);
 		}
