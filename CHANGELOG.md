@@ -1,5 +1,36 @@
 # Changelog
 
+### [0.4.1](https://www.github.com/Vhoyon/voyage/compare/v0.4.0...v0.4.1) (2021-10-11)
+
+
+### Bug Fixes
+
+* disable YOUTUBE_API_KEY env var checks as it is useless now ([eef5ea4](https://www.github.com/Vhoyon/voyage/commit/eef5ea47780d5845ad862033a3410d858a5eccf8))
+* **MessageService:** add error looging to sendEmbed ([c99c48b](https://www.github.com/Vhoyon/voyage/commit/c99c48bab416c88b593985962a13a8e4c7df2041))
+* **MessageService:** better typing for edit method ([c9605a6](https://www.github.com/Vhoyon/voyage/commit/c9605a6cc3568588e81c2b888df5ff7b0e535e4c))
+* **MessageService:** better typing for replace method ([936b791](https://www.github.com/Vhoyon/voyage/commit/936b7919beaaffe2e0bbec5e2540ace40890703a))
+* **MusicGuard:** remove now useless type condition ([d10f5b7](https://www.github.com/Vhoyon/voyage/commit/d10f5b71a69f8d5f52488f80f952a5f7f60e16b9))
+* **music:** looping is now a toggle ([376ee42](https://www.github.com/Vhoyon/voyage/commit/376ee42b97681dd2e692120407811e4a3c6c3d65))
+* unused import ([2e35c1d](https://www.github.com/Vhoyon/voyage/commit/2e35c1d0fe760f476e58ff1c96213a415ecfc8cb))
+
+
+### Miscellaneous
+
+* **eslint:** ignore magic numbers in enums ([1a86611](https://www.github.com/Vhoyon/voyage/commit/1a86611490b3be7c7e78341d4503d1e13bbfc5ad))
+
+
+### Refactors
+
+* config gateway is now a controller ([7a9f157](https://www.github.com/Vhoyon/voyage/commit/7a9f1577a283cb46cd7001470c517a50e7ead53e))
+* **MessageService:** allow errors of type unknown and better types ([596f551](https://www.github.com/Vhoyon/voyage/commit/596f551e488e002488b61fc194e867bb7c79e5ab))
+* **music:** move discord player logic to PlayerService ([dcd9d39](https://www.github.com/Vhoyon/voyage/commit/dcd9d39d89c3024ab8ed6421c44a7acb88f61dde))
+* rename PlayerGateway to InteractionsGateway ([6c7d746](https://www.github.com/Vhoyon/voyage/commit/6c7d746fc811dffee89225ee9b16652c22ff0abf))
+
+
+### Dependencies
+
+* update dependency @nestjs/graphql to v9.0.6 ([a76d5db](https://www.github.com/Vhoyon/voyage/commit/a76d5db872495f343c59fac1255a29d019f78466))
+
 ## [0.4.0](https://www.github.com/Vhoyon/voyage/compare/v0.3.0...v0.4.0) (2021-10-08)
 
 
