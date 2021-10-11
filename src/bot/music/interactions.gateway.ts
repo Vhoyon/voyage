@@ -129,6 +129,7 @@ export class InteractionsGateway {
 			await this.messageService.sendError(interaction, error);
 		}
 	}
+
 	@On({ event: 'interactionCreate' })
 	async onStopDynamicPlayerInteraction(@Context() [interaction]: [Interaction]) {
 		if (!interaction.isButton() || !interaction.channel || !(interaction.channel instanceof TextChannel)) {
