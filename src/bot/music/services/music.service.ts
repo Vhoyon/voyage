@@ -8,7 +8,7 @@ import { RepeatMode, Song } from 'discord-music-player';
 import { EmbedFieldData, InteractionButtonOptions, Message, MessageActionRow, MessageButton } from 'discord.js';
 import { MAXIMUM as VOLUME_MAXIMUM } from '../dtos/volume.dto';
 import { MusicInteractionConstant } from '../music.constant';
-import { MusicContext, PlayerService, PlayerType, QueueData, SongData } from './player.service';
+import { MusicContext, PlayerService, QueueData, SongData } from './player.service';
 
 export const DEFAULT_VIEW_QUEUED_SONG = 10;
 
