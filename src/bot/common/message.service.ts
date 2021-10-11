@@ -179,54 +179,60 @@ export class MessageService {
 	}
 
 	protected async sendEmbed(context: ChannelContext, embed: MessageEmbed, payload?: MessageOptions | InteractionReplyOptions) {
-		if (context instanceof Interaction) {
-			const isEphemeral = payload && 'ephemeral' in payload && payload.ephemeral;
+		try {
+			if (context instanceof Interaction) {
+				const isEphemeral = payload && 'ephemeral' in payload && payload.ephemeral;
 
-			const interactionEmbed = isEphemeral ? embed : embed.addField('Action requested by', context.user.tag, true);
+				const interactionEmbed = isEphemeral ? embed : embed.addField('Action requested by', context.user.tag, true);
 
-			if (context.isButton()) {
-				await context.reply({
-					embeds: [interactionEmbed],
-					...payload,
-				});
+				if (context.isButton()) {
+					await context.reply({
+						embeds: [interactionEmbed],
+						...payload,
+					});
 
-				if (!isEphemeral) {
-					const message = await context.fetchReply();
+					if (!isEphemeral) {
+						const message = await context.fetchReply();
 
-					if (message instanceof Message) {
-						const timeout = this.env.DISCORD_INTERACTION_MESSAGE_TIMEOUT;
+						if (message instanceof Message) {
+							const timeout = this.env.DISCORD_INTERACTION_MESSAGE_TIMEOUT;
 
-						if (timeout > 0) {
-							setTimeout(() => message.delete().catch(), timeout * 1000);
+							if (timeout > 0) {
+								setTimeout(() => message.delete().catch(), timeout * 1000);
+							}
 						}
+
+						return message;
+					}
+				} else {
+					if (!context.channel) {
+						this.logger.error('Interaction has no channel when trying to send reply to it.', undefined, context);
+						throw new InformInternalError('The interaction has no channel to send a message to!');
 					}
 
-					return message;
+					return context.channel.send({
+						embeds: [interactionEmbed],
+						...payload,
+					});
 				}
+			} else if (context instanceof Message) {
+				return context.reply({
+					embeds: [embed],
+					allowedMentions: {
+						repliedUser: false,
+					},
+					...payload,
+				});
 			} else {
-				if (!context.channel) {
-					this.logger.error('Interaction has no channel when trying to send reply to it.', undefined, context);
-					throw new InformInternalError('The interaction has no channel to send a message to!');
-				}
-
-				return context.channel.send({
-					embeds: [interactionEmbed],
+				return context.send({
+					embeds: [embed],
 					...payload,
 				});
 			}
-		} else if (context instanceof Message) {
-			return context.reply({
-				embeds: [embed],
-				allowedMentions: {
-					repliedUser: false,
-				},
-				...payload,
-			});
-		} else {
-			return context.send({
-				embeds: [embed],
-				...payload,
-			});
+		} catch (error) {
+			this.logger.error(`Error sending embed : `, error);
+
+			throw error;
 		}
 	}
 }
