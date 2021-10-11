@@ -54,8 +54,8 @@ export class EnvironmentConfig {
 	@IsNumber()
 	readonly DISCORD_INTERACTION_MESSAGE_TIMEOUT: number = DEFAULT_DISCORD_INTERACTION_MESSAGE_TIMEOUT;
 
-	@IsString()
-	readonly YOUTUBE_API_KEY!: string;
+	// @IsString()
+	// readonly YOUTUBE_API_KEY!: string;
 
 	// ---------------
 	//     DATABASE
