@@ -1,6 +1,6 @@
 import { Controller, Logger } from '@nestjs/common';
 import { Context, On } from 'discord-nestjs';
-import { Interaction, TextChannel } from 'discord.js';
+import { GuildMember, Interaction, TextChannel } from 'discord.js';
 import { MessageService } from '../common/message.service';
 import { MusicInteractionConstant } from './music.constant';
 import { MusicService } from './services/music.service';
@@ -26,6 +26,11 @@ export class InteractionsGateway {
 			return;
 		}
 
+		if (interaction.member instanceof GuildMember && interaction.member.voice.channel) {
+			await this.messageService.sendError(interaction, 'You need to be in a voice channel to play the last played song!');
+			return;
+		}
+
 		try {
 			const reply = await this.musicService.playLastPlayedSong(interaction);
 
@@ -42,6 +47,11 @@ export class InteractionsGateway {
 		}
 
 		if (interaction.customId != MusicInteractionConstant.PLAY_PAUSE) {
+			return;
+		}
+
+		if (interaction.member instanceof GuildMember && interaction.member.voice.channel) {
+			await this.messageService.sendError(interaction, 'You need to be in a voice channel to toggle play / pause!');
 			return;
 		}
 
@@ -64,6 +74,11 @@ export class InteractionsGateway {
 			return;
 		}
 
+		if (interaction.member instanceof GuildMember && interaction.member.voice.channel) {
+			await this.messageService.sendError(interaction, 'You need to be in a voice channel to skip the song!');
+			return;
+		}
+
 		try {
 			const reply = this.musicService.skip(interaction);
 
@@ -80,6 +95,11 @@ export class InteractionsGateway {
 		}
 
 		if (interaction.customId != MusicInteractionConstant.REPEAT) {
+			return;
+		}
+
+		if (interaction.member instanceof GuildMember && interaction.member.voice.channel) {
+			await this.messageService.sendError(interaction, 'You need to be in a voice channel to repeat the queue!');
 			return;
 		}
 
@@ -102,6 +122,11 @@ export class InteractionsGateway {
 			return;
 		}
 
+		if (interaction.member instanceof GuildMember && interaction.member.voice.channel) {
+			await this.messageService.sendError(interaction, 'You need to be in a voice channel to repeat the queue!');
+			return;
+		}
+
 		try {
 			const reply = this.musicService.toggleLoopAll(interaction);
 
@@ -121,6 +146,11 @@ export class InteractionsGateway {
 			return;
 		}
 
+		if (interaction.member instanceof GuildMember && interaction.member.voice.channel) {
+			await this.messageService.sendError(interaction, 'You need to be in a voice channel to disconnect the bot!');
+			return;
+		}
+
 		try {
 			const reply = await this.musicService.disconnect(interaction);
 
@@ -137,6 +167,11 @@ export class InteractionsGateway {
 		}
 
 		if (interaction.customId != MusicInteractionConstant.STOP_DYNAMIC_PLAYER) {
+			return;
+		}
+
+		if (interaction.member instanceof GuildMember && interaction.member.voice.channel) {
+			await this.messageService.sendError(interaction, 'You need to be in a voice channel to stop the dynamic player!');
 			return;
 		}
 
