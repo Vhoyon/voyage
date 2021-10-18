@@ -116,17 +116,15 @@ export class PlayerService extends Player {
 		});
 
 		this.on('error', (error, queue) => {
-			if (typeof error == 'string') {
-				const queueData = queue.data as QueueData;
+			const queueData = queue.data as QueueData;
 
-				if (queueData.textChannel && error == 'Status code: 410') {
-					this.messageService.sendError(
-						queueData.textChannel,
-						`Couldn't play the given query. If you used a link, make sure the video / playlist is not private or age restricted!`,
-					);
-				} else {
-					this.logger.error(`Error: "${error}" in guild named "${queue.guild?.name}"`);
-				}
+			if (queueData.textChannel && error == 'Status code: 410') {
+				this.messageService.sendError(
+					queueData.textChannel,
+					`Couldn't play the given query. If you used a link, make sure the video / playlist is not private or age restricted!`,
+				);
+			} else {
+				this.logger.error(`Error: "${error}" in guild named "${queue.guild?.name}"`);
 			}
 		});
 	}
