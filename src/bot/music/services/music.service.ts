@@ -217,24 +217,26 @@ export class MusicService {
 	async setVolume(of: MusicContext, volume: number) {
 		const queue = this.player.getQueueOf(of);
 
-		const guildId = of.guild!.id;
+		const guildId = of.guild?.id;
 
-		try {
-			await this.prisma.musicSetting.updateMany({
-				data: {
-					volume,
-				},
-				where: {
-					guild: {
-						guildId,
+		if (guildId) {
+			try {
+				await this.prisma.musicSetting.updateMany({
+					data: {
+						volume,
 					},
-					volume: {
-						not: volume,
+					where: {
+						guild: {
+							guildId,
+						},
+						volume: {
+							not: volume,
+						},
 					},
-				},
-			});
-		} catch (error) {
-			this.logger.error(error);
+				});
+			} catch (error) {
+				this.logger.error(error);
+			}
 		}
 
 		queue?.setVolume(volume);
