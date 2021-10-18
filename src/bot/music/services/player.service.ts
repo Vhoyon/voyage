@@ -522,17 +522,12 @@ export class PlayerService extends Player {
 
 		let updater: () => void;
 
-		const channel = message.channel;
 		let messageToReplace = message;
 
 		switch (type) {
 			case DynamicPlayerType.PINNED:
 				updater = async () => {
-					const newPlayerMessage = await this.messageService.replace(
-						channel,
-						messageToReplace,
-						this.createNowPlayingWidget(queue, buttonOptions),
-					);
+					const newPlayerMessage = await this.messageService.replace(messageToReplace, this.createNowPlayingWidget(queue, buttonOptions));
 
 					if (queueData.dynamicPlayer) {
 						queueData.dynamicPlayer.playerMessage = newPlayerMessage;
