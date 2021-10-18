@@ -39,10 +39,10 @@ export enum DynamicPlayerType {
 	PINNED = 'Pinned',
 }
 
-export type DynamicPlayerOptions = Partial<{
-	type: DynamicPlayerType;
-	delay: number;
-}>;
+export type DynamicPlayerOptions = {
+	type?: DynamicPlayerType;
+	delay?: number;
+};
 
 @Injectable()
 export class PlayerService extends Player {

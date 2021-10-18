@@ -45,7 +45,10 @@ export class MusicGateway {
 
 		try {
 			await this.musicService.play(parsed.content, message, {
-				type: playerType,
+				sendMessages: true,
+				dynamicPlayerOptions: {
+					type: playerType,
+				},
 			});
 		} catch (error) {
 			this.logger.error(error, error instanceof TypeError ? error.stack : undefined);

@@ -2,14 +2,29 @@ import { InformError } from '$/bot/common/error/inform-error';
 import { MessageService, SendableOptions } from '$/bot/common/message.service';
 import { PrismaService } from '$common/prisma/prisma.service';
 import { parseMsIntoTime, parseTimeIntoSeconds } from '$common/utils/funcs';
+import { MusicSetting } from '.prisma/client';
 import { bold, inlineCode } from '@discordjs/builders';
 import { Injectable, Logger } from '@nestjs/common';
-import { RepeatMode, Song } from 'discord-music-player';
+import { Playlist, Queue, RepeatMode, Song } from 'discord-music-player';
 import { Message } from 'discord.js';
 import { MAXIMUM as VOLUME_MAXIMUM } from '../dtos/volume.dto';
 import { DynamicPlayerOptions, MusicContext, PlayerService, QueueData, SongData } from './player.service';
 
 export const DEFAULT_VIEW_QUEUED_SONG = 10;
+
+export type PlayOptions = {
+	sendMessages?: boolean;
+	dynamicPlayerOptions?: DynamicPlayerOptions;
+};
+
+export type PlayQueryOptions = {
+	query: string;
+	queue: Queue;
+	message: Message;
+	botMessage: Message | undefined;
+	musicSettings: MusicSetting;
+	options?: PlayOptions;
+};
 
 @Injectable()
 export class MusicService {
@@ -25,7 +40,7 @@ export class MusicService {
 		});
 	}
 
-	async play(query: string, message: Message, dynamicPlayerOptions?: DynamicPlayerOptions) {
+	async play(query: string, message: Message, options?: PlayOptions) {
 		if (!message.guild) {
 			return;
 		}
@@ -39,120 +54,163 @@ export class MusicService {
 
 		const isQuerySong = !query.includes('/playlist');
 
-		const createSongData = (): SongData => ({
-			query,
-		});
+		let botMessage: Message | undefined;
 
-		const botMessage = await this.messageService.send(message, bold(`Searching for ${inlineCode(query)}...`));
+		if (options?.sendMessages) {
+			botMessage = await this.messageService.send(message, bold(`Searching for ${inlineCode(query)}...`));
+		}
+
+		if (isQuerySong) {
+			await this.playSong({ query, queue, message, botMessage, musicSettings, options });
+		} else {
+			await this.playPlaylist({ query, queue, message, botMessage, musicSettings, options });
+		}
+	}
+
+	protected createSongData(query: string): SongData {
+		return {
+			query,
+		};
+	}
+
+	protected async playSong({ query, queue, message, botMessage, musicSettings, options }: PlayQueryOptions) {
+		let song: Song;
+
+		try {
+			song = await queue.play(query, {
+				requestedBy: message.author,
+			});
+		} catch (error) {
+			if (botMessage) {
+				await this.messageService.replace(
+					message,
+					botMessage,
+					`Couldn't find a match for the query ${inlineCode(query)}. If you used a link, make sure the video / playlist is not private!`,
+					'error',
+				);
+			}
+
+			return;
+		}
+
+		song.setData(this.createSongData(query));
 
 		const hadSongs = queue.songs.length;
 
-		const playerButtons = this.player.createPlayerButtons();
-		const commonOptions: SendableOptions = {
-			components: [...playerButtons],
-		};
+		if (hadSongs) {
+			if (botMessage) {
+				const playerButtons = this.player.createPlayerButtons();
 
-		try {
-			if (isQuerySong) {
-				const song = await queue.play(query, {
-					requestedBy: message.author,
-				});
-
-				song.setData(createSongData());
-
-				if (hadSongs) {
-					await this.messageService.replace(message, botMessage, {
-						...commonOptions,
-						title: `Added song ${inlineCode(song.name)} to the queue!`,
-						thumbnail: {
-							url: song.thumbnail,
+				await this.messageService.replace(message, botMessage, {
+					title: `Added song ${inlineCode(song.name)} to the queue!`,
+					thumbnail: {
+						url: song.thumbnail,
+					},
+					fields: [
+						{
+							name: 'Author',
+							value: inlineCode(song.author),
+							inline: true,
 						},
-						fields: [
-							{
-								name: 'Author',
-								value: inlineCode(song.author),
-								inline: true,
-							},
-							{
-								name: 'Duration',
-								value: inlineCode(song.duration),
-								inline: true,
-							},
-							{
-								name: 'Volume',
-								value: `${musicSettings.volume}/${VOLUME_MAXIMUM}`,
-								inline: true,
-							},
-						],
-						url: song.url,
-					});
-				} else {
-					(queue.data as QueueData).lastPlayedSong = song;
-
-					const nowPlayingWidget = this.player.createNowPlayingWidget(queue, {
-						showStopDynamicPlayer: !!dynamicPlayerOptions?.type,
-					});
-
-					const playerMessage = await this.messageService.replace(message, botMessage, nowPlayingWidget);
-
-					if (dynamicPlayerOptions?.type) {
-						await this.player.setDynamic(queue, playerMessage, dynamicPlayerOptions);
-					}
-				}
-			} else {
-				const playlist = await queue.playlist(query, {
-					requestedBy: message.author,
+						{
+							name: 'Duration',
+							value: inlineCode(song.duration),
+							inline: true,
+						},
+						{
+							name: 'Volume',
+							value: `${musicSettings.volume}/${VOLUME_MAXIMUM}`,
+							inline: true,
+						},
+					],
+					url: song.url,
+					components: [...playerButtons],
 				});
+			}
+		} else {
+			(queue.data as QueueData).lastPlayedSong = song;
 
-				playlist.songs.forEach((s) => s.setData(createSongData()));
+			if (botMessage) {
+				const nowPlayingWidget = this.player.createNowPlayingWidget(queue, {
+					showStopDynamicPlayer: !!options?.dynamicPlayerOptions?.type,
+				});
+				const playerMessage = await this.messageService.replace(message, botMessage, nowPlayingWidget);
 
-				if (hadSongs) {
-					const totalDuration = playlist.songs.reduce((acc, song) => acc + song.millisecons, 0);
-					const formattedTotalDuration = parseMsIntoTime(totalDuration);
-
-					await this.messageService.replace(message, botMessage, {
-						...commonOptions,
-						title: `Added playlist ${inlineCode(playlist.name)}!`,
-						fields: [
-							{
-								name: 'Songs Count',
-								value: inlineCode(playlist.songs.length.toString()),
-								inline: true,
-							},
-							{
-								name: 'Total Duration',
-								value: inlineCode(formattedTotalDuration),
-								inline: true,
-							},
-							{
-								name: 'Volume',
-								value: `${musicSettings.volume}/${VOLUME_MAXIMUM}`,
-								inline: true,
-							},
-						],
-						url: playlist.url,
-					});
-				} else {
-					(queue.data as QueueData).lastPlayedSong = playlist.songs[0];
-
-					const nowPlayingWidget = this.player.createNowPlayingWidget(queue, {
-						showStopDynamicPlayer: !!dynamicPlayerOptions?.type,
-					});
-
-					const playerMessage = await this.messageService.replace(message, botMessage, nowPlayingWidget);
-
-					if (dynamicPlayerOptions?.type) {
-						await this.player.setDynamic(queue, playerMessage, dynamicPlayerOptions);
-					}
+				if (options?.dynamicPlayerOptions?.type) {
+					await this.player.setDynamic(queue, playerMessage, options?.dynamicPlayerOptions);
 				}
 			}
+		}
+	}
+
+	protected async playPlaylist({ query, queue, message, botMessage, musicSettings, options }: PlayQueryOptions) {
+		let playlist: Playlist;
+
+		try {
+			playlist = await queue.playlist(query, {
+				requestedBy: message.author,
+			});
 		} catch (error) {
-			await this.messageService.replace(
-				message,
-				botMessage,
-				`Couldn't find a match for the query ${inlineCode(query)}. If you used a link, make sure the video / playlist is not private!`,
-				'error',
-			);
+			if (botMessage) {
+				await this.messageService.replace(
+					message,
+					botMessage,
+					`Couldn't find a match for the query ${inlineCode(query)}. If you used a link, make sure the video / playlist is not private!`,
+					'error',
+				);
+			}
+
+			return;
+		}
+
+		playlist.songs.forEach((s) => s.setData(this.createSongData(query)));
+
+		const hadSongs = queue.songs.length;
+
+		if (hadSongs) {
+			if (botMessage) {
+				const playerButtons = this.player.createPlayerButtons();
+
+				const totalDuration = playlist.songs.reduce((acc, song) => acc + song.millisecons, 0);
+				const formattedTotalDuration = parseMsIntoTime(totalDuration);
+
+				await this.messageService.replace(message, botMessage, {
+					title: `Added playlist ${inlineCode(playlist.name)}!`,
+					fields: [
+						{
+							name: 'Songs Count',
+							value: inlineCode(playlist.songs.length.toString()),
+							inline: true,
+						},
+						{
+							name: 'Total Duration',
+							value: inlineCode(formattedTotalDuration),
+							inline: true,
+						},
+						{
+							name: 'Volume',
+							value: `${musicSettings.volume}/${VOLUME_MAXIMUM}`,
+							inline: true,
+						},
+					],
+					url: playlist.url,
+					components: [...playerButtons],
+				});
+			}
+		} else {
+			(queue.data as QueueData).lastPlayedSong = playlist.songs[0];
+
+			if (botMessage) {
+				const nowPlayingWidget = this.player.createNowPlayingWidget(queue, {
+					showStopDynamicPlayer: !!options?.dynamicPlayerOptions?.type,
+				});
+
+				const playerMessage = await this.messageService.replace(message, botMessage, nowPlayingWidget);
+
+				if (options?.dynamicPlayerOptions?.type) {
+					await this.player.setDynamic(queue, playerMessage, options?.dynamicPlayerOptions);
+				}
+			}
 		}
 	}
 
