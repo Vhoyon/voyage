@@ -496,8 +496,8 @@ export class PlayerService extends Player {
 		}
 	}
 
-	async setDynamic(context: MusicContext, message: Message, options?: DynamicPlayerOptions) {
-		const queue = this.getQueueOf(context);
+	async setDynamic(message: Message, options?: DynamicPlayerOptions & { context?: ChannelContext }) {
+		const queue = this.getQueueOf(message);
 
 		if (!this.hasQueueAndPlaying(queue)) {
 			throw new InformError(`Cannot set a dynamic player when there is nothing playing!`);
@@ -527,7 +527,9 @@ export class PlayerService extends Player {
 		switch (type) {
 			case DynamicPlayerType.PINNED:
 				updater = async () => {
-					const newPlayerMessage = await this.messageService.replace(messageToReplace, this.createNowPlayingWidget(queue, buttonOptions));
+					const newPlayerMessage = await this.messageService.replace(messageToReplace, this.createNowPlayingWidget(queue, buttonOptions), {
+						context: options?.context,
+					});
 
 					if (queueData.dynamicPlayer) {
 						queueData.dynamicPlayer.playerMessage = newPlayerMessage;

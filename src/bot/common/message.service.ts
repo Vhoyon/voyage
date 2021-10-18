@@ -158,19 +158,33 @@ export class MessageService {
 		return message.edit({ embeds: [newEmbed], options });
 	}
 
-	async replace(messageToReplace: Message, data: SendableOptions): Promise<Message>;
-	async replace(messageToReplace: Message, message: string, type?: EmbedType): Promise<Message>;
+	async replace(message: Message, data: SendableOptions, options?: { context?: CommandContext }): Promise<Message>;
+	async replace(message: Message, data: string, options?: { context?: CommandContext; type?: EmbedType }): Promise<Message>;
 
-	async replace(messageToReplace: Message, data: string | SendableOptions, type?: EmbedType) {
-		const [finalType, options] = typeof data != 'string' ? [data.type, data] : [type];
+	async replace(message: Message, data: SendableOptions, options?: { context?: ChannelContext }): Promise<Message | APIMessage | undefined>;
+	async replace(
+		message: Message,
+		data: string,
+		options?: { context?: ChannelContext; type?: EmbedType },
+	): Promise<Message | APIMessage | undefined>;
+
+	async replace(
+		message: Message,
+		data: string | SendableOptions,
+		replaceOptions?: {
+			context?: ChannelContext;
+			type?: EmbedType;
+		},
+	) {
+		const [finalType, options] = typeof data != 'string' ? [data.type, data] : [replaceOptions?.type];
 
 		const newEmbed = this.createEmbed(data, { type: finalType });
 
-		const channel = messageToReplace.channel;
+		const finalContext = replaceOptions?.context ?? message.channel;
 
-		messageToReplace.delete();
+		message.delete();
 
-		return this.sendEmbed(channel, newEmbed, options);
+		return this.sendEmbed(finalContext, newEmbed, options);
 	}
 
 	protected async sendEmbed(context: ChannelContext, embed: MessageEmbed, payload?: MessageOptions | InteractionReplyOptions) {

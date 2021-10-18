@@ -332,7 +332,7 @@ export class MusicService {
 			const message = await this.messageService.send(queueData.textChannel, nowPlayingWidget);
 
 			if (dynamicPlayerOptions?.type) {
-				await this.player.setDynamic(queue, message, dynamicPlayerOptions);
+				await this.player.setDynamic(message, dynamicPlayerOptions);
 			}
 		}
 	}
