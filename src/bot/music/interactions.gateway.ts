@@ -26,7 +26,7 @@ export class InteractionsGateway {
 			return;
 		}
 
-		if (interaction.member instanceof GuildMember && interaction.member.voice.channel) {
+		if (interaction.member instanceof GuildMember && !interaction.member.voice.channel) {
 			await this.messageService.sendError(interaction, 'You need to be in a voice channel to play the last played song!');
 			return;
 		}
@@ -50,7 +50,7 @@ export class InteractionsGateway {
 			return;
 		}
 
-		if (interaction.member instanceof GuildMember && interaction.member.voice.channel) {
+		if (interaction.member instanceof GuildMember && !interaction.member.voice.channel) {
 			await this.messageService.sendError(interaction, 'You need to be in a voice channel to toggle play / pause!');
 			return;
 		}
@@ -74,7 +74,7 @@ export class InteractionsGateway {
 			return;
 		}
 
-		if (interaction.member instanceof GuildMember && interaction.member.voice.channel) {
+		if (interaction.member instanceof GuildMember && !interaction.member.voice.channel) {
 			await this.messageService.sendError(interaction, 'You need to be in a voice channel to skip the song!');
 			return;
 		}
@@ -98,7 +98,7 @@ export class InteractionsGateway {
 			return;
 		}
 
-		if (interaction.member instanceof GuildMember && interaction.member.voice.channel) {
+		if (interaction.member instanceof GuildMember && !interaction.member.voice.channel) {
 			await this.messageService.sendError(interaction, 'You need to be in a voice channel to repeat the queue!');
 			return;
 		}
@@ -122,7 +122,7 @@ export class InteractionsGateway {
 			return;
 		}
 
-		if (interaction.member instanceof GuildMember && interaction.member.voice.channel) {
+		if (interaction.member instanceof GuildMember && !interaction.member.voice.channel) {
 			await this.messageService.sendError(interaction, 'You need to be in a voice channel to repeat the queue!');
 			return;
 		}
@@ -146,7 +146,7 @@ export class InteractionsGateway {
 			return;
 		}
 
-		if (interaction.member instanceof GuildMember && interaction.member.voice.channel) {
+		if (interaction.member instanceof GuildMember && !interaction.member.voice.channel) {
 			await this.messageService.sendError(interaction, 'You need to be in a voice channel to disconnect the bot!');
 			return;
 		}
@@ -170,7 +170,7 @@ export class InteractionsGateway {
 			return;
 		}
 
-		if (interaction.member instanceof GuildMember && interaction.member.voice.channel) {
+		if (interaction.member instanceof GuildMember && !interaction.member.voice.channel) {
 			await this.messageService.sendError(interaction, 'You need to be in a voice channel to stop the dynamic player!');
 			return;
 		}
