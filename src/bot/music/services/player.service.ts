@@ -1,14 +1,23 @@
 import { InformError } from '$/bot/common/error/inform-error';
-import { GuildChannelsContext, MessageService, SendableOptions } from '$/bot/common/message.service';
+import { ChannelContext, GuildChannelsContext, MessageService, SendableOptions } from '$/bot/common/message.service';
 import { EnvironmentConfig } from '$common/configs/env.validation';
 import { PrismaService } from '$common/prisma/prisma.service';
-import { parseMsIntoTime } from '$common/utils/funcs';
+import { CallbackResult } from '$common/utils/types';
 import { inlineCode } from '@discordjs/builders';
 import { Injectable, Logger } from '@nestjs/common';
-import { MusicSetting } from '@prisma/client';
 import { Player, Playlist, Queue, RepeatMode, Song } from 'discord-music-player';
 import { DiscordClientProvider } from 'discord-nestjs';
-import { EmbedFieldData, Guild, InteractionButtonOptions, Message, MessageActionRow, MessageButton, TextChannel } from 'discord.js';
+import {
+	EmbedFieldData,
+	Guild,
+	GuildChannelResolvable,
+	InteractionButtonOptions,
+	Message,
+	MessageActionRow,
+	MessageButton,
+	TextChannel,
+	User,
+} from 'discord.js';
 import { MAXIMUM as VOLUME_MAXIMUM } from '../dtos/volume.dto';
 import { MusicInteractionConstant } from '../music.constant';
 
@@ -26,22 +35,37 @@ export type SongData = {
 
 export type MusicContext = Guild | GuildChannelsContext | Queue;
 
-export type PlayerButtonsOptions = Partial<{
-	showStopDynamicPlayer: boolean;
-}>;
-
-export type PlayOptions = {
-	sendMessages?: boolean;
-	dynamicPlayerOptions?: DynamicPlayerOptions;
+export type PlayerButtonsOptions = {
+	dynamicPlayerType?: DynamicPlayerType;
 };
 
-export type PlayMusicOptions = {
+export type PlaySongCallbacks<T> = {
+	onSongSearch?: () => CallbackResult<T>;
+	onSongSearchError?: (searchContext: T) => CallbackResult<T>;
+	onSongPlay?: (searchContext: T, song: Song) => CallbackResult<T>;
+	onSongAdd?: (searchContext: T, song: Song) => CallbackResult<T>;
+};
+
+export type PlayPlaylistCallbacks<T> = {
+	onPlaylistSearch?: () => CallbackResult<T>;
+	onPlaylistSearchError?: (searchContext: T) => CallbackResult<T>;
+	onPlaylistPlay?: (searchContext: T, playlist: Playlist) => CallbackResult<T>;
+	onPlaylistAdd?: (searchContext: T, playlist: Playlist) => CallbackResult<T>;
+};
+
+export type PlayMusicCallbacks<SongType, PlaylistType> = PlaySongCallbacks<SongType> & PlayPlaylistCallbacks<PlaylistType>;
+
+export type PlayMusicOptions<
+	SongType,
+	PlaylistType,
+	C extends PlayMusicCallbacks<SongType, PlaylistType> = PlayMusicCallbacks<SongType, PlaylistType>,
+> = {
 	query: string;
 	queue: Queue;
-	message: Message;
-	botMessage: Message | undefined;
-	musicSettings: MusicSetting;
-	options?: PlayOptions;
+	voiceChannel: GuildChannelResolvable;
+	volume: number;
+	requester: User;
+	callbacks?: C;
 };
 
 export type DynamicPlayerData = {
@@ -162,22 +186,27 @@ export class PlayerService extends Player {
 			});
 		}
 
-		const isNewQueue = !queue;
+		let finalQueue: Queue;
 
-		const finalQueue =
-			queue ??
-			this.createQueue(guild.id, {
+		if (queue) {
+			finalQueue = queue;
+		} else {
+			finalQueue = this.createQueue(guild.id, {
 				data: {
 					textChannel,
 				} as QueueData,
-				volume: guildMusicSettings.volume,
 			});
+		}
 
-		return { queue: finalQueue, musicSettings: guildMusicSettings, isNewQueue };
+		return { queue: finalQueue, musicSettings: guildMusicSettings, isNewQueue: !queue };
+	}
+
+	isQueuePlaying(queue: Queue) {
+		return !!queue.nowPlaying;
 	}
 
 	hasQueueAndPlaying(queue: Queue | null | undefined): queue is Queue {
-		const isPlaying = !!queue?.nowPlaying;
+		const isPlaying = !!queue && this.isQueuePlaying(queue);
 
 		if (queue) {
 			queue.isPlaying = isPlaying;
@@ -216,7 +245,7 @@ export class PlayerService extends Player {
 			},
 		];
 
-		if (options?.showStopDynamicPlayer) {
+		if (options?.dynamicPlayerType) {
 			queueInteractions.push({
 				customId: MusicInteractionConstant.STOP_DYNAMIC_PLAYER,
 				emoji: '🛑',
@@ -313,20 +342,24 @@ export class PlayerService extends Player {
 				value: `${queue.volume}/${VOLUME_MAXIMUM}`,
 				inline: true,
 			},
-			{
-				name: 'Progress',
-				value: inlineCode(progressBar),
-			},
 		];
 
 		const queueData = queue.data as QueueData;
 
-		if (queueData.dynamicPlayer?.type) {
+		const dynamicPlayerType = options?.dynamicPlayerType ?? queueData.dynamicPlayer?.type;
+
+		if (dynamicPlayerType) {
 			fields.push({
 				name: 'Dynamic Player Type',
-				value: queueData.dynamicPlayer.type,
+				value: dynamicPlayerType,
+				inline: true,
 			});
 		}
+
+		fields.push({
+			name: 'Progress',
+			value: inlineCode(progressBar),
+		});
 
 		return {
 			title: `Now playing : ${inlineCode(song.name)}!`,
@@ -339,7 +372,9 @@ export class PlayerService extends Player {
 		} as SendableOptions;
 	}
 
-	async playMusic(data: PlayMusicOptions) {
+	async playMusic<SongType, PlaylistType>(data: PlayMusicOptions<SongType, PlaylistType>) {
+		await data.queue.join(data.voiceChannel);
+
 		const isQuerySong = !data.query.includes('/playlist');
 
 		if (isQuerySong) {
@@ -355,21 +390,20 @@ export class PlayerService extends Player {
 		};
 	}
 
-	protected async playSong({ query, queue, message, botMessage, musicSettings, options }: PlayMusicOptions) {
+	protected async playSong<T>({ query, queue, volume, requester, callbacks }: PlayMusicOptions<T, undefined, PlaySongCallbacks<T>>) {
 		let song: Song;
+
+		const searchContext = await callbacks?.onSongSearch?.();
+
+		const hadSongs = queue.songs.length;
 
 		try {
 			song = await queue.play(query, {
-				requestedBy: message.author,
+				requestedBy: requester,
 			});
 		} catch (error) {
-			if (botMessage) {
-				await this.messageService.replace(
-					message,
-					botMessage,
-					`Couldn't find a match for the query ${inlineCode(query)}. If you used a link, make sure the video is not private!`,
-					'error',
-				);
+			if (searchContext) {
+				await callbacks?.onSongSearchError?.(searchContext);
 			}
 
 			return;
@@ -377,69 +411,41 @@ export class PlayerService extends Player {
 
 		song.setData(this.createSongData(query));
 
-		const hadSongs = queue.songs.length;
-
 		if (hadSongs) {
-			if (botMessage) {
-				const playerButtons = this.createPlayerButtons();
-
-				await this.messageService.replace(message, botMessage, {
-					title: `Added song ${inlineCode(song.name)} to the queue!`,
-					thumbnail: {
-						url: song.thumbnail,
-					},
-					fields: [
-						{
-							name: 'Author',
-							value: inlineCode(song.author),
-							inline: true,
-						},
-						{
-							name: 'Duration',
-							value: inlineCode(song.duration),
-							inline: true,
-						},
-						{
-							name: 'Volume',
-							value: `${musicSettings.volume}/${VOLUME_MAXIMUM}`,
-							inline: true,
-						},
-					],
-					url: song.url,
-					components: [...playerButtons],
-				});
+			if (searchContext) {
+				await callbacks?.onSongAdd?.(searchContext, song);
 			}
 		} else {
+			queue.setVolume(volume);
+
 			(queue.data as QueueData).lastPlayedSong = song;
 
-			if (botMessage) {
-				const nowPlayingWidget = this.createNowPlayingWidget(queue, {
-					showStopDynamicPlayer: !!options?.dynamicPlayerOptions?.type,
-				});
-				const playerMessage = await this.messageService.replace(message, botMessage, nowPlayingWidget);
-
-				if (options?.dynamicPlayerOptions?.type) {
-					await this.setDynamic(queue, playerMessage, options?.dynamicPlayerOptions);
-				}
+			if (searchContext) {
+				await callbacks?.onSongPlay?.(searchContext, song);
 			}
 		}
 	}
 
-	protected async playPlaylist({ query, queue, message, botMessage, musicSettings, options }: PlayMusicOptions) {
+	protected async playPlaylist<T>({
+		query,
+		queue,
+		volume,
+		requester,
+		callbacks,
+	}: PlayMusicOptions<undefined, T, PlayPlaylistCallbacks<T>>) {
 		let playlist: Playlist;
+
+		const searchContext = await callbacks?.onPlaylistSearch?.();
+
+		const hadSongs = queue.songs.length;
 
 		try {
 			playlist = await queue.playlist(query, {
-				requestedBy: message.author,
+				requestedBy: requester,
 			});
 		} catch (error) {
-			if (botMessage) {
-				await this.messageService.replace(
-					message,
-					botMessage,
-					`Couldn't find a match for the query ${inlineCode(query)}. If you used a link, make sure the playlist is not private!`,
-					'error',
-				);
+			if (searchContext) {
+				await callbacks?.onPlaylistSearchError?.(searchContext);
 			}
 
 			return;
@@ -447,51 +453,17 @@ export class PlayerService extends Player {
 
 		playlist.songs.forEach((s) => s.setData(this.createSongData(query)));
 
-		const hadSongs = queue.songs.length;
-
 		if (hadSongs) {
-			if (botMessage) {
-				const playerButtons = this.createPlayerButtons();
-
-				const totalDuration = playlist.songs.reduce((acc, song) => acc + song.millisecons, 0);
-				const formattedTotalDuration = parseMsIntoTime(totalDuration);
-
-				await this.messageService.replace(message, botMessage, {
-					title: `Added playlist ${inlineCode(playlist.name)}!`,
-					fields: [
-						{
-							name: 'Songs Count',
-							value: inlineCode(playlist.songs.length.toString()),
-							inline: true,
-						},
-						{
-							name: 'Total Duration',
-							value: inlineCode(formattedTotalDuration),
-							inline: true,
-						},
-						{
-							name: 'Volume',
-							value: `${musicSettings.volume}/${VOLUME_MAXIMUM}`,
-							inline: true,
-						},
-					],
-					url: playlist.url,
-					components: [...playerButtons],
-				});
+			if (searchContext) {
+				await callbacks?.onPlaylistAdd?.(searchContext, playlist);
 			}
 		} else {
+			queue.setVolume(volume);
+
 			(queue.data as QueueData).lastPlayedSong = playlist.songs[0];
 
-			if (botMessage) {
-				const nowPlayingWidget = this.createNowPlayingWidget(queue, {
-					showStopDynamicPlayer: !!options?.dynamicPlayerOptions?.type,
-				});
-
-				const playerMessage = await this.messageService.replace(message, botMessage, nowPlayingWidget);
-
-				if (options?.dynamicPlayerOptions?.type) {
-					await this.setDynamic(queue, playerMessage, options?.dynamicPlayerOptions);
-				}
+			if (searchContext) {
+				await callbacks?.onPlaylistPlay?.(searchContext, playlist);
 			}
 		}
 	}
@@ -517,7 +489,7 @@ export class PlayerService extends Player {
 		const delay = options?.delay ?? this.env.DISCORD_PLAYER_UPDATE_INTERVAL;
 
 		const buttonOptions: PlayerButtonsOptions = {
-			showStopDynamicPlayer: true,
+			dynamicPlayerType: type,
 		};
 
 		let updater: () => void;
@@ -531,11 +503,13 @@ export class PlayerService extends Player {
 						context: options?.context,
 					});
 
-					if (queueData.dynamicPlayer) {
-						queueData.dynamicPlayer.playerMessage = newPlayerMessage;
-					}
+					if (newPlayerMessage instanceof Message) {
+						if (queueData.dynamicPlayer) {
+							queueData.dynamicPlayer.playerMessage = newPlayerMessage;
+						}
 
-					messageToReplace = newPlayerMessage;
+						messageToReplace = newPlayerMessage;
+					}
 				};
 				break;
 			case DynamicPlayerType.UPDATEABLE:
@@ -564,11 +538,11 @@ export class PlayerService extends Player {
 
 		clearInterval(interval);
 
+		delete queueData.dynamicPlayer;
+
 		if (playerMessage) {
 			await this.messageService.edit(playerMessage, this.createNowPlayingWidget(queue));
 		}
-
-		delete queueData.dynamicPlayer;
 
 		return type;
 	}

@@ -6,7 +6,7 @@ import { bold, inlineCode } from '@discordjs/builders';
 import { Injectable, Logger } from '@nestjs/common';
 import { RepeatMode, Song } from 'discord-music-player';
 import { Guild, Message, TextChannel } from 'discord.js';
-import { DynamicPlayerOptions, MusicContext, PlayerService, PlayOptions, QueueData, SongData } from './player.service';
+import { DynamicPlayerOptions, MusicContext, PlayerService, PlayMusicCallbacks, QueueData, SongData } from './player.service';
 
 export const DEFAULT_VIEW_QUEUED_SONG = 10;
 
@@ -28,7 +28,7 @@ export class MusicService {
 		});
 	}
 
-	async play(query: string, message: Message, options?: PlayOptions) {
+	async play<SongType, PlaylistType>(query: string, message: Message, options?: PlayMusicCallbacks<SongType, PlaylistType>) {
 		if (!message.guild) {
 			throw new InformError(`I can't play music from this channel! Make sure to be in a server.`);
 		}
@@ -41,15 +41,14 @@ export class MusicService {
 			message.channel instanceof TextChannel ? message.channel : undefined,
 		);
 
-		await queue.join(message.member.voice.channel);
-
-		let botMessage: Message | undefined;
-
-		if (options?.sendMessages) {
-			botMessage = await this.messageService.send(message, bold(`Searching for ${inlineCode(query)}...`));
-		}
-
-		return this.player.playMusic({ query, queue, message, botMessage, musicSettings, options });
+		return this.player.playMusic({
+			query,
+			queue,
+			voiceChannel: message.member.voice.channel,
+			volume: musicSettings.volume,
+			requester: message.author,
+			callbacks: options,
+		});
 	}
 
 	async setVolume(of: MusicContext, volume: number) {
@@ -323,7 +322,7 @@ export class MusicService {
 		}
 
 		const nowPlayingWidget = this.player.createNowPlayingWidget(queue, {
-			showStopDynamicPlayer: !!dynamicPlayerOptions?.type,
+			dynamicPlayerType: dynamicPlayerOptions?.type,
 		});
 
 		const queueData = queue.data as QueueData;

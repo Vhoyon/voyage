@@ -1,3 +1,5 @@
+import { parseMsIntoTime } from '$common/utils/funcs';
+import { bold, inlineCode } from '@discordjs/builders';
 import { Controller, Logger } from '@nestjs/common';
 import { Content, Context, OnCommand, TransformPipe, UseGuards, UsePipes, ValidationPipe } from 'discord-nestjs';
 import { Message } from 'discord.js';
@@ -5,17 +7,21 @@ import { VParsedCommand } from 'vcommand-parser';
 import { MessageIsFromTextChannelGuard } from '../common/guards/message-is-from-textchannel.guard';
 import { MessageService } from '../common/message.service';
 import { QueueDto } from './dtos/queue.dto';
-import { VolumeDto } from './dtos/volume.dto';
+import { MAXIMUM as VOLUME_MAXIMUM, VolumeDto } from './dtos/volume.dto';
 import { MusicGuard } from './guards/music.guard';
 import { MusicService } from './services/music.service';
-import { DynamicPlayerType } from './services/player.service';
+import { DynamicPlayerType, PlayerService } from './services/player.service';
 
 @Controller()
 @UseGuards(MessageIsFromTextChannelGuard, MusicGuard)
 export class MusicGateway {
 	private readonly logger = new Logger(MusicGateway.name);
 
-	constructor(private readonly musicService: MusicService, private readonly messageService: MessageService) {}
+	constructor(
+		private readonly musicService: MusicService,
+		private readonly messageService: MessageService,
+		private readonly player: PlayerService,
+	) {}
 
 	@OnCommand({ name: 'play', aliases: ['p'] })
 	async onPlay(@Content() parsed: VParsedCommand, @Context() [message]: [Message]) {
@@ -43,11 +49,127 @@ export class MusicGateway {
 
 		const playerType = isPinned ? DynamicPlayerType.PINNED : isUpdateable && DynamicPlayerType.UPDATEABLE;
 
+		const query = parsed.content;
+
+		const onSearch = () => {
+			return this.messageService.send(message, bold(`Searching for ${inlineCode(query)}...`));
+		};
+
 		try {
-			await this.musicService.play(parsed.content, message, {
-				sendMessages: true,
-				dynamicPlayerOptions: {
-					type: playerType,
+			await this.musicService.play(query, message, {
+				onSongSearch: onSearch,
+				onPlaylistSearch: onSearch,
+				onSongSearchError: (searchMessage) => {
+					return this.messageService.replace(
+						searchMessage,
+						`Couldn't find a match for the query ${inlineCode(query)}. If you used a link, make sure the video is not private!`,
+						{
+							context: message,
+							type: 'error',
+						},
+					);
+				},
+				onPlaylistSearchError: (searchMessage) => {
+					return this.messageService.replace(
+						searchMessage,
+						`Couldn't find a match for the query ${inlineCode(query)}. If you used a link, make sure the playlist is not private!`,
+						{
+							context: message,
+							type: 'error',
+						},
+					);
+				},
+				onSongPlay: async (searchMessage) => {
+					const nowPlayingWidget = this.player.createNowPlayingWidget(searchMessage, {
+						dynamicPlayerType: playerType,
+					});
+
+					const playerMessage = await this.messageService.replace(searchMessage, nowPlayingWidget);
+
+					if (playerType) {
+						await this.player.setDynamic(playerMessage, { type: playerType });
+					}
+				},
+				onSongAdd: (searchMessage, song) => {
+					const playerButtons = this.player.createPlayerButtons();
+
+					return this.messageService.replace(
+						searchMessage,
+						{
+							title: `Added song ${inlineCode(song.name)} to the queue!`,
+							thumbnail: {
+								url: song.thumbnail,
+							},
+							fields: [
+								{
+									name: 'Author',
+									value: inlineCode(song.author),
+									inline: true,
+								},
+								{
+									name: 'Duration',
+									value: inlineCode(song.duration),
+									inline: true,
+								},
+								{
+									name: 'Volume',
+									value: `${song.queue.volume}/${VOLUME_MAXIMUM}`,
+									inline: true,
+								},
+							],
+							url: song.url,
+							components: [...playerButtons],
+						},
+						{
+							context: message,
+						},
+					);
+				},
+				onPlaylistPlay: async (searchMessage) => {
+					const nowPlayingWidget = this.player.createNowPlayingWidget(searchMessage, {
+						dynamicPlayerType: playerType,
+					});
+
+					const playerMessage = await this.messageService.replace(searchMessage, nowPlayingWidget);
+
+					if (playerType) {
+						await this.player.setDynamic(playerMessage, { type: playerType });
+					}
+				},
+				onPlaylistAdd: (searchMessage, playlist) => {
+					const playerButtons = this.player.createPlayerButtons();
+
+					const totalDuration = playlist.songs.reduce((acc, song) => acc + song.millisecons, 0);
+					const formattedTotalDuration = parseMsIntoTime(totalDuration);
+
+					return this.messageService.replace(
+						searchMessage,
+						{
+							title: `Added playlist ${inlineCode(playlist.name)}!`,
+							fields: [
+								{
+									name: 'Songs Count',
+									value: inlineCode(playlist.songs.length.toString()),
+									inline: true,
+								},
+								{
+									name: 'Total Duration',
+									value: inlineCode(formattedTotalDuration),
+									inline: true,
+								},
+								{
+									name: 'Volume',
+									value: `${playlist.queue.volume}/${VOLUME_MAXIMUM}`,
+									inline: true,
+								},
+							],
+							url: playlist.url,
+							components: [...playerButtons],
+						},
+						{
+							context: message,
+						},
+					);
 				},
 			});
 		} catch (error) {
