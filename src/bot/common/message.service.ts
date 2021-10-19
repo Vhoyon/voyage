@@ -155,7 +155,7 @@ export class MessageService {
 
 		const newEmbed = this.createEmbed(data, { type: finalType });
 
-		return message.edit({ embeds: [newEmbed], options });
+		return message.edit({ embeds: [newEmbed], ...options });
 	}
 
 	async replace(message: Message, data: SendableOptions, options?: { context?: CommandContext }): Promise<Message>;
