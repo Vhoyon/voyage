@@ -195,10 +195,14 @@ export class MessageService {
 				const interactionEmbed = isEphemeral ? embed : embed.addField('Action requested by', context.user.tag, true);
 
 				if (context.isButton()) {
-					await context.reply({
-						embeds: [interactionEmbed],
-						...payload,
-					});
+					try {
+						await context.reply({
+							embeds: [interactionEmbed],
+							...payload,
+						});
+					} catch (error) {
+						return;
+					}
 
 					if (!isEphemeral) {
 						const message = await context.fetchReply();
