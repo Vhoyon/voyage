@@ -2,7 +2,7 @@ import { Controller, Logger } from '@nestjs/common';
 import { Context, On } from 'discord-nestjs';
 import { GuildMember, Interaction, TextChannel } from 'discord.js';
 import { MessageService } from '../common/message.service';
-import { MusicInteractionConstant } from './music.constant';
+import { MusicInteractionConstant } from './constants/music.constant';
 import { MusicService } from './services/music.service';
 import { PlayerService } from './services/player.service';
 

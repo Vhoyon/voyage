@@ -18,8 +18,8 @@ import {
 	TextChannel,
 	User,
 } from 'discord.js';
+import { MusicInteractionConstant } from '../constants/music.constant';
 import { MAXIMUM as VOLUME_MAXIMUM } from '../dtos/volume.dto';
-import { MusicInteractionConstant } from '../music.constant';
 
 export type QueueData = {
 	textChannel?: TextChannel;
