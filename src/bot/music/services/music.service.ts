@@ -1,10 +1,10 @@
 import { InformError } from '$/bot/common/error/inform-error';
-import { MessageService, SendableOptions } from '$/bot/common/message.service';
+import { GuildChannelsContext, MessageService, SendableOptions } from '$/bot/common/message.service';
 import { PrismaService } from '$common/prisma/prisma.service';
 import { parseTimeIntoSeconds } from '$common/utils/funcs';
 import { bold, inlineCode } from '@discordjs/builders';
 import { Injectable, Logger } from '@nestjs/common';
-import { RepeatMode, Song } from 'discord-music-player';
+import { Queue, RepeatMode, Song } from 'discord-music-player';
 import { Guild, Message, TextChannel } from 'discord.js';
 import { DynamicPlayerOptions, MusicContext, PlayerService, PlayMusicCallbacks, QueueData, SongData } from './player.service';
 
@@ -20,12 +20,16 @@ export class MusicService {
 		private readonly messageService: MessageService,
 	) {
 		this.player.on('channelEmpty', async (queue) => {
-			const queueData = queue.data as QueueData;
+			const channel = this.getChannelContext(queue);
 
-			if (queueData.textChannel) {
-				this.messageService.sendInfo(queueData.textChannel, `Nobody's listening to me anymore, cya!`);
+			if (channel) {
+				this.messageService.sendInfo(channel, `Nobody's listening to me anymore, cya!`);
 			}
 		});
+	}
+
+	getChannelContext(context: MusicContext): GuildChannelsContext | undefined {
+		return context instanceof Guild ? undefined : context instanceof Queue ? (context.data as QueueData).textChannel : context;
 	}
 
 	async play<SongType, PlaylistType>(query: string, message: Message, options?: PlayMusicCallbacks<SongType, PlaylistType>) {
@@ -325,10 +329,10 @@ export class MusicService {
 			dynamicPlayerType: dynamicPlayerOptions?.type,
 		});
 
-		const queueData = queue.data as QueueData;
+		const channelContext = this.getChannelContext(context);
 
-		if (queueData.textChannel) {
-			const message = await this.messageService.send(queueData.textChannel, nowPlayingWidget);
+		if (channelContext) {
+			const message = await this.messageService.send(channelContext, nowPlayingWidget);
 
 			if (dynamicPlayerOptions?.type) {
 				await this.player.setDynamic(message, dynamicPlayerOptions);
