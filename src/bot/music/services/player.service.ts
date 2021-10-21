@@ -15,8 +15,10 @@ import {
 	Message,
 	MessageActionRow,
 	MessageButton,
+	StageChannel,
 	TextChannel,
 	User,
+	VoiceChannel,
 } from 'discord.js';
 import { MusicInteractionConstant } from '../constants/music.constant';
 import { MAXIMUM as VOLUME_MAXIMUM } from '../dtos/volume.dto';
@@ -55,17 +57,22 @@ export type PlayPlaylistCallbacks<T> = {
 
 export type PlayMusicCallbacks<SongType, PlaylistType> = PlaySongCallbacks<SongType> & PlayPlaylistCallbacks<PlaylistType>;
 
-export type PlayMusicOptions<
+export type PlayMusicOptions<SongType, PlaylistType> = PlayMusicCallbacks<SongType, PlaylistType> & {
+	/** This allows to setup the queue with the textChannel data property, therefore sending messages on different events. */
+	textChannel?: TextChannel;
+};
+
+export type PlayMusicData<
 	SongType,
 	PlaylistType,
-	C extends PlayMusicCallbacks<SongType, PlaylistType> = PlayMusicCallbacks<SongType, PlaylistType>,
+	Options extends PlayMusicOptions<SongType, PlaylistType> = PlayMusicOptions<SongType, PlaylistType>,
 > = {
 	query: string;
 	queue: Queue;
 	voiceChannel: GuildChannelResolvable;
 	volume: number;
 	requester: User;
-	callbacks?: C;
+	options?: Options;
 };
 
 export type DynamicPlayerData = {
@@ -372,7 +379,25 @@ export class PlayerService extends Player {
 		} as SendableOptions;
 	}
 
-	async playMusic<SongType, PlaylistType>(data: PlayMusicOptions<SongType, PlaylistType>) {
+	async play<SongType, PlaylistType>(
+		query: string,
+		voiceChannel: VoiceChannel | StageChannel,
+		requester: User,
+		options?: PlayMusicOptions<SongType, PlaylistType>,
+	) {
+		const { queue, musicSettings } = await this.getOrCreateQueueOf(voiceChannel.guild, options?.textChannel);
+
+		return this.playMusic({
+			query,
+			queue,
+			voiceChannel,
+			requester,
+			volume: musicSettings.volume,
+			options,
+		});
+	}
+
+	async playMusic<SongType, PlaylistType>(data: PlayMusicData<SongType, PlaylistType>) {
 		await data.queue.join(data.voiceChannel);
 
 		const isQuerySong = !data.query.includes('/playlist');
@@ -390,10 +415,10 @@ export class PlayerService extends Player {
 		};
 	}
 
-	protected async playSong<T>({ query, queue, volume, requester, callbacks }: PlayMusicOptions<T, undefined, PlaySongCallbacks<T>>) {
+	protected async playSong<T>({ query, queue, volume, requester, options }: PlayMusicData<T, undefined, PlaySongCallbacks<T>>) {
 		let song: Song;
 
-		const searchContext = await callbacks?.onSongSearch?.();
+		const searchContext = await options?.onSongSearch?.();
 
 		const hadSongs = queue.songs.length;
 
@@ -403,7 +428,7 @@ export class PlayerService extends Player {
 			});
 		} catch (error) {
 			if (searchContext) {
-				await callbacks?.onSongSearchError?.(searchContext);
+				await options?.onSongSearchError?.(searchContext);
 			}
 
 			return;
@@ -413,7 +438,7 @@ export class PlayerService extends Player {
 
 		if (hadSongs) {
 			if (searchContext) {
-				await callbacks?.onSongAdd?.(searchContext, song);
+				await options?.onSongAdd?.(searchContext, song);
 			}
 		} else {
 			queue.setVolume(volume);
@@ -421,21 +446,15 @@ export class PlayerService extends Player {
 			(queue.data as QueueData).lastPlayedSong = song;
 
 			if (searchContext) {
-				await callbacks?.onSongPlay?.(searchContext, song);
+				await options?.onSongPlay?.(searchContext, song);
 			}
 		}
 	}
 
-	protected async playPlaylist<T>({
-		query,
-		queue,
-		volume,
-		requester,
-		callbacks,
-	}: PlayMusicOptions<undefined, T, PlayPlaylistCallbacks<T>>) {
+	protected async playPlaylist<T>({ query, queue, volume, requester, options }: PlayMusicData<undefined, T, PlayPlaylistCallbacks<T>>) {
 		let playlist: Playlist;
 
-		const searchContext = await callbacks?.onPlaylistSearch?.();
+		const searchContext = await options?.onPlaylistSearch?.();
 
 		const hadSongs = queue.songs.length;
 
@@ -445,7 +464,7 @@ export class PlayerService extends Player {
 			});
 		} catch (error) {
 			if (searchContext) {
-				await callbacks?.onPlaylistSearchError?.(searchContext);
+				await options?.onPlaylistSearchError?.(searchContext);
 			}
 
 			return;
@@ -455,7 +474,7 @@ export class PlayerService extends Player {
 
 		if (hadSongs) {
 			if (searchContext) {
-				await callbacks?.onPlaylistAdd?.(searchContext, playlist);
+				await options?.onPlaylistAdd?.(searchContext, playlist);
 			}
 		} else {
 			queue.setVolume(volume);
@@ -463,7 +482,7 @@ export class PlayerService extends Player {
 			(queue.data as QueueData).lastPlayedSong = playlist.songs[0];
 
 			if (searchContext) {
-				await callbacks?.onPlaylistPlay?.(searchContext, playlist);
+				await options?.onPlaylistPlay?.(searchContext, playlist);
 			}
 		}
 	}

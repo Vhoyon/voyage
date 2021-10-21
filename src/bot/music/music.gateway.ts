@@ -4,6 +4,7 @@ import { Controller, Logger } from '@nestjs/common';
 import { Content, Context, OnCommand, TransformPipe, UseGuards, UsePipes, ValidationPipe } from 'discord-nestjs';
 import { Message } from 'discord.js';
 import { VParsedCommand } from 'vcommand-parser';
+import { InformError } from '../common/error/inform-error';
 import { MessageIsFromTextChannelGuard } from '../common/guards/message-is-from-textchannel.guard';
 import { MessageService } from '../common/message.service';
 import { QueueDto } from './dtos/queue.dto';
@@ -25,6 +26,11 @@ export class MusicGateway {
 
 	@OnCommand({ name: 'play', aliases: ['p'] })
 	async onPlay(@Content() parsed: VParsedCommand, @Context() [message]: [Message]) {
+		if (!message.guild) {
+			await this.messageService.sendError(message, `I can't play music from this channel! Make sure to be in a server.`);
+			return;
+		}
+
 		if (!parsed.content) {
 			await this.messageService.sendError(message, 'You need to provide a search query to this command!');
 			return;
@@ -173,8 +179,12 @@ export class MusicGateway {
 				},
 			});
 		} catch (error) {
-			this.logger.error(error, error instanceof TypeError ? error.stack : undefined);
-			await this.messageService.sendError(message, `An error happened!`);
+			if (error instanceof InformError) {
+				await this.messageService.sendError(message, error);
+			} else {
+				this.logger.error(error, error instanceof TypeError ? error.stack : undefined);
+				await this.messageService.sendError(message, `An error happened!`);
+			}
 		}
 	}
 
