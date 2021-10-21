@@ -10,8 +10,8 @@ import { MessageService } from '../common/message.service';
 import { QueueDto } from './dtos/queue.dto';
 import { MAXIMUM as VOLUME_MAXIMUM, VolumeDto } from './dtos/volume.dto';
 import { MusicGuard } from './guards/music.guard';
+import { DynamicPlayerType, PlayerService } from './player/player.service';
 import { MusicService } from './services/music.service';
-import { DynamicPlayerType, PlayerService } from './services/player.service';
 
 @Controller()
 @UseGuards(MessageIsFromTextChannelGuard, MusicGuard)

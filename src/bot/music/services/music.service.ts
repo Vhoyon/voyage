@@ -6,7 +6,8 @@ import { bold, inlineCode } from '@discordjs/builders';
 import { Injectable, Logger } from '@nestjs/common';
 import { Queue, RepeatMode, Song } from 'discord-music-player';
 import { Guild, Message, TextChannel } from 'discord.js';
-import { DynamicPlayerOptions, MusicContext, PlayerService, PlayMusicOptions, QueueData, SongData } from './player.service';
+import { PlayerService } from '../player/player.service';
+import { DynamicPlayerOptions, MusicContext, PlayMusicOptions, QueueData, SongData } from '../player/player.types';
 
 export const DEFAULT_VIEW_QUEUED_SONG = 10;
 

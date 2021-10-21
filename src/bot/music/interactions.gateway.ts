@@ -3,8 +3,8 @@ import { Context, On } from 'discord-nestjs';
 import { GuildMember, Interaction, TextChannel } from 'discord.js';
 import { MessageService } from '../common/message.service';
 import { MusicInteractionConstant } from './constants/music.constant';
+import { PlayerService } from './player/player.service';
 import { MusicService } from './services/music.service';
-import { PlayerService } from './services/player.service';
 
 @Controller()
 export class InteractionsGateway {

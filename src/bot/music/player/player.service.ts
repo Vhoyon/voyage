@@ -1,8 +1,7 @@
 import { InformError } from '$/bot/common/error/inform-error';
-import { ChannelContext, GuildChannelsContext, MessageService, SendableOptions } from '$/bot/common/message.service';
+import { ChannelContext, MessageService, SendableOptions } from '$/bot/common/message.service';
 import { EnvironmentConfig } from '$common/configs/env.validation';
 import { PrismaService } from '$common/prisma/prisma.service';
-import { CallbackResult } from '$common/utils/types';
 import { inlineCode } from '@discordjs/builders';
 import { Injectable, Logger } from '@nestjs/common';
 import { Player, Playlist, Queue, RepeatMode, Song } from 'discord-music-player';
@@ -10,7 +9,6 @@ import { DiscordClientProvider } from 'discord-nestjs';
 import {
 	EmbedFieldData,
 	Guild,
-	GuildChannelResolvable,
 	InteractionButtonOptions,
 	Message,
 	MessageActionRow,
@@ -22,74 +20,22 @@ import {
 } from 'discord.js';
 import { MusicInteractionConstant } from '../constants/music.constant';
 import { MAXIMUM as VOLUME_MAXIMUM } from '../dtos/volume.dto';
-
-export type QueueData = {
-	textChannel?: TextChannel;
-	isPaused?: boolean;
-	lastPlayedSong?: Song;
-	dynamicPlayer?: DynamicPlayerData;
-};
-
-export type SongData = {
-	query: string;
-	skipped?: boolean;
-};
-
-export type MusicContext = Guild | GuildChannelsContext | Queue;
-
-export type PlayerButtonsOptions = {
-	dynamicPlayerType?: DynamicPlayerType;
-};
-
-export type PlaySongCallbacks<T> = {
-	onSongSearch?: () => CallbackResult<T>;
-	onSongSearchError?: (searchContext: T) => CallbackResult<T>;
-	onSongPlay?: (searchContext: T, song: Song) => CallbackResult<T>;
-	onSongAdd?: (searchContext: T, song: Song) => CallbackResult<T>;
-};
-
-export type PlayPlaylistCallbacks<T> = {
-	onPlaylistSearch?: () => CallbackResult<T>;
-	onPlaylistSearchError?: (searchContext: T) => CallbackResult<T>;
-	onPlaylistPlay?: (searchContext: T, playlist: Playlist) => CallbackResult<T>;
-	onPlaylistAdd?: (searchContext: T, playlist: Playlist) => CallbackResult<T>;
-};
-
-export type PlayMusicCallbacks<SongType, PlaylistType> = PlaySongCallbacks<SongType> & PlayPlaylistCallbacks<PlaylistType>;
-
-export type PlayMusicOptions<SongType, PlaylistType> = PlayMusicCallbacks<SongType, PlaylistType> & {
-	/** This allows to setup the queue with the textChannel data property, therefore sending messages on different events. */
-	textChannel?: TextChannel;
-};
-
-export type PlayMusicData<
-	SongType,
-	PlaylistType,
-	Options extends PlayMusicOptions<SongType, PlaylistType> = PlayMusicOptions<SongType, PlaylistType>,
-> = {
-	query: string;
-	queue: Queue;
-	voiceChannel: GuildChannelResolvable;
-	volume: number;
-	requester: User;
-	options?: Options;
-};
-
-export type DynamicPlayerData = {
-	type: DynamicPlayerType;
-	interval: NodeJS.Timer;
-	playerMessage?: Message;
-};
+import {
+	DynamicPlayerOptions,
+	MusicContext,
+	PlayerButtonsOptions,
+	PlayMusicData,
+	PlayMusicOptions,
+	PlayPlaylistCallbacks,
+	PlaySongCallbacks,
+	QueueData,
+	SongData,
+} from './player.types';
 
 export enum DynamicPlayerType {
 	UPDATEABLE = 'Updateable',
 	PINNED = 'Pinned',
 }
-
-export type DynamicPlayerOptions = {
-	type?: DynamicPlayerType;
-	delay?: number;
-};
 
 @Injectable()
 export class PlayerService extends Player {

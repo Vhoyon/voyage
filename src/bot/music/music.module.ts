@@ -5,13 +5,13 @@ import { MessageService } from '../common/message.service';
 import { BlacklistGateway } from './blacklist.gateway';
 import { InteractionsGateway } from './interactions.gateway';
 import { MusicGateway } from './music.gateway';
+import { PlayerModule } from './player/player.module';
 import { BlacklistService } from './services/blacklist.service';
 import { MusicService } from './services/music.service';
-import { PlayerService } from './services/player.service';
 
 @Module({
-	imports: [PrismaModule, forwardRef(() => discordModule)],
+	imports: [PrismaModule, forwardRef(() => discordModule), PlayerModule],
 	controllers: [MusicGateway, BlacklistGateway, InteractionsGateway],
-	providers: [MessageService, PlayerService, MusicService, BlacklistService],
+	providers: [MessageService, MusicService, BlacklistService],
 })
 export class MusicModule {}

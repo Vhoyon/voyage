@@ -4,17 +4,17 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { discordModule } from '../bot.module';
 import { MessageService } from '../common/message.service';
 import { MusicGateway } from './music.gateway';
+import { PlayerModule } from './player/player.module';
 import { MusicService } from './services/music.service';
-import { PlayerService } from './services/player.service';
 
 describe('MusicGateway', () => {
 	let gateway: MusicGateway;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [ConfigModule, PrismaModule, discordModule],
+			imports: [ConfigModule, PrismaModule, discordModule, PlayerModule],
 			controllers: [MusicGateway],
-			providers: [MusicService, MessageService, PlayerService],
+			providers: [MusicService, MessageService],
 		}).compile();
 
 		gateway = module.get<MusicGateway>(MusicGateway);
