@@ -1,4 +1,5 @@
 import { PrismaService } from '$common/prisma/prisma.service';
+import { MomsLog } from '.prisma/client';
 import { Injectable, Logger } from '@nestjs/common';
 import { StageChannel, User, VoiceChannel } from 'discord.js';
 import { PlayerService } from '../player/player.service';
@@ -14,6 +15,12 @@ export type OnMomJoinsOptions = {
 	 * Defaults to an hour.
 	 */
 	timeout?: number;
+	/**
+	 * Defines if a log for the user provided should be created.
+	 *
+	 * Defaults to `true`.
+	 */
+	doCreateLog?: boolean | ((lastLogInTimeout: MomsLog | null) => boolean);
 };
 
 const DEFAULT_TIMEOUT = 60;
@@ -25,9 +32,9 @@ export class MomsMusicService {
 	constructor(private readonly player: PlayerService, private readonly prisma: PrismaService) {}
 
 	async playThemeIfAwayFor<SongType, PlaylistType>(data: OnMomJoinsOptions, playOptions?: PlayMusicOptions<SongType, PlaylistType>) {
-		const { voiceChannel, user, query, timeout } = data;
+		const { voiceChannel, user, query, timeout = DEFAULT_TIMEOUT, doCreateLog = true } = data;
 
-		const timeoutMs = (timeout ?? DEFAULT_TIMEOUT) * 60 * 1000;
+		const timeoutMs = timeout * 60 * 1000;
 		const lastLoggedDate = new Date(Date.now() - timeoutMs);
 
 		const lastLogInTimeoutArray = await this.prisma.momsLog.findMany({
@@ -48,17 +55,21 @@ export class MomsMusicService {
 
 		const lastLogInTimeout = lastLogInTimeoutArray.length ? lastLogInTimeoutArray[0] : null;
 
-		const newMomLog = await this.prisma.momsLog.create({
-			data: {
-				userIdDiscord: user.id,
-				guild: {
-					connect: {
-						guildId: voiceChannel.guild.id,
+		const doIndeedCreateLog = typeof doCreateLog == 'boolean' ? doCreateLog : doCreateLog(lastLogInTimeout);
+
+		const newMomLog = doIndeedCreateLog
+			? await this.prisma.momsLog.create({
+					data: {
+						userIdDiscord: user.id,
+						guild: {
+							connect: {
+								guildId: voiceChannel.guild.id,
+							},
+						},
+						didStartTheme: !lastLogInTimeout,
 					},
-				},
-				didStartTheme: !lastLogInTimeout,
-			},
-		});
+			  })
+			: null;
 
 		const result = {
 			lastLog: lastLogInTimeout,

@@ -18,11 +18,21 @@ export class MomsMusicGateway {
 			return;
 		}
 
-		if (newMember.user.id != FRANCOIS_USER_ID) {
+		if (oldChannel.channel || !newChannel.channel) {
+			// Only handle join events
 			return;
 		}
 
-		if (oldChannel.channel || !newChannel.channel) {
+		const voiceUsers = newChannel.channel.members.filter((member) => !member.user.bot);
+
+		const francoisMember = voiceUsers.find((member) => member.user.id == FRANCOIS_USER_ID);
+
+		if (!francoisMember) {
+			return;
+		}
+
+		if (voiceUsers.size <= 1) {
+			// Do not log when Francois joins alone.
 			return;
 		}
 
@@ -30,12 +40,18 @@ export class MomsMusicGateway {
 
 		const francoisTimeout = 60 * 24 * numberOfDays;
 
+		// Victory song
+		const query = 'https://www.youtube.com/watch?v=OLTZbJMQiD4';
+
 		try {
 			await this.momsMusicService.playThemeIfAwayFor({
 				voiceChannel: newChannel.channel,
-				user: newMember.user,
-				query: 'https://www.youtube.com/watch?v=OLTZbJMQiD4',
+				user: francoisMember.user,
+				query,
 				timeout: francoisTimeout,
+				doCreateLog: (lastLogInTimeout) => {
+					return !lastLogInTimeout || francoisMember == newMember;
+				},
 			});
 		} catch (error) {
 			this.logger.error(error, error instanceof TypeError ? error.stack : undefined);
