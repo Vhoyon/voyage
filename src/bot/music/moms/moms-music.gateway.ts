@@ -11,19 +11,19 @@ export class MomsMusicGateway {
 	constructor(private readonly momsMusicService: MomsMusicService) {}
 
 	@On({ event: 'voiceStateUpdate' })
-	async onFrancoisJoin(@Context() [oldChannel, newChannel]: [VoiceState, VoiceState]) {
-		const newMember = newChannel.member;
+	async onFrancoisJoin(@Context() [oldVoiceState, newVoiceState]: [VoiceState, VoiceState]) {
+		const newMember = newVoiceState.member;
 
 		if (!newMember || newMember.user.bot) {
 			return;
 		}
 
-		if (oldChannel.channel || !newChannel.channel) {
+		if (oldVoiceState.channel || !newVoiceState.channel) {
 			// Only handle join events
 			return;
 		}
 
-		const voiceUsers = newChannel.channel.members.filter((member) => !member.user.bot);
+		const voiceUsers = newVoiceState.channel.members.filter((member) => !member.user.bot);
 
 		const francoisMember = voiceUsers.find((member) => member.user.id == FRANCOIS_USER_ID);
 
@@ -45,7 +45,7 @@ export class MomsMusicGateway {
 
 		try {
 			await this.momsMusicService.playThemeIfAwayFor({
-				voiceChannel: newChannel.channel,
+				voiceChannel: newVoiceState.channel,
 				user: francoisMember.user,
 				query,
 				timeout: francoisTimeout,
