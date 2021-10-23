@@ -50,7 +50,7 @@ export type OnMomJoinsOptions = {
 	 *
 	 * This will only be called if there was a possibility to play the theme music already, aka when there was no log in the defined timeout.
 	 *
-	 * Default to playing the them song if not defined.
+	 * Default to playing the theme song if not defined.
 	 */
 	doPlayMusic?: () => boolean;
 };
