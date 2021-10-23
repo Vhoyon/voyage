@@ -80,7 +80,7 @@ model MomsLog {
   didStartTheme Boolean
   guild         Guild   @relation(fields: [guildId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
-  guildId Int @unique
+  guildId Int
 
   createdAt DateTime @default(now())
 
