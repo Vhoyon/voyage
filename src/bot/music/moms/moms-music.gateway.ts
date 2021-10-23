@@ -40,8 +40,8 @@ export class MomsMusicGateway {
 
 		const francoisTimeout = 60 * 24 * numberOfDays;
 
-		// Victory song
-		const query = 'https://www.youtube.com/watch?v=OLTZbJMQiD4';
+		// "Victory" theme song
+		const query = 'https://www.youtube.com/watch?v=E94f_b92wl4';
 
 		try {
 			await this.momsMusicService.playThemeIfAwayFor({
