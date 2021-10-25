@@ -62,7 +62,7 @@
     "graphql-subscriptions": "1.2.1",
     "graphql-tools": "8.2.0",
     "graphql-ws": "5.5.3",
-    "nest-typed-config": "1.6.4",
+    "nest-typed-config": "1.6.5",
     "reflect-metadata": "0.1.13",
     "rxjs": "7.4.0",
     "vcommand-parser": "2.0.0",
