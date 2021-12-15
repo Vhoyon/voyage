@@ -1,33 +1,44 @@
 import { ConfigModule } from '$common/configs/config.module';
 import { EnvironmentConfig } from '$common/configs/env.validation';
 import { PrismaModule } from '$common/prisma/prisma.module';
+import { DiscordModule, DiscordModuleAsyncOptions } from '@discord-nestjs/core';
+import { RegisterCommandOptions } from '@discord-nestjs/core/dist/definitions/interfaces/register-command-options';
 import { Module } from '@nestjs/common';
-import { DiscordModule } from 'discord-nestjs';
 import { CommonModule } from './common/common.module';
+import { CommandValidationFilter } from './common/filters/command-validation.filter';
+import { GenericErrorFilter } from './common/filters/generic.filter';
 import { DiscordConfigGateway } from './config/config.gateway';
 import { MusicModule } from './music/music.module';
-import { RequestPipe } from './utils/request.pipe';
+
+const imports: DiscordModuleAsyncOptions['imports'] = [ConfigModule, PrismaModule, CommonModule, MusicModule];
 
 export const discordModule = DiscordModule.forRootAsync({
-	imports: [ConfigModule, PrismaModule, CommonModule],
+	imports,
 	inject: [EnvironmentConfig],
 	useFactory: async (env: EnvironmentConfig) => {
-		const requestPipe = RequestPipe({
-			commandPrefix: env.DISCORD_PREFIX,
-		});
+		const isProd = env.NODE_ENV == 'production';
+
+		const devGuilds = env.DISCORD_DEV_GUILDS?.map(
+			(guild): RegisterCommandOptions => ({
+				forGuild: guild,
+			}),
+		);
 
 		return {
-			intents: ['GUILD_VOICE_STATES'],
+			discordClientOptions: {
+				intents: ['GUILDS', 'GUILD_MESSAGES', 'GUILD_VOICE_STATES'],
+			},
 			token: env.DISCORD_TOKEN,
-			commandPrefix: env.DISCORD_PREFIX,
-			usePipes: [requestPipe],
-			// usePipes: [TransformPipe, ValidationPipe],
+			commands: ['**/*.command.js'],
+			autoRegisterGlobalCommands: isProd,
+			registerCommandOptions: devGuilds,
+			useFilters: [CommandValidationFilter, GenericErrorFilter],
 		};
 	},
 });
 
 @Module({
-	imports: [discordModule, PrismaModule, MusicModule],
+	imports: [discordModule, PrismaModule],
 	controllers: [DiscordConfigGateway],
 })
 export class BotModule {}

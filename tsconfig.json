@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "target": "es2019",
+    "target": "ESNext",
     "module": "commonjs",
     "lib": [
-      "es2019"
+      "ESNext"
     ],
     
     "allowJs": true,

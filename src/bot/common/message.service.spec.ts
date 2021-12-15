@@ -1,5 +1,6 @@
 import { ConfigModule } from '$common/configs/config.module';
 import { Test, TestingModule } from '@nestjs/testing';
+import { discordModule } from '../bot.module';
 import { MessageService } from './message.service';
 
 describe('MessageService', () => {
@@ -7,7 +8,7 @@ describe('MessageService', () => {
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [ConfigModule],
+			imports: [discordModule, ConfigModule],
 			providers: [MessageService],
 		}).compile();
 

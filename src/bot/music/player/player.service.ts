@@ -2,25 +2,16 @@ import { InformError } from '$/bot/common/error/inform-error';
 import { ChannelContext, MessageService, SendableOptions } from '$/bot/common/message.service';
 import { EnvironmentConfig } from '$common/configs/env.validation';
 import { PrismaService } from '$common/prisma/prisma.service';
+import { sleep } from '$common/utils/funcs';
+import { DiscordClientProvider } from '@discord-nestjs/core';
 import { inlineCode } from '@discordjs/builders';
 import { Injectable, Logger } from '@nestjs/common';
 import { Player, Playlist, Queue, RepeatMode, Song } from 'discord-music-player';
-import { DiscordClientProvider } from 'discord-nestjs';
-import {
-	EmbedFieldData,
-	Guild,
-	InteractionButtonOptions,
-	Message,
-	MessageActionRow,
-	MessageButton,
-	StageChannel,
-	TextChannel,
-	User,
-	VoiceChannel,
-} from 'discord.js';
-import { MusicInteractionConstant } from '../constants/music.constant';
+import { EmbedFieldData, Guild, Message, MessageActionRow, MessageButton, StageChannel, TextChannel, User, VoiceChannel } from 'discord.js';
+import { MusicInteractionConstant, PartialInteractionButtonOptions } from '../constants/music.constant';
 import { MAXIMUM as VOLUME_MAXIMUM } from '../dtos/volume.dto';
 import {
+	DynamicPlayerData,
 	DynamicPlayerOptions,
 	MusicContext,
 	PlayerButtonsOptions,
@@ -35,6 +26,12 @@ import {
 export enum DynamicPlayerType {
 	UPDATEABLE = 'Updateable',
 	PINNED = 'Pinned',
+}
+
+export enum PlayType {
+	ERROR,
+	NEW,
+	ADD,
 }
 
 @Injectable()
@@ -75,9 +72,17 @@ export class PlayerService extends Player {
 		});
 
 		this.on('songChanged', async (queue, _newSong, oldSong) => {
+			const queueData = queue.data as QueueData;
+
 			if (queue.repeatMode != RepeatMode.SONG) {
-				(queue.data as QueueData).lastPlayedSong = oldSong;
+				queueData.lastPlayedSong = oldSong;
 			}
+
+			const loadingSongDelay = 500;
+
+			await sleep(loadingSongDelay);
+
+			this.updateDynamic(queue);
 		});
 
 		this.on('clientDisconnect', (queue) => {
@@ -88,7 +93,7 @@ export class PlayerService extends Player {
 			this.clearDynamic(queue);
 		});
 
-		this.on('channelEmpty', async (queue) => {
+		this.on('channelEmpty', (queue) => {
 			this.clearDynamic(queue);
 		});
 
@@ -100,10 +105,34 @@ export class PlayerService extends Player {
 					queueData.textChannel,
 					`Couldn't play the given query. If you used a link, make sure the video / playlist is not private or age restricted!`,
 				);
+			} else if (queueData.textChannel && error == 'Status code: 403') {
+				this.messageService.sendError(
+					queueData.textChannel,
+					`A forbidden error happened while trying to load the given query. Either try again or find another source!`,
+				);
 			} else {
-				this.logger.error(`Error: "${error}" in guild named "${queue.guild?.name}"`);
+				if (queueData.textChannel) {
+					this.messageService.sendError(queueData.textChannel, `An unexpected error happened in the music player...`);
+				}
+				this.logger.error(`Error: "${error}" in guild named "${queue.guild.name}"`);
 			}
 		});
+	}
+
+	async setPlayerMessage(message: Message, options?: DynamicPlayerOptions) {
+		const queue = this.getQueueOf(message);
+
+		if (!this.hasQueueAndPlaying(queue)) {
+			throw new InformError(`Cannot set the player message of an inexistant queue!`);
+		}
+
+		const queueData = queue.data as QueueData;
+
+		queueData.playerMessage = message;
+
+		if (options?.type) {
+			await this.setDynamic(message, { type: options.type });
+		}
 	}
 
 	getQueueOf(of: MusicContext) {
@@ -178,31 +207,20 @@ export class PlayerService extends Player {
 		await this.clearDynamic(queue);
 
 		queue.destroy(true);
+		this.emit('clientDisconnect', queue);
 
 		return true;
 	}
 
 	createPlayerButtons(options?: PlayerButtonsOptions) {
-		const queueInteractions: Pick<InteractionButtonOptions, 'customId' | 'emoji'>[] = [
-			{
-				customId: MusicInteractionConstant.LAST_SONG,
-				emoji: '⏮',
-			},
-			{
-				customId: MusicInteractionConstant.PLAY_PAUSE,
-				emoji: '⏯',
-			},
-			{
-				customId: MusicInteractionConstant.SKIP,
-				emoji: '⏩',
-			},
+		const queueInteractions: PartialInteractionButtonOptions[] = [
+			MusicInteractionConstant.LAST_SONG,
+			MusicInteractionConstant.PLAY_PAUSE,
+			MusicInteractionConstant.SKIP,
 		];
 
 		if (options?.dynamicPlayerType) {
-			queueInteractions.push({
-				customId: MusicInteractionConstant.STOP_DYNAMIC_PLAYER,
-				emoji: '🛑',
-			});
+			queueInteractions.push(MusicInteractionConstant.STOP_DYNAMIC_PLAYER);
 		}
 
 		const queueRow = new MessageActionRow({
@@ -214,19 +232,10 @@ export class PlayerService extends Player {
 			}),
 		});
 
-		const playerInteractions: Pick<InteractionButtonOptions, 'customId' | 'emoji'>[] = [
-			{
-				customId: MusicInteractionConstant.REPEAT,
-				emoji: '🔂',
-			},
-			{
-				customId: MusicInteractionConstant.REPEAT_ALL,
-				emoji: '🔁',
-			},
-			{
-				customId: MusicInteractionConstant.DISCONNECT,
-				emoji: '⏹',
-			},
+		const playerInteractions: PartialInteractionButtonOptions[] = [
+			MusicInteractionConstant.REPEAT,
+			MusicInteractionConstant.REPEAT_ALL,
+			MusicInteractionConstant.DISCONNECT,
 		];
 
 		const playerRow = new MessageActionRow({
@@ -330,10 +339,10 @@ export class PlayerService extends Player {
 		voiceChannel: VoiceChannel | StageChannel,
 		requester: User,
 		options?: PlayMusicOptions<SongType, PlaylistType>,
-	) {
+	): Promise<PlayType> {
 		const { queue, musicSettings } = await this.getOrCreateQueueOf(voiceChannel.guild, options?.textChannel);
 
-		return this.playMusic({
+		const playType = await this.playMusic({
 			query,
 			queue,
 			voiceChannel,
@@ -341,17 +350,35 @@ export class PlayerService extends Player {
 			volume: musicSettings.volume,
 			options,
 		});
+
+		if (playType == PlayType.NEW) {
+			this.on('clientDisconnect', async (queue) => {
+				const timeout = this.env.DISCORD_INTERACTION_MESSAGE_TIMEOUT;
+
+				await sleep(timeout * 1000);
+
+				const queueData = queue.data as QueueData;
+
+				try {
+					await queueData.playerMessage?.delete();
+				} catch (error) {
+					// do nothing if error happens
+				}
+			});
+		}
+
+		return playType;
 	}
 
-	async playMusic<SongType, PlaylistType>(data: PlayMusicData<SongType, PlaylistType>) {
+	async playMusic<SongType, PlaylistType>(data: PlayMusicData<SongType, PlaylistType>): Promise<PlayType> {
 		await data.queue.join(data.voiceChannel);
 
 		const isQuerySong = !data.query.includes('/playlist');
 
 		if (isQuerySong) {
-			await this.playSong(data);
+			return this.playSong(data);
 		} else {
-			await this.playPlaylist(data);
+			return this.playPlaylist(data);
 		}
 	}
 
@@ -361,7 +388,13 @@ export class PlayerService extends Player {
 		};
 	}
 
-	protected async playSong<T>({ query, queue, volume, requester, options }: PlayMusicData<T, undefined, PlaySongCallbacks<T>>) {
+	protected async playSong<T>({
+		query,
+		queue,
+		volume,
+		requester,
+		options,
+	}: PlayMusicData<T, undefined, PlaySongCallbacks<T>>): Promise<PlayType> {
 		let song: Song;
 
 		const searchContext = await options?.onSongSearch?.();
@@ -377,27 +410,37 @@ export class PlayerService extends Player {
 				await options?.onSongSearchError?.(searchContext);
 			}
 
-			return;
+			return PlayType.ERROR;
 		}
 
 		song.setData(this.createSongData(query));
 
 		if (hadSongs) {
 			if (searchContext) {
-				await options?.onSongAdd?.(searchContext, song);
+				await options?.onSongAdd?.(song, searchContext);
 			}
+
+			return PlayType.ADD;
 		} else {
 			queue.setVolume(volume);
 
 			(queue.data as QueueData).lastPlayedSong = song;
 
 			if (searchContext) {
-				await options?.onSongPlay?.(searchContext, song);
+				await options?.onSongPlay?.(song, searchContext);
 			}
+
+			return PlayType.NEW;
 		}
 	}
 
-	protected async playPlaylist<T>({ query, queue, volume, requester, options }: PlayMusicData<undefined, T, PlayPlaylistCallbacks<T>>) {
+	protected async playPlaylist<T>({
+		query,
+		queue,
+		volume,
+		requester,
+		options,
+	}: PlayMusicData<undefined, T, PlayPlaylistCallbacks<T>>): Promise<PlayType> {
 		let playlist: Playlist;
 
 		const searchContext = await options?.onPlaylistSearch?.();
@@ -413,23 +456,27 @@ export class PlayerService extends Player {
 				await options?.onPlaylistSearchError?.(searchContext);
 			}
 
-			return;
+			return PlayType.ERROR;
 		}
 
 		playlist.songs.forEach((s) => s.setData(this.createSongData(query)));
 
 		if (hadSongs) {
 			if (searchContext) {
-				await options?.onPlaylistAdd?.(searchContext, playlist);
+				await options?.onPlaylistAdd?.(playlist, searchContext);
 			}
+
+			return PlayType.ADD;
 		} else {
 			queue.setVolume(volume);
 
 			(queue.data as QueueData).lastPlayedSong = playlist.songs[0];
 
 			if (searchContext) {
-				await options?.onPlaylistPlay?.(searchContext, playlist);
+				await options?.onPlaylistPlay?.(playlist, searchContext);
 			}
+
+			return PlayType.NEW;
 		}
 	}
 
@@ -442,9 +489,9 @@ export class PlayerService extends Player {
 
 		const queueData = queue.data as QueueData;
 
-		const previousPlayerMessage = queueData.dynamicPlayer?.playerMessage;
+		const previousPlayerMessage = queueData.playerMessage;
 
-		if (previousPlayerMessage) {
+		if (queueData.dynamicPlayer && previousPlayerMessage) {
 			this.messageService.sendInfo(previousPlayerMessage, `The dynamic player was stopped because another one was created!`);
 
 			await this.clearDynamic(previousPlayerMessage);
@@ -457,21 +504,21 @@ export class PlayerService extends Player {
 			dynamicPlayerType: type,
 		};
 
-		let updater: () => void;
+		let updater: DynamicPlayerData['updater'];
 
 		let messageToReplace = message;
 
 		switch (type) {
 			case DynamicPlayerType.PINNED:
 				updater = async () => {
-					const newPlayerMessage = await this.messageService.replace(messageToReplace, this.createNowPlayingWidget(queue, buttonOptions), {
+					const npWidget = this.createNowPlayingWidget(queue, buttonOptions);
+
+					const newPlayerMessage = await this.messageService.replace(messageToReplace, npWidget, {
 						context: options?.context,
 					});
 
-					if (newPlayerMessage instanceof Message) {
-						if (queueData.dynamicPlayer) {
-							queueData.dynamicPlayer.playerMessage = newPlayerMessage;
-						}
+					if (newPlayerMessage) {
+						queueData.playerMessage = newPlayerMessage;
 
 						messageToReplace = newPlayerMessage;
 					}
@@ -480,14 +527,29 @@ export class PlayerService extends Player {
 			case DynamicPlayerType.UPDATEABLE:
 			default:
 				updater = async () => {
-					await this.messageService.edit(message, this.createNowPlayingWidget(queue, buttonOptions));
+					const npWidget = this.createNowPlayingWidget(queue, buttonOptions);
+
+					await this.messageService.edit(message, npWidget);
 				};
 				break;
 		}
 
 		const interval = setInterval(updater, delay * 1000);
 
-		queueData.dynamicPlayer = { type, interval, playerMessage: messageToReplace };
+		queueData.playerMessage = messageToReplace;
+		queueData.dynamicPlayer = { type, interval, updater };
+	}
+
+	updateDynamic(context: MusicContext) {
+		const queue = this.getQueueOf(context);
+
+		const queueData = queue?.data as QueueData | undefined;
+
+		if (!queue || !queueData?.dynamicPlayer) {
+			return null;
+		}
+
+		return queueData.dynamicPlayer?.updater();
 	}
 
 	async clearDynamic(context: MusicContext) {
@@ -499,7 +561,8 @@ export class PlayerService extends Player {
 			return null;
 		}
 
-		const { interval, type, playerMessage } = queueData.dynamicPlayer!;
+		const { interval, type } = queueData.dynamicPlayer;
+		const playerMessage = queueData.playerMessage;
 
 		clearInterval(interval);
 

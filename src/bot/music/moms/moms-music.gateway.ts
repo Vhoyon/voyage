@@ -1,6 +1,6 @@
 import { probability } from '$common/utils/funcs';
+import { On } from '@discord-nestjs/core';
 import { Controller, Logger } from '@nestjs/common';
-import { Context, On } from 'discord-nestjs';
 import { VoiceState } from 'discord.js';
 import { FRANCOIS_USER_ID, NICO_USER_ID } from '../constants/moms.ids';
 import { JoinType, MomsMusicService } from './moms-music.service';
@@ -11,8 +11,8 @@ export class MomsMusicGateway {
 
 	constructor(private readonly momsMusicService: MomsMusicService) {}
 
-	@On({ event: 'voiceStateUpdate' })
-	async onFrancoisJoin(@Context() [oldVoiceState, newVoiceState]: [VoiceState, VoiceState]) {
+	@On('voiceStateUpdate')
+	async onFrancoisJoin(oldVoiceState: VoiceState, newVoiceState: VoiceState) {
 		const state = this.momsMusicService.getMemberState({
 			userId: FRANCOIS_USER_ID,
 			oldVoiceState,
@@ -32,23 +32,19 @@ export class MomsMusicGateway {
 		// "Victory" theme song
 		const query = 'https://www.youtube.com/watch?v=E94f_b92wl4';
 
-		try {
-			await this.momsMusicService.playThemeIfAwayFor({
-				voiceChannel: voiceState.channel,
-				user: francoisMember.user,
-				query,
-				timeout: francoisTimeout,
-				doCreateLog: (lastLogInTimeout) => {
-					return !lastLogInTimeout || francoisMember == voiceState.member;
-				},
-			});
-		} catch (error) {
-			this.logger.error(error, error instanceof TypeError ? error.stack : undefined);
-		}
+		await this.momsMusicService.playThemeIfAwayFor({
+			voiceChannel: voiceState.channel,
+			user: francoisMember.user,
+			query,
+			timeout: francoisTimeout,
+			doCreateLog: (lastLogInTimeout) => {
+				return !lastLogInTimeout || francoisMember == voiceState.member;
+			},
+		});
 	}
 
-	@On({ event: 'voiceStateUpdate' })
-	async onNicoJoin(@Context() [oldVoiceState, newVoiceState]: [VoiceState, VoiceState]) {
+	@On('voiceStateUpdate')
+	async onNicoJoin(oldVoiceState: VoiceState, newVoiceState: VoiceState) {
 		const state = this.momsMusicService.getMemberState({
 			userId: NICO_USER_ID,
 			oldVoiceState,
@@ -67,23 +63,19 @@ export class MomsMusicGateway {
 		// "Annoying" theme song
 		const query = 'https://youtu.be/DvR6-SQzqO8';
 
-		try {
-			await this.momsMusicService.playThemeIfAwayFor({
-				voiceChannel: voiceState.channel,
-				user: nicoMember.user,
-				query,
-				timeout: numberOfMinutes,
-				doCreateLog: (lastLogInTimeout) => {
-					return !lastLogInTimeout || nicoMember == voiceState.member;
-				},
-				doPlayMusic: () => {
-					const percentage = 33;
+		await this.momsMusicService.playThemeIfAwayFor({
+			voiceChannel: voiceState.channel,
+			user: nicoMember.user,
+			query,
+			timeout: numberOfMinutes,
+			doCreateLog: (lastLogInTimeout) => {
+				return !lastLogInTimeout || nicoMember == voiceState.member;
+			},
+			doPlayMusic: () => {
+				const percentage = 33;
 
-					return probability(percentage);
-				},
-			});
-		} catch (error) {
-			this.logger.error(error, error instanceof TypeError ? error.stack : undefined);
-		}
+				return probability(percentage);
+			},
+		});
 	}
 }

@@ -2,26 +2,33 @@ import { bold } from '@discordjs/builders';
 import { EmbedType, SendableOptions } from '../message.service';
 
 export interface InformErrorOptions {
-	message: string | SendableOptions;
 	stack?: string;
+	error?: unknown;
 }
 
-export class InformError implements InformErrorOptions {
+export interface InformErrorData extends InformErrorOptions {
+	message: string | SendableOptions;
+}
+
+export class InformError implements InformErrorData {
 	message!: string | SendableOptions;
+	type: EmbedType = 'error';
+	stack?: string;
+	error?: unknown;
 
-	get type(): EmbedType {
-		return 'error';
-	}
-	protected set type(type) {
-		this.type = type;
-	}
+	constructor(message: string, options?: InformErrorOptions);
+	constructor(options: InformErrorData);
 
-	constructor(message: string, options?: Omit<InformErrorOptions, 'message'>);
-	constructor(options: InformErrorOptions);
-
-	constructor(data: string | InformErrorOptions, options?: Omit<InformErrorOptions, 'message'>) {
+	constructor(data: string | InformErrorData, options?: InformErrorOptions) {
 		if (typeof data == 'string') {
 			this.message = data;
+
+			if (options?.error instanceof Error) {
+				if (!options.stack) {
+					this.stack = options.error.stack;
+				}
+			}
+
 			Object.assign(this, options);
 		} else {
 			Object.assign(this, data);
@@ -30,7 +37,7 @@ export class InformError implements InformErrorOptions {
 }
 
 export class InformErrorInfo extends InformError {
-	constructor(message: string, options?: Omit<InformErrorOptions, 'message'>) {
+	constructor(message: string, options?: InformErrorOptions) {
 		super(bold(message), options);
 
 		this.type = 'info';
@@ -38,7 +45,7 @@ export class InformErrorInfo extends InformError {
 }
 
 export class InformInternalError extends InformError {
-	constructor(message: string, options?: Omit<InformErrorOptions, 'message'>) {
+	constructor(message: string, options?: InformErrorOptions) {
 		super(bold(message), options);
 
 		this.type = 'internal_error';

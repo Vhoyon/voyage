@@ -9,7 +9,6 @@ export default class GuildFixture extends Fixture<Guild> {
 		f.seed(123456789);
 
 		const guilds = await upsertRange(prisma.guild.upsert, 3, (current) => {
-			// 268486670762901506
 			const guildId = [...Array(18)].map(() => f.datatype.number(9)).join();
 
 			return {
