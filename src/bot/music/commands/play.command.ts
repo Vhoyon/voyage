@@ -1,7 +1,8 @@
 import { InteractionFromServer } from '$/bot/common/guards/interaction-from-server.guard';
 import { MessageService } from '$/bot/common/message.service';
+import { TransformPipe } from '$/bot/common/pipes/transform.pipe';
 import { parseMsIntoTime } from '$common/utils/funcs';
-import { TransformPipe, ValidationPipe } from '@discord-nestjs/common';
+import { ValidationPipe } from '@discord-nestjs/common';
 import { Command, DiscordTransformedCommand, Payload, UseGuards, UsePipes } from '@discord-nestjs/core';
 import { bold, inlineCode } from '@discordjs/builders';
 import { Logger } from '@nestjs/common';
