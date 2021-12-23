@@ -11,7 +11,6 @@ import { MusicService } from '../services/music.service';
 	description: 'Toggles the loop of the music player',
 })
 @UseGuards(InteractionFromServer, MusicGuard)
-// @UsePipes(TransformPipe, ValidationPipe)
 export class LoopCommand implements DiscordCommand {
 	private readonly logger = new Logger(LoopCommand.name);
 

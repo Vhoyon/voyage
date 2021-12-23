@@ -11,7 +11,6 @@ import { MusicService } from '../services/music.service';
 	description: 'Stops the queue and disconnect the bot',
 })
 @UseGuards(InteractionFromServer, MusicGuard)
-// @UsePipes(TransformPipe, ValidationPipe)
 export class DisconnectCommand implements DiscordCommand {
 	private readonly logger = new Logger(DisconnectCommand.name);
 

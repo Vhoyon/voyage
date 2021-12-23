@@ -11,7 +11,6 @@ import { MusicService } from '../services/music.service';
 	description: 'Shuffles the current music queue',
 })
 @UseGuards(InteractionFromServer, MusicGuard)
-// @UsePipes(TransformPipe, ValidationPipe)
 export class ShuffleCommand implements DiscordCommand {
 	private readonly logger = new Logger(ShuffleCommand.name);
 

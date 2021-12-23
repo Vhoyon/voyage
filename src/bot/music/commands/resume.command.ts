@@ -11,7 +11,6 @@ import { MusicService } from '../services/music.service';
 	description: 'Resumes the current song if player is paused',
 })
 @UseGuards(InteractionFromServer, MusicGuard)
-// @UsePipes(TransformPipe, ValidationPipe)
 export class ResumeCommand implements DiscordCommand {
 	private readonly logger = new Logger(ResumeCommand.name);
 

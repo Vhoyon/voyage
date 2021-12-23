@@ -11,7 +11,6 @@ import { MusicService } from '../services/music.service';
 	description: 'Pauses the current song',
 })
 @UseGuards(InteractionFromServer, MusicGuard)
-// @UsePipes(TransformPipe, ValidationPipe)
 export class PauseCommand implements DiscordCommand {
 	private readonly logger = new Logger(PauseCommand.name);
 

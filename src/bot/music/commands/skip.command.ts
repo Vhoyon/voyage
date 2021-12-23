@@ -11,7 +11,6 @@ import { MusicService } from '../services/music.service';
 	description: 'Skips the current song',
 })
 @UseGuards(InteractionFromServer, MusicGuard)
-// @UsePipes(TransformPipe, ValidationPipe)
 export class SkipCommand implements DiscordCommand {
 	private readonly logger = new Logger(SkipCommand.name);
 

@@ -11,7 +11,6 @@ import { MusicService } from '../services/music.service';
 	description: 'Removes any loop that the music player can be in',
 })
 @UseGuards(InteractionFromServer, MusicGuard)
-// @UsePipes(TransformPipe, ValidationPipe)
 export class UnloopCommand implements DiscordCommand {
 	private readonly logger = new Logger(UnloopCommand.name);
 
