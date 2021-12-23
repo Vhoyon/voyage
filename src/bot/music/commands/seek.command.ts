@@ -30,8 +30,7 @@ export class SeekCommand implements DiscordTransformedCommand<SeekDto> {
 		const voiceChannel = member.voice?.channel;
 
 		if (!voiceChannel) {
-			await this.messageService.sendError(interaction, `You need to be in a voice channel to seek music!`);
-			return;
+			throw `You need to be in a voice channel to seek music!`;
 		}
 
 		const reply = await this.musicService.seek(interaction, timestamp);

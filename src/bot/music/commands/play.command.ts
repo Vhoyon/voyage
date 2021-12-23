@@ -34,15 +34,13 @@ export class PlayCommand implements DiscordTransformedCommand<PlayDto> {
 		const voiceChannel = member.voice?.channel;
 
 		if (!voiceChannel) {
-			await this.messageService.sendError(interaction, 'You need to be in a voice channel to play music!');
-			return;
+			throw `You need to be in a voice channel to play music!`;
 		}
 
 		const permissions = voiceChannel.permissionsFor(interaction.client.user!);
 
 		if (!permissions?.has('CONNECT') || !permissions.has('SPEAK')) {
-			await this.messageService.sendError(interaction, 'I need the permissions to join and speak in your voice channel!');
-			return;
+			throw `I need the permissions to join and speak in your voice channel!`;
 		}
 
 		await this.player.play(query, voiceChannel, member.user, {

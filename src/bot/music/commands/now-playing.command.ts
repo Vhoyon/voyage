@@ -30,8 +30,7 @@ export class NowPlayingCommand implements DiscordTransformedCommand<NowPlayingDt
 		const voiceChannel = member.voice?.channel;
 
 		if (!voiceChannel) {
-			await this.messageService.sendError(interaction, `You need to be in a voice channel to see the current song!`);
-			return;
+			throw `You need to be in a voice channel to see the current song!`;
 		}
 
 		await this.musicService.nowPlaying(interaction, {

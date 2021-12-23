@@ -26,8 +26,7 @@ export class UnloopCommand implements DiscordCommand {
 		const voiceChannel = member.voice?.channel;
 
 		if (!voiceChannel) {
-			await this.messageService.sendError(interaction, 'You need to be in a voice channel to unloop the music player!');
-			return;
+			throw `You need to be in a voice channel to unloop the music player!`;
 		}
 
 		const reply = this.musicService.unloop(interaction);

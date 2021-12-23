@@ -26,8 +26,7 @@ export class DisconnectCommand implements DiscordCommand {
 		const voiceChannel = member.voice?.channel;
 
 		if (!voiceChannel) {
-			await this.messageService.sendError(interaction, 'You need to be in a voice channel to stop me from playing music!');
-			return;
+			throw `You need to be in a voice channel to stop me from playing music!`;
 		}
 
 		const reply = await this.musicService.disconnect(interaction);

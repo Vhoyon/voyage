@@ -26,8 +26,7 @@ export class SkipCommand implements DiscordCommand {
 		const voiceChannel = member.voice?.channel;
 
 		if (!voiceChannel) {
-			await this.messageService.sendError(interaction, 'You need to be in a voice channel to skip a song!');
-			return;
+			throw `You need to be in a voice channel to skip a song!`;
 		}
 
 		const reply = this.musicService.skip(interaction);

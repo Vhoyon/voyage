@@ -1,5 +1,6 @@
 import { Catch, DiscordArgumentMetadata, DiscordExceptionFilter } from '@discord-nestjs/core';
 import { Logger } from '@nestjs/common';
+import { Interaction } from 'discord.js';
 import { InformError, InformInternalError } from '../error/inform-error';
 import { MessageService } from '../message.service';
 
@@ -9,8 +10,12 @@ export class GenericErrorFilter implements DiscordExceptionFilter {
 
 	constructor(private readonly messageService: MessageService) {}
 
-	async catch(error: unknown, metadata: DiscordArgumentMetadata<'interactionCreate'>) {
+	async catch(error: unknown, metadata: DiscordArgumentMetadata) {
 		const [interaction] = metadata.context;
+
+		if (!(interaction instanceof Interaction)) {
+			return;
+		}
 
 		if (!interaction.isCommand()) {
 			return;

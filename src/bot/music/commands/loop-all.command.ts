@@ -26,8 +26,7 @@ export class LoopAllCommand implements DiscordCommand {
 		const voiceChannel = member.voice?.channel;
 
 		if (!voiceChannel) {
-			await this.messageService.sendError(interaction, 'You need to be in a voice channel to loop the player!');
-			return;
+			throw `You need to be in a voice channel to loop the player!`;
 		}
 
 		const reply = this.musicService.toggleLoopAll(interaction);

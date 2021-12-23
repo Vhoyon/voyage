@@ -30,8 +30,7 @@ export class VolumeCommand implements DiscordTransformedCommand<VolumeDto> {
 		const voiceChannel = member.voice?.channel;
 
 		if (!voiceChannel) {
-			await this.messageService.sendError(interaction, `You need to be in a voice channel to set the music's volume!`);
-			return;
+			throw `You need to be in a voice channel to set the music's volume!`;
 		}
 
 		const wasPlaying = await this.musicService.setVolume(interaction, volume);

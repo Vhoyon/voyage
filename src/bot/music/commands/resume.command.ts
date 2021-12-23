@@ -26,8 +26,7 @@ export class ResumeCommand implements DiscordCommand {
 		const voiceChannel = member.voice?.channel;
 
 		if (!voiceChannel) {
-			await this.messageService.sendError(interaction, 'You need to be in a voice channel to resume music!');
-			return;
+			throw `You need to be in a voice channel to resume music!`;
 		}
 
 		const reply = this.musicService.resume(interaction);

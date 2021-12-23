@@ -30,8 +30,7 @@ export class QueueCommand implements DiscordTransformedCommand<QueueDto> {
 		const voiceChannel = member.voice?.channel;
 
 		if (!voiceChannel) {
-			await this.messageService.sendError(interaction, `You need to be in a voice channel to view the queue!`);
-			return;
+			throw `You need to be in a voice channel to view the queue!`;
 		}
 
 		const reply = this.musicService.viewQueue(interaction, count);
