@@ -3,7 +3,6 @@ import { sleep } from '$common/utils/funcs';
 import { DiscordClientProvider } from '@discord-nestjs/core';
 import { bold } from '@discordjs/builders';
 import { Injectable, Logger } from '@nestjs/common';
-import { APIMessage } from 'discord-api-types';
 import {
 	ButtonInteraction,
 	CommandInteraction,
@@ -11,6 +10,7 @@ import {
 	Interaction,
 	InteractionReplyOptions,
 	Message,
+	MessageComponentInteraction,
 	MessageEmbed,
 	MessageEmbedOptions,
 	MessageOptions,
@@ -39,6 +39,8 @@ export type CustomSendOptions = {
 
 export type SendableOptions = CustomSendOptions & CustomEmbedOptions & (MessageOptions | InteractionReplyOptions);
 
+export type DirtyMessage = Awaited<ReturnType<MessageComponentInteraction['fetchReply']>>;
+
 @Injectable()
 export class MessageService {
 	private readonly logger = new Logger(MessageService.name);
@@ -49,7 +51,7 @@ export class MessageService {
 		this.#client = discordProvider.getClient();
 	}
 
-	async get(message: Message | APIMessage): Promise<Message> {
+	async get(message: DirtyMessage): Promise<Message> {
 		if (message instanceof Message) {
 			return message;
 		} else {
