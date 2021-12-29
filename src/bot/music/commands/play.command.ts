@@ -1,4 +1,5 @@
 import { InteractionFromServer } from '$/bot/common/guards/interaction-from-server.guard';
+import { VoicePermissionChecker } from '$/bot/common/guards/permission.guard';
 import { MessageService } from '$/bot/common/message.service';
 import { parseMsIntoTime } from '$common/utils/funcs';
 import { TransformPipe, ValidationPipe } from '@discord-nestjs/common';
@@ -12,11 +13,13 @@ import { MAXIMUM as VOLUME_MAXIMUM } from '../dtos/volume.dto';
 import { MusicGuard } from '../guards/music.guard';
 import { DynamicPlayerType, PlayerService } from '../player/player.service';
 
+const VoicePermGuard = VoicePermissionChecker(['CONNECT', 'SPEAK'], `I need the permissions to join and speak in your voice channel!`);
+
 @Command({
 	name: 'play',
 	description: 'Search for a song / playlist to play in the voice channel that you are in',
 })
-@UseGuards(InteractionFromServer, MusicGuard)
+@UseGuards(InteractionFromServer, VoicePermGuard, MusicGuard)
 @UsePipes(TransformPipe, ValidationPipe)
 export class PlayCommand implements DiscordTransformedCommand<PlayDto> {
 	private readonly logger = new Logger(PlayCommand.name);
@@ -24,23 +27,8 @@ export class PlayCommand implements DiscordTransformedCommand<PlayDto> {
 	constructor(private readonly messageService: MessageService, private readonly player: PlayerService) {}
 
 	async handler(@Payload() { query, dynamicType }: PlayDto, interaction: CommandInteraction) {
-		const member = interaction.member;
-
-		if (!(member instanceof GuildMember)) {
-			return;
-		}
-
-		const voiceChannel = member.voice?.channel;
-
-		if (!voiceChannel) {
-			throw `You need to be in a voice channel to play music!`;
-		}
-
-		const permissions = voiceChannel.permissionsFor(interaction.client.user!);
-
-		if (!permissions?.has('CONNECT') || !permissions.has('SPEAK')) {
-			throw `I need the permissions to join and speak in your voice channel!`;
-		}
+		const member = interaction.member as GuildMember;
+		const voiceChannel = member.voice.channel!;
 
 		await this.player.play(query, voiceChannel, member.user, {
 			onSongSearch: () => this.onSearch(interaction, query),
