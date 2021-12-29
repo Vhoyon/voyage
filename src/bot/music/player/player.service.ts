@@ -6,7 +6,7 @@ import { sleep } from '$common/utils/funcs';
 import { DiscordClientProvider } from '@discord-nestjs/core';
 import { inlineCode } from '@discordjs/builders';
 import { Injectable, Logger } from '@nestjs/common';
-import { Player, Playlist, Queue, RepeatMode, Song } from 'discord-music-player';
+import { Player, PlayerOptions, Playlist, Queue, RepeatMode, Song } from 'discord-music-player';
 import { EmbedFieldData, Guild, Message, MessageActionRow, MessageButton, StageChannel, TextChannel, User, VoiceChannel } from 'discord.js';
 import { MusicInteractionConstant, PartialInteractionButtonOptions } from '../constants/music.constant';
 import { MAXIMUM as VOLUME_MAXIMUM } from '../dtos/volume.dto';
@@ -21,6 +21,7 @@ import {
 	PlaySongCallbacks,
 	QueueData,
 	SongData,
+	VQueue,
 } from './player.types';
 
 export enum DynamicPlayerType {
@@ -119,6 +120,16 @@ export class PlayerService extends Player {
 		});
 	}
 
+	/** @inheritdoc */
+	override getQueue(guildId: string): VQueue | undefined {
+		return super.getQueue(guildId) as VQueue;
+	}
+
+	/** @inheritdoc */
+	override createQueue(guildId: string, options?: PlayerOptions & { data: QueueData }): VQueue {
+		return super.createQueue(guildId, options) as VQueue;
+	}
+
 	async setPlayerMessage(message: Message, options?: DynamicPlayerOptions) {
 		const queue = this.getQueueOf(message);
 
@@ -126,9 +137,7 @@ export class PlayerService extends Player {
 			throw new InformError(`Cannot set the player message of an inexistant queue!`);
 		}
 
-		const queueData = queue.data as QueueData;
-
-		queueData.playerMessage = message;
+		queue.data.playerMessage = message;
 
 		if (options?.type) {
 			await this.setDynamic(message, { type: options.type });
@@ -137,7 +146,7 @@ export class PlayerService extends Player {
 
 	getQueueOf(of: MusicContext) {
 		if (of instanceof Queue) {
-			return of;
+			return of as VQueue;
 		}
 
 		const guild = of instanceof Guild ? of : of.guild;
@@ -168,7 +177,7 @@ export class PlayerService extends Player {
 			});
 		}
 
-		let finalQueue: Queue;
+		let finalQueue: VQueue;
 
 		if (queue) {
 			finalQueue = queue;
@@ -176,7 +185,7 @@ export class PlayerService extends Player {
 			finalQueue = this.createQueue(guild.id, {
 				data: {
 					textChannel,
-				} as QueueData,
+				},
 			});
 		}
 
@@ -306,9 +315,7 @@ export class PlayerService extends Player {
 			},
 		];
 
-		const queueData = queue.data as QueueData;
-
-		const dynamicPlayerType = options?.dynamicPlayerType ?? queueData.dynamicPlayer?.type;
+		const dynamicPlayerType = options?.dynamicPlayerType ?? queue.data.dynamicPlayer?.type;
 
 		if (dynamicPlayerType) {
 			fields.push({
@@ -424,7 +431,7 @@ export class PlayerService extends Player {
 		} else {
 			queue.setVolume(volume);
 
-			(queue.data as QueueData).lastPlayedSong = song;
+			queue.data.lastPlayedSong = song;
 
 			if (searchContext) {
 				await options?.onSongPlay?.(song, searchContext);
@@ -470,7 +477,7 @@ export class PlayerService extends Player {
 		} else {
 			queue.setVolume(volume);
 
-			(queue.data as QueueData).lastPlayedSong = playlist.songs[0];
+			queue.data.lastPlayedSong = playlist.songs[0];
 
 			if (searchContext) {
 				await options?.onPlaylistPlay?.(playlist, searchContext);
@@ -487,11 +494,9 @@ export class PlayerService extends Player {
 			throw new InformError(`Cannot set a dynamic player when there is nothing playing!`);
 		}
 
-		const queueData = queue.data as QueueData;
+		const previousPlayerMessage = queue.data.playerMessage;
 
-		const previousPlayerMessage = queueData.playerMessage;
-
-		if (queueData.dynamicPlayer && previousPlayerMessage) {
+		if (queue.data.dynamicPlayer && previousPlayerMessage) {
 			this.messageService.sendInfo(previousPlayerMessage, `The dynamic player was stopped because another one was created!`);
 
 			await this.clearDynamic(previousPlayerMessage);
@@ -518,7 +523,7 @@ export class PlayerService extends Player {
 					});
 
 					if (newPlayerMessage) {
-						queueData.playerMessage = newPlayerMessage;
+						queue.data.playerMessage = newPlayerMessage;
 
 						messageToReplace = newPlayerMessage;
 					}
@@ -536,37 +541,33 @@ export class PlayerService extends Player {
 
 		const interval = setInterval(updater, delay * 1000);
 
-		queueData.playerMessage = messageToReplace;
-		queueData.dynamicPlayer = { type, interval, updater };
+		queue.data.playerMessage = messageToReplace;
+		queue.data.dynamicPlayer = { type, interval, updater };
 	}
 
 	updateDynamic(context: MusicContext) {
 		const queue = this.getQueueOf(context);
 
-		const queueData = queue?.data as QueueData | undefined;
-
-		if (!queue || !queueData?.dynamicPlayer) {
+		if (!queue?.data.dynamicPlayer) {
 			return null;
 		}
 
-		return queueData.dynamicPlayer?.updater();
+		return queue.data.dynamicPlayer?.updater();
 	}
 
 	async clearDynamic(context: MusicContext) {
 		const queue = this.getQueueOf(context);
 
-		const queueData = queue?.data as QueueData | undefined;
-
-		if (!queue || !queueData?.dynamicPlayer) {
+		if (!queue?.data.dynamicPlayer) {
 			return null;
 		}
 
-		const { interval, type } = queueData.dynamicPlayer;
-		const playerMessage = queueData.playerMessage;
+		const { interval, type } = queue.data.dynamicPlayer;
+		const playerMessage = queue.data.playerMessage;
 
 		clearInterval(interval);
 
-		delete queueData.dynamicPlayer;
+		delete queue.data.dynamicPlayer;
 
 		if (playerMessage) {
 			await this.messageService.edit(playerMessage, this.createNowPlayingWidget(queue));

@@ -17,6 +17,8 @@ export type SongData = {
 	skipped?: boolean;
 };
 
+export type VQueue = Omit<Queue, 'data'> & { data: QueueData };
+
 export type MusicContext = Guild | GuildChannelsContext | Queue;
 
 export type PlayerButtonsOptions = {
@@ -50,7 +52,7 @@ export type PlayMusicData<
 	Options extends PlayMusicOptions<SongType, PlaylistType> = PlayMusicOptions<SongType, PlaylistType>,
 > = {
 	query: string;
-	queue: Queue;
+	queue: VQueue;
 	voiceChannel: GuildChannelResolvable;
 	volume: number;
 	requester: User;

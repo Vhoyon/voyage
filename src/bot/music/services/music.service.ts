@@ -52,6 +52,26 @@ export class MusicService {
 
 		if (guildId) {
 			try {
+				const hasMusicSetting = await this.prisma.musicSetting.count({
+					where: {
+						guild: {
+							guildId: guild.id,
+						},
+					},
+				});
+
+				if (!hasMusicSetting) {
+					await this.prisma.musicSetting.create({
+						data: {
+							guild: {
+								connect: {
+									guildId: guild.id,
+								},
+							},
+						},
+					});
+				}
+
 				await this.prisma.musicSetting.updateMany({
 					data: {
 						volume,
@@ -78,11 +98,11 @@ export class MusicService {
 	async playLastPlayedSong(context: MusicContext) {
 		const queue = this.player.getQueueOf(context);
 
-		if (!queue || !(queue.data as QueueData).lastPlayedSong) {
+		if (!queue?.data.lastPlayedSong) {
 			throw new InformError(`You need to at least play one song before I can play the last played song!`);
 		}
 
-		const lastPlayedSong = (queue.data as QueueData).lastPlayedSong!;
+		const lastPlayedSong = queue.data.lastPlayedSong;
 
 		const isSameSong = lastPlayedSong == queue.nowPlaying;
 
@@ -153,14 +173,14 @@ export class MusicService {
 			throw new InformError(`I'm not even playing a song :/`);
 		}
 
-		const wasPaused = (queue.data as QueueData).isPaused;
+		const wasPaused = queue.data.isPaused;
 
 		if (wasPaused) {
 			throw new InformError(`The player is already paused! To resume the song, use the resume command!`);
 		}
 
 		queue.setPaused(true);
-		(queue.data as QueueData).isPaused = true;
+		queue.data.isPaused = true;
 
 		return `Paused ${inlineCode(queue.nowPlaying.name)}!`;
 	}
@@ -172,14 +192,14 @@ export class MusicService {
 			throw new InformError(`There is no song to resume, play a song first!`);
 		}
 
-		const wasPaused = (queue.data as QueueData).isPaused;
+		const wasPaused = queue.data.isPaused;
 
 		if (!wasPaused) {
 			throw new InformError(`There is no song to resume, play a song first!`);
 		}
 
 		queue.setPaused(false);
-		(queue.data as QueueData).isPaused = false;
+		queue.data.isPaused = false;
 
 		return `Resumed ${inlineCode(queue.nowPlaying.name)}!`;
 	}
@@ -191,7 +211,7 @@ export class MusicService {
 			throw new InformError(`Play a song first!`);
 		}
 
-		const wasPaused = (queue.data as QueueData).isPaused;
+		const wasPaused = queue.data.isPaused;
 
 		if (wasPaused) {
 			return this.resume(queue);
@@ -331,16 +351,14 @@ export class MusicService {
 				return;
 			}
 
-			const queueData = queue.data as QueueData;
-
-			if (queueData.playerMessage) {
-				if (queueData.dynamicPlayer) {
+			if (queue.data.playerMessage) {
+				if (queue.data.dynamicPlayer) {
 					await this.player.clearDynamic(queue);
 				}
 
-				await queueData.playerMessage.delete();
+				await queue.data.playerMessage.delete();
 
-				queueData.playerMessage = message;
+				queue.data.playerMessage = message;
 			}
 
 			if (dynamicPlayerOptions?.type) {
