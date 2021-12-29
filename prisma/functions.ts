@@ -23,11 +23,21 @@ export type PushDbOptions = {
 export async function pushDb(options?: Partial<PushDbOptions>) {
 	const opts: PushDbOptions = { ...{ skipGenerators: false, acceptDataLoss: false, forceReset: false }, ...(options ?? {}) };
 
-	let optionsString = '';
+	const mapping: Record<keyof PushDbOptions, string> = {
+		skipGenerators: '--skip-generate',
+		acceptDataLoss: '--accept-data-loss',
+		forceReset: '--force-reset',
+	};
 
-	optionsString = `${optionsString}${opts.skipGenerators ? ' --skip-generate' : ''}`;
-	optionsString = `${optionsString}${opts.acceptDataLoss ? ' --accept-data-loss' : ''}`;
-	optionsString = `${optionsString}${opts.forceReset ? ' --force-reset' : ''}`;
+	const entries = Object.entries(mapping) as Array<[keyof PushDbOptions, string]>;
+
+	const optionsString = entries.reduce((acc, [key, option]) => {
+		if (opts[key]) {
+			return `${acc} ${option}`;
+		}
+
+		return acc;
+	}, '');
 
 	return exec(`${prismaBinary} db push${optionsString}`);
 }
