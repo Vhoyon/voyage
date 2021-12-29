@@ -226,7 +226,7 @@ export class MessageService {
 					}
 				}
 
-				return this.get(message);
+				return message;
 			}
 
 			throw 'Support for given Interaction context is not implemented yet!';
