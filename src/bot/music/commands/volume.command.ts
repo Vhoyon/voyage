@@ -1,9 +1,10 @@
 import { InteractionFromServer } from '$/bot/common/guards/interaction-from-server.guard';
+import { IsInVoiceChannel } from '$/bot/common/guards/is-in-voicechannel.guard';
 import { MessageService } from '$/bot/common/message.service';
 import { TransformPipe, ValidationPipe } from '@discord-nestjs/common';
 import { Command, DiscordTransformedCommand, Payload, UseGuards, UsePipes } from '@discord-nestjs/core';
 import { Logger } from '@nestjs/common';
-import { CommandInteraction, GuildMember } from 'discord.js';
+import { CommandInteraction } from 'discord.js';
 import { VolumeDto } from '../dtos/volume.dto';
 import { MusicGuard } from '../guards/music.guard';
 import { MusicService } from '../services/music.service';
@@ -12,7 +13,7 @@ import { MusicService } from '../services/music.service';
 	name: 'volume',
 	description: 'Sets the volume of the music bot for the server',
 })
-@UseGuards(InteractionFromServer, MusicGuard)
+@UseGuards(InteractionFromServer, MusicGuard, IsInVoiceChannel(`You need to be in a voice channel to set the music's volume!`))
 @UsePipes(TransformPipe, ValidationPipe)
 export class VolumeCommand implements DiscordTransformedCommand<VolumeDto> {
 	private readonly logger = new Logger(VolumeCommand.name);
@@ -20,18 +21,6 @@ export class VolumeCommand implements DiscordTransformedCommand<VolumeDto> {
 	constructor(private readonly messageService: MessageService, private readonly musicService: MusicService) {}
 
 	async handler(@Payload() { volume }: VolumeDto, interaction: CommandInteraction) {
-		const member = interaction.member;
-
-		if (!(member instanceof GuildMember)) {
-			return;
-		}
-
-		const voiceChannel = member.voice?.channel;
-
-		if (!voiceChannel) {
-			throw `You need to be in a voice channel to set the music's volume!`;
-		}
-
 		const wasPlaying = await this.musicService.setVolume(interaction, volume);
 
 		if (wasPlaying) {
