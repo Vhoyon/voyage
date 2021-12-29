@@ -33,7 +33,10 @@ export type CustomEmbedOptions = {
 } & MessageEmbedOptions;
 
 export type CustomSendOptions = {
-	/** Activate default message deletion timeout or set custom timeout in ms. 0 and negative values are ignored. */
+	/**
+	 * Activate default message deletion timeout or set custom timeout in seconds.
+	 * 0 and negative values are ignored.
+	 */
 	timeout?: boolean | number;
 };
 
