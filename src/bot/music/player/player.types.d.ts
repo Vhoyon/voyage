@@ -1,13 +1,15 @@
 import { GuildChannelsContext } from '$/bot/common/message.service';
-import { CallbackResult } from '$common/utils/types';
+import { CallbackResult, Promiseable } from '$common/utils/types';
 import { Playlist, Queue, Song } from 'discord-music-player';
 import { Guild, GuildChannelResolvable, Message, TextChannel, User } from 'discord.js';
+import { DynamicPlayerType } from './player.service';
 
 export type QueueData = {
 	textChannel?: TextChannel;
 	isPaused?: boolean;
 	lastPlayedSong?: Song;
 	dynamicPlayer?: DynamicPlayerData;
+	playerMessage?: Message;
 };
 
 export type SongData = {
@@ -23,16 +25,16 @@ export type PlayerButtonsOptions = {
 
 export type PlaySongCallbacks<T> = {
 	onSongSearch?: () => CallbackResult<T>;
-	onSongSearchError?: (searchContext: T) => CallbackResult<T>;
-	onSongPlay?: (searchContext: T, song: Song) => CallbackResult<T>;
-	onSongAdd?: (searchContext: T, song: Song) => CallbackResult<T>;
+	onSongSearchError?: (searchContext: T) => CallbackResult<unknown>;
+	onSongPlay?: (song: Song, searchContext: T) => CallbackResult<unknown>;
+	onSongAdd?: (song: Song, searchContext: T) => CallbackResult<unknown>;
 };
 
 export type PlayPlaylistCallbacks<T> = {
 	onPlaylistSearch?: () => CallbackResult<T>;
-	onPlaylistSearchError?: (searchContext: T) => CallbackResult<T>;
-	onPlaylistPlay?: (searchContext: T, playlist: Playlist) => CallbackResult<T>;
-	onPlaylistAdd?: (searchContext: T, playlist: Playlist) => CallbackResult<T>;
+	onPlaylistSearchError?: (searchContext: T) => CallbackResult<unknown>;
+	onPlaylistPlay?: (playlist: Playlist, searchContext: T) => CallbackResult<unknown>;
+	onPlaylistAdd?: (playlist: Playlist, searchContext: T) => CallbackResult<unknown>;
 };
 
 export type PlayMusicCallbacks<SongType, PlaylistType> = PlaySongCallbacks<SongType> & PlayPlaylistCallbacks<PlaylistType>;
@@ -58,7 +60,7 @@ export type PlayMusicData<
 export type DynamicPlayerData = {
 	type: DynamicPlayerType;
 	interval: NodeJS.Timer;
-	playerMessage?: Message;
+	updater: () => Promiseable<void>;
 };
 
 export type DynamicPlayerOptions = {

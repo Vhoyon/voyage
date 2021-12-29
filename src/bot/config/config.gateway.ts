@@ -1,6 +1,6 @@
 import { PrismaService } from '$common/prisma/prisma.service';
+import { DiscordClientProvider, On, Once } from '@discord-nestjs/core';
 import { Controller, Logger } from '@nestjs/common';
-import { Context, DiscordClientProvider, On, Once } from 'discord-nestjs';
 import { Guild } from 'discord.js';
 
 @Controller()
@@ -9,33 +9,33 @@ export class DiscordConfigGateway {
 
 	constructor(private readonly discordProvider: DiscordClientProvider, private readonly prisma: PrismaService) {}
 
-	@Once({ event: 'ready' })
+	@Once('ready')
 	async onReady() {
 		const client = this.discordProvider.getClient();
 
 		this.logger.log(`Logged in as ${client.user?.tag}!`);
 
-		await Promise.all(
-			client.guilds.cache.map(async (guild) => {
-				const pGuild = await this.prisma.guild.findUnique({
-					where: {
+		const guildCreations = client.guilds.cache.map(async (guild) => {
+			const pGuild = await this.prisma.guild.findUnique({
+				where: {
+					guildId: guild.id,
+				},
+			});
+
+			if (!pGuild) {
+				return await this.prisma.guild.create({
+					data: {
 						guildId: guild.id,
 					},
 				});
+			}
+		});
 
-				if (!pGuild) {
-					return await this.prisma.guild.create({
-						data: {
-							guildId: guild.id,
-						},
-					});
-				}
-			}),
-		);
+		await Promise.all(guildCreations);
 	}
 
-	@On({ event: 'guildCreate' })
-	async onJoinGuild(@Context() [guild]: [Guild]) {
+	@On('guildCreate')
+	async onJoinGuild(guild: Guild) {
 		await this.prisma.guild.create({
 			data: {
 				guildId: guild.id,
@@ -45,8 +45,8 @@ export class DiscordConfigGateway {
 		this.logger.log(`Joined a new guild : "${guild.name}" (id: ${guild.id})!`);
 	}
 
-	@On({ event: 'guildDelete' })
-	async onLeaveGuild(@Context() [guild]: [Guild]) {
+	@On('guildDelete')
+	async onLeaveGuild(guild: Guild) {
 		try {
 			await this.prisma.guild.delete({
 				where: {

@@ -1,14 +1,18 @@
-import { InformErrorInfo, InformInternalError } from '$/bot/common/error/inform-error';
+import { InformError, InformErrorInfo, InformInternalError } from '$/bot/common/error/inform-error';
 import { PrismaService } from '$common/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
-import { Message } from 'discord.js';
+import { CommandInteraction } from 'discord.js';
 
 @Injectable()
 export class BlacklistService {
 	constructor(private readonly prisma: PrismaService) {}
 
-	async blacklist(message: Message) {
-		const textChannel = message.channel;
+	async blacklist(interaction: CommandInteraction) {
+		const textChannel = interaction.channel;
+
+		if (!textChannel || !interaction.guild) {
+			throw new InformError(`You need to use this command in a server!`);
+		}
 
 		try {
 			await this.prisma.guild.update({
@@ -20,7 +24,7 @@ export class BlacklistService {
 					},
 				},
 				where: {
-					guildId: message.guild!.id,
+					guildId: interaction.guild.id,
 				},
 			});
 
@@ -30,26 +34,34 @@ export class BlacklistService {
 		}
 	}
 
-	async unblacklist(message: Message) {
-		const textChannel = message.channel;
+	async unblacklist(interaction: CommandInteraction) {
+		const textChannel = interaction.channel;
+
+		if (!textChannel || !interaction.guild) {
+			throw new InformError(`You need to use this command in a server!`);
+		}
+
+		let count: number;
 
 		try {
-			const { count } = await this.prisma.musicBlacklistedChannel.deleteMany({
+			const result = await this.prisma.musicBlacklistedChannel.deleteMany({
 				where: {
 					channelId: textChannel.id,
 					guild: {
-						guildId: message.guild!.id,
+						guildId: interaction.guild.id,
 					},
 				},
 			});
 
-			if (count > 0) {
-				return `Unblocked this channel for accepting music commands!`;
-			} else {
-				throw new InformErrorInfo(`This channel was already blacklisted!`);
-			}
+			count = result.count;
 		} catch (error) {
 			throw new InformInternalError(`An error happened while deleting the blacklisted channel from the database!`);
+		}
+
+		if (count > 0) {
+			return `Unblocked this channel for accepting music commands!`;
+		} else {
+			throw new InformErrorInfo(`This channel was already free from sending music commands!`);
 		}
 	}
 }

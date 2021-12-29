@@ -1,8 +1,8 @@
 import { MessageService } from '$/bot/common/message.service';
 import { PrismaService } from '$common/prisma/prisma.service';
+import { DiscordGuard } from '@discord-nestjs/core';
 import { Injectable } from '@nestjs/common';
-import { DiscordGuard } from 'discord-nestjs';
-import { ClientEvents, Message } from 'discord.js';
+import { ClientEvents, Interaction } from 'discord.js';
 
 /** The number of seconds to keep the blacklisted message and its command. */
 export const BLACKLISTED_MESSAGE_RETENTION = 3;
@@ -11,33 +11,35 @@ export const BLACKLISTED_MESSAGE_RETENTION = 3;
 export class MusicGuard implements DiscordGuard {
 	constructor(private readonly prisma: PrismaService, private readonly messageService: MessageService) {}
 
-	async canActive(event: keyof ClientEvents, [message]: [Message]): Promise<boolean> {
-		const handlingEvents: (keyof ClientEvents)[] = ['message', 'messageCreate'];
+	async canActive(event: keyof ClientEvents, [interaction]: [Interaction]): Promise<boolean> {
+		const handlingEvents: (keyof ClientEvents)[] = ['interaction', 'interactionCreate'];
 
 		if (!handlingEvents.includes(event)) {
 			return true;
 		}
 
+		if (!interaction.isCommand()) {
+			return false;
+		}
+
+		if (!interaction.guild) {
+			return false;
+		}
+		if (!interaction.channel) {
+			return false;
+		}
+
 		const guild = await this.prisma.guild.findUnique({
 			where: {
-				guildId: message.guild!.id,
+				guildId: interaction.guild.id,
 			},
 			include: {
 				musicBlacklistedChannels: true,
 			},
 		});
 
-		if (guild?.musicBlacklistedChannels.some((blChannel) => blChannel.channelId == message.channel.id)) {
-			const sendBlacklistedMessage = async () => {
-				const sentMessage = await this.messageService.sendError(message, `You can't use any music command on this channel!`);
-
-				setTimeout(async () => {
-					sentMessage.delete();
-					message.delete();
-				}, BLACKLISTED_MESSAGE_RETENTION * 1000);
-			};
-
-			sendBlacklistedMessage();
+		if (guild?.musicBlacklistedChannels.some((blChannel) => blChannel.channelId == interaction.channel!.id)) {
+			await this.messageService.sendError(interaction, `You can't use any music command on this channel!`, { ephemeral: true });
 
 			return false;
 		}

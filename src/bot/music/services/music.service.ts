@@ -1,7 +1,7 @@
 import { InformError } from '$/bot/common/error/inform-error';
 import { GuildChannelsContext, MessageService, SendableOptions } from '$/bot/common/message.service';
 import { PrismaService } from '$common/prisma/prisma.service';
-import { parseTimeIntoSeconds } from '$common/utils/funcs';
+import { parseMsIntoTime, parseTimeIntoSeconds } from '$common/utils/funcs';
 import { bold, inlineCode } from '@discordjs/builders';
 import { Injectable, Logger } from '@nestjs/common';
 import { Queue, RepeatMode, Song } from 'discord-music-player';
@@ -200,7 +200,7 @@ export class MusicService {
 		}
 	}
 
-	async seek(timestamp: string, context: MusicContext) {
+	async seek(context: MusicContext, timestamp: string) {
 		const queue = this.player.getQueueOf(context);
 
 		if (!this.player.hasQueueAndPlaying(queue)) {
@@ -211,16 +211,20 @@ export class MusicService {
 		const seekTimeMS = seekTime * 1000;
 
 		if (seekTimeMS > queue.nowPlaying.millisecons) {
+			const inlinedDuration = inlineCode(queue.nowPlaying.duration);
+
 			throw new InformError(
-				`You are trying to seek to a time greater than the song itself (${inlineCode(
-					queue.nowPlaying.duration,
-				)}). If you want to skip the song, use the skip command!`,
+				`You are trying to seek to a time greater than the song itself (${inlinedDuration}). If you want to skip the song, use the skip command!`,
 			);
 		}
 
 		await queue.seek(seekTimeMS);
 
-		return `Seeked current song to ${timestamp}!`;
+		this.player.updateDynamic(queue);
+
+		const formattedTimestamp = parseMsIntoTime(seekTimeMS);
+
+		return `Seeked current song to ${formattedTimestamp}!`;
 	}
 
 	toggleLoop(context: MusicContext) {
@@ -322,6 +326,22 @@ export class MusicService {
 
 		if (channelContext) {
 			const message = await this.messageService.send(channelContext, nowPlayingWidget);
+
+			if (!message) {
+				return;
+			}
+
+			const queueData = queue.data as QueueData;
+
+			if (queueData.playerMessage) {
+				if (queueData.dynamicPlayer) {
+					await this.player.clearDynamic(queue);
+				}
+
+				await queueData.playerMessage.delete();
+
+				queueData.playerMessage = message;
+			}
 
 			if (dynamicPlayerOptions?.type) {
 				await this.player.setDynamic(message, dynamicPlayerOptions);

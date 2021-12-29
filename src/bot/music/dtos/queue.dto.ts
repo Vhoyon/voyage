@@ -1,17 +1,13 @@
-import { Expose, Type } from 'class-transformer';
-import { IsNumber, IsOptional, Max, Min } from 'class-validator';
-import { ArgNum } from 'discord-nestjs';
+import { Param, ParamType } from '@discord-nestjs/core';
+import { IsOptional, Max, Min } from 'class-validator';
 
 export const MINIMUM = 1;
 export const MAXIMUM = 30;
 
 export class QueueDto {
-	@ArgNum((_last: number) => ({ position: 1 }))
-	@Expose()
 	@IsOptional()
-	@Type(() => Number)
-	@IsNumber()
 	@Min(MINIMUM)
 	@Max(MAXIMUM)
-	count!: number;
+	@Param({ description: 'Number of songs to show', required: false, type: ParamType.INTEGER })
+	count?: number;
 }
