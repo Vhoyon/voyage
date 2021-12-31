@@ -10,10 +10,10 @@ import { GenericErrorFilter } from './common/filters/generic.filter';
 import { DiscordConfigGateway } from './config/config.gateway';
 import { MusicModule } from './music/music.module';
 
-const imports: DiscordModuleAsyncOptions['imports'] = [ConfigModule, PrismaModule, CommonModule, MusicModule];
+const discordImports: DiscordModuleAsyncOptions['imports'] = [PrismaModule, CommonModule, MusicModule];
 
 export const discordModule = DiscordModule.forRootAsync({
-	imports,
+	imports: [ConfigModule, ...discordImports],
 	inject: [EnvironmentConfig],
 	useFactory: async (env: EnvironmentConfig) => {
 		const isProd = env.NODE_ENV == 'production';
