@@ -29,17 +29,17 @@ export class MusicGuard implements DiscordGuard {
 			return false;
 		}
 
-		const guild = await this.prisma.guild.findUnique({
+		const isBlacklistedChannel = await this.prisma.musicBlacklistedChannel.count({
 			where: {
-				guildId: interaction.guild.id,
-			},
-			include: {
-				musicBlacklistedChannels: true,
+				channelId: interaction.channel.id,
+				guild: {
+					guildId: interaction.guild.id,
+				},
 			},
 		});
 
-		if (guild?.musicBlacklistedChannels.some((blChannel) => blChannel.channelId == interaction.channel!.id)) {
-			await this.messageService.sendError(interaction, `You can't use any music command on this channel!`, { ephemeral: true });
+		if (isBlacklistedChannel) {
+			await this.messageService.sendError(interaction, `You can't use any music command on this channel!`);
 
 			return false;
 		}
