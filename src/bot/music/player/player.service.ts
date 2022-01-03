@@ -126,7 +126,7 @@ export class PlayerService extends Player {
 	}
 
 	/** @inheritdoc */
-	override createQueue(guildId: string, options?: PlayerOptions & { data: QueueData }): VQueue {
+	override createQueue(guildId: string, options: PlayerOptions & { data: QueueData }): VQueue {
 		return super.createQueue(guildId, options) as VQueue;
 	}
 
@@ -192,11 +192,11 @@ export class PlayerService extends Player {
 		return { queue: finalQueue, musicSettings: guildMusicSettings, isNewQueue: !queue };
 	}
 
-	isQueuePlaying(queue: Queue) {
+	isQueuePlaying(queue: Queue): queue is Queue & { nowPlaying: Song } {
 		return !!queue.nowPlaying;
 	}
 
-	hasQueueAndPlaying(queue: Queue | null | undefined): queue is Queue {
+	hasQueueAndPlaying(queue: VQueue | null | undefined): queue is VQueue & { nowPlaying: Song } {
 		const isPlaying = !!queue && this.isQueuePlaying(queue);
 
 		if (queue) {

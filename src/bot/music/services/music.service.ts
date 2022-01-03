@@ -169,7 +169,7 @@ export class MusicService {
 	pause(context: MusicContext) {
 		const queue = this.player.getQueueOf(context);
 
-		if (!queue) {
+		if (!this.player.hasQueueAndPlaying(queue)) {
 			throw new InformError(`I'm not even playing a song :/`);
 		}
 
@@ -188,14 +188,14 @@ export class MusicService {
 	resume(context: MusicContext) {
 		const queue = this.player.getQueueOf(context);
 
-		if (!queue) {
+		if (!this.player.hasQueueAndPlaying(queue)) {
 			throw new InformError(`There is no song to resume, play a song first!`);
 		}
 
 		const wasPaused = queue.data.isPaused;
 
 		if (!wasPaused) {
-			throw new InformError(`There is no song to resume, play a song first!`);
+			throw new InformError(`The song is already playing, no need to resume it!`);
 		}
 
 		queue.setPaused(false);
@@ -230,7 +230,7 @@ export class MusicService {
 		const seekTime = parseTimeIntoSeconds(timestamp);
 		const seekTimeMS = seekTime * 1000;
 
-		if (seekTimeMS > queue.nowPlaying.millisecons) {
+		if (seekTimeMS > queue.nowPlaying.milliseconds) {
 			const inlinedDuration = inlineCode(queue.nowPlaying.duration);
 
 			throw new InformError(

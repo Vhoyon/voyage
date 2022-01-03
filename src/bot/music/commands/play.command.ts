@@ -124,7 +124,7 @@ export class PlayCommand implements DiscordTransformedCommand<PlayDto> {
 	protected onPlaylistAdd(playlist: Playlist, interaction: CommandInteraction) {
 		// const playerButtons = this.player.createPlayerButtons();
 
-		const totalDuration = playlist.songs.reduce((acc, song) => acc + song.millisecons, 0);
+		const totalDuration = playlist.songs.reduce((acc, song) => acc + song.milliseconds, 0);
 		const formattedTotalDuration = parseMsIntoTime(totalDuration);
 
 		return this.messageService.replace(interaction, {
