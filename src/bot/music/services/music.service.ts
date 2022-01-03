@@ -38,7 +38,10 @@ export class MusicService {
 			return;
 		}
 
-		return this.player.play(query, message.member.voice.channel, message.author, {
+		return this.player.play({
+			query,
+			voiceChannel: message.member.voice.channel,
+			requester: message.author,
 			textChannel: message.channel instanceof TextChannel ? message.channel : undefined,
 			...options,
 		});

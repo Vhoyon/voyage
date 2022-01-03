@@ -342,11 +342,13 @@ export class PlayerService extends Player {
 	}
 
 	async play<SongType, PlaylistType>(
-		query: string,
-		voiceChannel: VoiceChannel | StageChannel,
-		requester: User,
-		options?: PlayMusicOptions<SongType, PlaylistType>,
+		data: {
+			query: string;
+			voiceChannel: VoiceChannel | StageChannel;
+			requester: User;
+		} & PlayMusicOptions<SongType, PlaylistType>,
 	): Promise<PlayType> {
+		const { query, voiceChannel, requester, ...options } = data;
 		const { queue, musicSettings } = await this.getOrCreateQueueOf(voiceChannel.guild, options?.textChannel);
 
 		const playType = await this.playMusic({

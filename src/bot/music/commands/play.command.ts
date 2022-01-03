@@ -30,7 +30,10 @@ export class PlayCommand implements DiscordTransformedCommand<PlayDto> {
 		const member = interaction.member as GuildMember;
 		const voiceChannel = member.voice.channel!;
 
-		await this.player.play(query, voiceChannel, member.user, {
+		await this.player.play({
+			query,
+			voiceChannel,
+			requester: member.user,
 			onSongSearch: () => this.onSearch(interaction, query),
 			onPlaylistSearch: () => this.onSearch(interaction, query),
 			onSongSearchError: () => this.onSongSearchError(interaction, query),

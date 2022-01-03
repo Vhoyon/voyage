@@ -155,7 +155,7 @@ export class MomsMusicService {
 		};
 
 		if (!lastLogInTimeout && (doPlayMusic?.() ?? true)) {
-			await this.player.play(query, voiceChannel, user, playOptions);
+			await this.player.play({ query, voiceChannel, requester: user, ...playOptions });
 		}
 
 		return result;
