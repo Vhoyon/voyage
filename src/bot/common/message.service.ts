@@ -195,7 +195,7 @@ export class MessageService {
 		return this.sendError(context, error, { type: 'internal_error', ...options });
 	}
 
-	async sendRaw(context: ChannelContext, payload?: SendableOptions) {
+	async sendRaw(context: ChannelContext, payload?: SendableOptions): Promise<Message> {
 		/** Can't delete ephemeral messages. */
 		const isEphemeral = payload && 'ephemeral' in payload && payload.ephemeral;
 
