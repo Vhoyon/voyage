@@ -16,11 +16,9 @@ export const ButtonInteractionWithId = (id: string | { customId: string }) => {
 				return false;
 			}
 
-			if (typeof id == 'string') {
-				return interaction.customId == id;
-			} else {
-				return interaction.customId == id.customId;
-			}
+			const customId = typeof id == 'string' ? id : id.customId;
+
+			return interaction.customId == customId;
 		}
 	}
 
