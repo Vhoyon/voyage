@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@discord-nestjs/common": "2.0.16",
-    "@discord-nestjs/core": "2.1.11",
+    "@discord-nestjs/core": "2.1.12",
     "@discordjs/builders": "0.11.0",
     "@discordjs/opus": "0.7.0",
     "@discordjs/voice": "0.7.5",
