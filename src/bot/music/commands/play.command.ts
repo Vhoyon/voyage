@@ -7,7 +7,7 @@ import { Command, DiscordTransformedCommand, Payload, UseGuards, UsePipes } from
 import { bold, inlineCode } from '@discordjs/builders';
 import { Logger } from '@nestjs/common';
 import { Playlist, Song } from 'discord-music-player';
-import { CommandInteraction, GuildMember } from 'discord.js';
+import { CommandInteraction, GuildMember, TextChannel } from 'discord.js';
 import { PlayDto } from '../dtos/play.dto';
 import { MAXIMUM as VOLUME_MAXIMUM } from '../dtos/volume.dto';
 import { MusicGuard } from '../guards/music.guard';
@@ -29,11 +29,13 @@ export class PlayCommand implements DiscordTransformedCommand<PlayDto> {
 	async handler(@Payload() { query, dynamicType }: PlayDto, interaction: CommandInteraction) {
 		const member = interaction.member as GuildMember;
 		const voiceChannel = member.voice.channel!;
+		const textChannel = interaction.channel instanceof TextChannel ? interaction.channel : undefined;
 
 		await this.player.play({
 			query,
 			voiceChannel,
 			requester: member.user,
+			textChannel,
 			onSongSearch: () => this.onSearch(interaction, query),
 			onPlaylistSearch: () => this.onSearch(interaction, query),
 			onSongSearchError: () => this.onSongSearchError(interaction, query),
