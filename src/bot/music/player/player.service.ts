@@ -215,7 +215,7 @@ export class PlayerService extends Player {
 
 		await this.clearDynamic(queue);
 
-		queue.destroy(true);
+		queue.leave();
 		this.emit('clientDisconnect', queue);
 
 		return true;
