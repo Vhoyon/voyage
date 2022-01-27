@@ -2,9 +2,11 @@ import { InteractionButtonOptions } from 'discord.js';
 
 export type PartialInteractionButtonOptions = Partial<InteractionButtonOptions> & Pick<InteractionButtonOptions, 'customId'>;
 
-export type InteractionButtonNames = 'LAST_SONG' | 'PLAY_PAUSE' | 'SKIP' | 'REPEAT' | 'REPEAT_ALL' | 'DISCONNECT' | 'STOP_DYNAMIC_PLAYER';
+function createInteractionButtonMap<T extends { [name: string]: PartialInteractionButtonOptions }>(map: T) {
+	return map;
+}
 
-export const MusicInteractionConstant: Record<InteractionButtonNames, PartialInteractionButtonOptions> = {
+export const MusicInteractionConstant = createInteractionButtonMap({
 	LAST_SONG: {
 		customId: 'voyage_i_music_last_song',
 		emoji: '⏮',
@@ -33,4 +35,4 @@ export const MusicInteractionConstant: Record<InteractionButtonNames, PartialInt
 		customId: 'voyage_i_music_stop_dynamic_player',
 		emoji: '🛑',
 	},
-};
+});
