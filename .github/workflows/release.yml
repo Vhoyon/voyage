@@ -5,18 +5,12 @@ on:
     branches:
       - 'master'
 
-env:
-  NODE_VERSION: '14'
-
 jobs:
   release-please:
     name: 'Run'
     runs-on: ubuntu-latest
 
     steps:
-      - uses: GoogleCloudPlatform/release-please-action@v2
+      - uses: GoogleCloudPlatform/release-please-action@v3
         with:
-          token: '${{ secrets.GITHUB_TOKEN }}'
-          release-type: node
-          bump-minor-pre-major: true
-          changelog-types: '[{"type":"feat","section":"Features","hidden":false},{"type":"fix","section":"Bug Fixes","hidden":false},{"type":"perf","section":"Performance","hidden":false},{"type":"refactor","section":"Refactors","hidden":false},{"type":"docs","section":"Documentation","hidden":false},{"type":"ci","section":"Continuous Integration","hidden":false},{"type":"chore","section":"Miscellaneous","hidden":false},{"type":"test","section":"Tests","hidden":false},{"type":"deps","section":"Dependencies","hidden":true},{"type":"revert","section":"Reverts","hidden":false}]'
+          command: manifest

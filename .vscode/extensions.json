@@ -1,9 +1,7 @@
 {
 	"recommendations":[
-		"esbenp.prettier-vscode",
-		"dbaeumer.vscode-eslint",
-		"prisma.prisma",
 		"orta.vscode-jest",
-		"graphql.vscode-graphql"
-	], 
+		"esbenp.prettier-vscode",
+		"dbaeumer.vscode-eslint"
+	],
 }

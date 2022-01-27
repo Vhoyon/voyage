@@ -1,54 +1,39 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "commonjs",
-    "lib": [
-      "ESNext"
-    ],
-    
     "allowJs": true,
-    
-    "baseUrl": "./",
-    "paths": {
-      "$prisma-graphql/*": ["./src/_generated/prisma-nestjs-graphql/*"],
-      "$common/*": ["./src/@common/*"],
-      "$/*": ["./src/*"],
-    },
     
     "typeRoots": [
       "@types",
       "./node_modules/@types"
     ],
     
-    "outDir": "./dist",
-    "declaration": false,
+    "importHelpers": true,
+    
+    "declaration": true,
     "sourceMap": true,
     "removeComments": false,
     "incremental": true,
+    
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    
     "skipLibCheck": true,
+    "noEmitOnError": true,
+    // "importsNotUsedAsValues": "error",
+    
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     
     "strict": true,
     "noImplicitAny": true,
+    "noImplicitThis": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
     "strictBindCallApply": true,
     "strictPropertyInitialization": true,
-    "noImplicitThis": true,
     "alwaysStrict": true,
     "noImplicitOverride": true,
-    // "importsNotUsedAsValues": "error",
-    
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-  },
-  "include": [
-    "src/**/*.ts",
-  ],
-  "exclude": [
-    "node_modules",
-    "src/**/*.spec.ts",
-    "src/**/*.d.ts",
-  ]
+  }
 }
