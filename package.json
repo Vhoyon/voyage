@@ -52,7 +52,7 @@
     "class-transformer": "0.4.0",
     "class-validator": "0.13.2",
     "deepmerge": "4.2.2",
-    "discord-music-player": "8.3.1",
+    "discord-music-player": "github:V-ed/discord-music-player",
     "discord.js": "13.3.1",
     "ffmpeg": "0.0.4",
     "ffmpeg-static": "4.4.1",
@@ -62,7 +62,8 @@
     "graphql-ws": "5.5.5",
     "nest-typed-config": "2.3.0",
     "reflect-metadata": "0.1.13",
-    "rxjs": "7.5.2"
+    "rxjs": "7.5.2",
+    "ytdl-core": "^4.10.0"
   },
   "devDependencies": {
     "@nestjs/cli": "8.2.0",
