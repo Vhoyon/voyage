@@ -21,7 +21,7 @@ jobs:
           cache: 'npm'
 
       - name: Install
-        run: npm install
+        run: npm ci
 
       - name: Lint Prisma
         run: npm run lint:prisma
@@ -44,7 +44,7 @@ jobs:
           cache: 'npm'
 
       - name: Install
-        run: npm install
+        run: npm ci
 
       - name: Build
         run: npm run build
@@ -73,7 +73,7 @@ jobs:
           cache: 'npm'
 
       - name: Install
-        run: npm install
+        run: npm ci
 
       - name: Init
         run: npm run init
@@ -109,7 +109,7 @@ jobs:
           cache: 'npm'
 
       - name: Install
-        run: npm install
+        run: npm ci
 
       - name: Init
         run: npm run init
