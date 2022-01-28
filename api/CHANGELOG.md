@@ -1,5 +1,13 @@
 # Changelog
 
+### [0.5.3](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.5.2...voyage-discord-bot-v0.5.3) (2022-01-28)
+
+
+### Bug Fixes
+
+* dev / prod path issues with prisma generators ([e6e029e](https://github.com/Vhoyon/voyage/commit/e6e029e02f923dcff781d2f0f72f749e8683161b))
+* switch condition to test for prod instead of dev for prisma bin ([cce482d](https://github.com/Vhoyon/voyage/commit/cce482d2ccf694cb56d4ab646b9bea52b1c16fd0))
+
 ### [0.5.2](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.5.1...voyage-discord-bot-v0.5.2) (2022-01-28)
 
 
