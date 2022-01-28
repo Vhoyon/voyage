@@ -1,6 +1,6 @@
 {
   "name": "client",
-  "version": "0.0.0",
+  "version": "0.0.2",
   "description": "Web client using Svelte, Routify, Svelte-Materialify and WindiCSS for theming, with support of GraphQL through URQL.",
   "private": true,
   "scripts": {
