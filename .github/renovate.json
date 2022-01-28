@@ -1,3 +1,14 @@
 {
-	"extends": ["github>V-ed/renovate-config"]
+	"extends": ["github>V-ed/renovate-config"],
+	"packageRules": [
+		{
+			"matchPackageNames": [
+				"ytdl-core"
+			],
+			"schedule": [
+				"at any time"
+			],
+			"automerge": true
+		}
+	]
 }
