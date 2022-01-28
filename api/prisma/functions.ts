@@ -8,11 +8,17 @@ const exec = util.promisify(execNoPromise);
 
 // Prisma Utils
 
-const projectRoot: string[] = process.env.NODE_ENV == 'development' ? ['..', '..'] : ['..'];
+function getPrismaBinary() {
+	const projectRoot: string[] = process.env.NODE_ENV == 'production' ? ['..'] : ['..', '..'];
 
-const prismaBinary = path.join(__dirname, ...projectRoot, 'node_modules', '.bin', 'prisma');
+	const prismaBinary = path.join(__dirname, ...projectRoot, 'node_modules', '.bin', 'prisma');
+
+	return prismaBinary;
+}
 
 export async function generate() {
+	const prismaBinary = getPrismaBinary();
+
 	return exec(`${prismaBinary} generate`);
 }
 
@@ -41,10 +47,14 @@ export async function pushDb(options?: Partial<PushDbOptions>) {
 		return acc;
 	}, '');
 
+	const prismaBinary = getPrismaBinary();
+
 	return exec(`${prismaBinary} db push${optionsString}`);
 }
 
 export async function seedDb() {
+	const prismaBinary = getPrismaBinary();
+
 	return exec(`${prismaBinary} db seed`);
 }
 
