@@ -1,16 +1,26 @@
 # Changelog
 
-## [0.5.0](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.4.0...voyage-discord-bot-v0.5.0) (2022-01-28)
+## [0.5.0](https://github.com/Vhoyon/voyage/compare/v0.4.0...voyage-discord-bot-v0.5.0) (2022-01-28)
 
 
 ### Features
 
+* **discord-nestjs:** Update to v2 and general improvements ([#30](https://www.github.com/Vhoyon/voyage/issues/30)) ([b526976](https://www.github.com/Vhoyon/voyage/commit/b526976fb525b756a9145bde90c8c3b2b124928e))
+* **MomsMusic:** add logic to play music on timed-out joins ([#16](https://www.github.com/Vhoyon/voyage/issues/16)) ([7776d66](https://www.github.com/Vhoyon/voyage/commit/7776d6680844c1f5365f8733a5e7ed9e2193a0b6))
+* **MomsMusic:** probability of annoying theme when nico joins ([13cbeb8](https://www.github.com/Vhoyon/voyage/commit/13cbeb8de9dc14403b919673269abe93fa25b18e))
+* **music:** add dynamic player ([#12](https://www.github.com/Vhoyon/voyage/issues/12)) ([83c5017](https://www.github.com/Vhoyon/voyage/commit/83c5017780e70d73dbf801dcdf825009e9d3c207))
 * update licence to 2022 ([27c370b](https://github.com/Vhoyon/voyage/commit/27c370b714c39c9b50e88165d540863e00c3d933))
 
 
 ### Bug Fixes
 
 * better DX by inferring interaction button keys ([c7c173f](https://github.com/Vhoyon/voyage/commit/c7c173fc157a776b8dd9b9c9110ab910ee20fa01))
+* **discord-music-player:** backward imcompatible change to leave vc ([03d507c](https://www.github.com/Vhoyon/voyage/commit/03d507c87f2820cfac06e8122d71caa388fb6fd4))
+* **music:** looping is now a toggle ([376ee42](https://www.github.com/Vhoyon/voyage/commit/376ee42b97681dd2e692120407811e4a3c6c3d65))
+* node engine version set to ^16 instead of >= 16 ([97f7645](https://www.github.com/Vhoyon/voyage/commit/97f76450b34e25b954e75770c4807a3bbe19f1f4))
+* **play:** give textChannel context to queue when playing song ([d3d553d](https://www.github.com/Vhoyon/voyage/commit/d3d553d76420bea0bbeddb16439b563e8b31701b))
+* possible update wrong settings if undefined guild ([77b8ad2](https://www.github.com/Vhoyon/voyage/commit/77b8ad2d406d16dac3718768ac4bc1fa39b1e164))
+* prevent interactions from members not in voice channel ([f587e9a](https://www.github.com/Vhoyon/voyage/commit/f587e9a829179812b861f236935f8f31eada5a3c))
 
 ## [0.4.0](https://www.github.com/Vhoyon/voyage/compare/v0.3.0...v0.4.0) (2021-10-08)
 
