@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.5.0](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.4.0...voyage-discord-bot-v0.5.0) (2022-01-28)
+
+
+### Features
+
+* update licence to 2022 ([27c370b](https://github.com/Vhoyon/voyage/commit/27c370b714c39c9b50e88165d540863e00c3d933))
+
+
+### Bug Fixes
+
+* better DX by inferring interaction button keys ([c7c173f](https://github.com/Vhoyon/voyage/commit/c7c173fc157a776b8dd9b9c9110ab910ee20fa01))
+
 ## [0.4.0](https://www.github.com/Vhoyon/voyage/compare/v0.3.0...v0.4.0) (2021-10-08)
 
 
