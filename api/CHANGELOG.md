@@ -1,5 +1,13 @@
 # Changelog
 
+### [0.5.1](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.5.0...voyage-discord-bot-v0.5.1) (2022-01-28)
+
+
+### Bug Fixes
+
+* engines fields not setup in api package.json ([543eda3](https://github.com/Vhoyon/voyage/commit/543eda3c9d725e6ad807ccfef659019871d59159))
+* refactor into error mapping to better handle player errors ([ce5614c](https://github.com/Vhoyon/voyage/commit/ce5614cfe92af382dd043570108d7c039611e0e7))
+
 ## [0.5.0](https://github.com/Vhoyon/voyage/compare/v0.4.0...voyage-discord-bot-v0.5.0) (2022-01-28)
 
 
