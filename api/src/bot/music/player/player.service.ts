@@ -101,20 +101,19 @@ export class PlayerService extends Player {
 		this.on('error', (error, queue) => {
 			const queueData = queue.data as QueueData;
 
-			if (queueData.textChannel && error == 'Status code: 410') {
-				this.messageService.sendError(
-					queueData.textChannel,
-					`Couldn't play the given query. If you used a link, make sure the video / playlist is not private or age restricted!`,
-				);
-			} else if (queueData.textChannel && error == 'Status code: 403') {
-				this.messageService.sendError(
-					queueData.textChannel,
-					`A forbidden error happened while trying to load the given query. Either try again or find another source!`,
-				);
-			} else {
-				if (queueData.textChannel) {
-					this.messageService.sendError(queueData.textChannel, `An unexpected error happened in the music player...`);
-				}
+			/** Error string to message mapping. */
+			const errorMap: Record<string, string> = {
+				'Status code: 410': `Couldn't play the given query. If you used a link, make sure the video / playlist is not private or age restricted!`,
+				'Status code: 403': `A forbidden error happened while trying to load the given query. Either try again or find another source!`,
+			};
+
+			if (queueData.textChannel) {
+				const errorMessage = errorMap[error] ?? `An unexpected error happened in the music player...`;
+
+				this.messageService.sendError(queueData.textChannel, errorMessage);
+			}
+
+			if (!errorMap[error]) {
 				this.logger.error(`Error: "${error}" in guild named "${queue.guild.name}"`);
 			}
 		});
