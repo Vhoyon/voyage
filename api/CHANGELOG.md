@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.5.2](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.5.1...voyage-discord-bot-v0.5.2) (2022-01-28)
+
+
+### Bug Fixes
+
+* now use shared tsconfig to extend from ([9c8ca33](https://github.com/Vhoyon/voyage/commit/9c8ca33e3d1755cefcf0cd922dc64438e0b21758))
+
 ### [0.5.1](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.5.0...voyage-discord-bot-v0.5.1) (2022-01-28)
 
 
