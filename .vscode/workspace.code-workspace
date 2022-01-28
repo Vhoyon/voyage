@@ -2,7 +2,7 @@
     "folders": [
 		{
 			"path": "..",
-			"name": "Root (fullstacked)"
+			"name": "Root (Voyage)"
 		},
 		{
 			"path": "../api",
@@ -16,7 +16,7 @@
     "settings": {
 		"window.title": "${dirty}${activeEditorMedium}${separator}Voyage${separator}${appName}",
 		"git.pullTags": false,
-		"jest.disabledWorkspaceFolders": ["Root (fullstacked)"],
+		"jest.disabledWorkspaceFolders": ["Root (Voyage)"],
 		"json.schemas": [
 			{
 				"fileMatch": ["renovate.json"],
