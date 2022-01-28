@@ -4,11 +4,13 @@ import path from 'path';
 import { ImportFixtureOptions, importFixtures } from 'prisma-fixtures';
 import util from 'util';
 
-// Prisma Utils
-
 const exec = util.promisify(execNoPromise);
 
-const prismaBinary = path.join(__dirname, '..', '..', 'node_modules', '.bin', 'prisma');
+// Prisma Utils
+
+const projectRoot: string[] = process.env.NODE_ENV == 'development' ? ['..', '..'] : ['..'];
+
+const prismaBinary = path.join(__dirname, ...projectRoot, 'node_modules', '.bin', 'prisma');
 
 export async function generate() {
 	return exec(`${prismaBinary} generate`);

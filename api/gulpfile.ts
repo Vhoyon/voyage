@@ -1,5 +1,6 @@
 import { exec as execCallback } from 'child_process';
 import del from 'del';
+import 'dotenv/config';
 import fs from 'fs';
 import gulp from 'gulp';
 import { prompt } from 'gulp-prompt';
