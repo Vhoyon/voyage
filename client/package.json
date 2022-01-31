@@ -30,7 +30,7 @@
     "minimum-delayer": "0.2.1"
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "2.3.1",
+    "@graphql-codegen/cli": "2.4.0",
     "@graphql-codegen/typed-document-node": "2.2.2",
     "@graphql-codegen/typescript": "2.4.2",
     "@graphql-codegen/typescript-operations": "2.2.2",
