@@ -6,10 +6,9 @@ import { bold, inlineCode } from '@discordjs/builders';
 import { Injectable, Logger } from '@nestjs/common';
 import { Queue, RepeatMode, Song } from 'discord-music-player';
 import { Guild, Message, TextChannel } from 'discord.js';
+import { DEFAULT_COUNT as DEFAULT_QUEUE_COUNT } from '../dtos/queue.dto';
 import { PlayerService } from '../player/player.service';
 import { DynamicPlayerOptions, MusicContext, PlayMusicOptions, QueueData, SongData } from '../player/player.types';
-
-export const DEFAULT_VIEW_QUEUED_SONG = 10;
 
 @Injectable()
 export class MusicService {
@@ -320,7 +319,7 @@ export class MusicService {
 		return `Shuffled the queue!`;
 	}
 
-	viewQueue(context: MusicContext, nbOfSongsToDisplay = DEFAULT_VIEW_QUEUED_SONG) {
+	viewQueue(context: MusicContext, nbOfSongsToDisplay = DEFAULT_QUEUE_COUNT): SendableOptions {
 		const queue = this.player.getQueueOf(context);
 
 		if (!this.player.hasQueueAndPlaying(queue)) {
@@ -341,7 +340,7 @@ export class MusicService {
 					inline: true,
 				},
 			],
-		} as SendableOptions;
+		};
 	}
 
 	async nowPlaying(context: MusicContext, dynamicPlayerOptions?: DynamicPlayerOptions) {
