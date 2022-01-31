@@ -8,12 +8,13 @@ import { MomsMusicService } from './moms/moms-music.service';
 import { PlayerModule } from './player/player.module';
 import { PlayerService } from './player/player.service';
 import { BlacklistService } from './services/blacklist.service';
+import { ButtonService } from './services/button.service';
 import { MusicService } from './services/music.service';
 
 @Module({
 	imports: [PrismaModule, forwardRef(() => discordModule), PlayerModule],
 	controllers: [InteractionsGateway, MomsMusicGateway],
-	providers: [MessageService, MusicService, PlayerService, MomsMusicService, BlacklistService],
-	exports: [MessageService, MusicService, PlayerService, MomsMusicService, BlacklistService],
+	providers: [MessageService, MusicService, PlayerService, MomsMusicService, BlacklistService, ButtonService],
+	exports: [MessageService, MusicService, PlayerService, MomsMusicService, BlacklistService, ButtonService],
 })
 export class MusicModule {}

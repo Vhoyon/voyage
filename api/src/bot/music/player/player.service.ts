@@ -1,15 +1,13 @@
 import { InformError } from '$/bot/common/error/inform-error';
-import { ChannelContext, MessageService, SendableOptions } from '$/bot/common/message.service';
+import { ChannelContext, MessageService } from '$/bot/common/message.service';
 import { EnvironmentConfig } from '$common/configs/env.validation';
 import { PrismaService } from '$common/prisma/prisma.service';
 import { sleep } from '$common/utils/funcs';
 import { DiscordClientProvider } from '@discord-nestjs/core';
-import { inlineCode } from '@discordjs/builders';
 import { Injectable, Logger } from '@nestjs/common';
 import { Player, PlayerOptions, Playlist, Queue, RepeatMode, Song } from 'discord-music-player';
-import { EmbedFieldData, Guild, Message, MessageActionRow, MessageButton, StageChannel, TextChannel, User, VoiceChannel } from 'discord.js';
-import { MusicInteractionConstant, PartialInteractionButtonOptions } from '../constants/music.constant';
-import { MAXIMUM as VOLUME_MAXIMUM } from '../dtos/volume.dto';
+import { Guild, Message, StageChannel, TextChannel, User, VoiceChannel } from 'discord.js';
+import { ButtonService } from '../services/button.service';
 import {
 	DynamicPlayerData,
 	DynamicPlayerOptions,
@@ -44,6 +42,7 @@ export class PlayerService extends Player {
 		private readonly env: EnvironmentConfig,
 		private readonly prisma: PrismaService,
 		private readonly messageService: MessageService,
+		private readonly buttonService: ButtonService,
 	) {
 		super(discordProvider.getClient(), {
 			deafenOnJoin: true,
@@ -232,45 +231,6 @@ export class PlayerService extends Player {
 		return true;
 	}
 
-	createButton(options: PartialInteractionButtonOptions) {
-		return new MessageButton({
-			style: 'SECONDARY',
-			...options,
-		});
-	}
-
-	createPlayerButtons(options?: PlayerButtonsOptions) {
-		const queueInteractions: PartialInteractionButtonOptions[] = [
-			MusicInteractionConstant.REWIND,
-			MusicInteractionConstant.PLAY_PAUSE,
-			MusicInteractionConstant.SKIP,
-		];
-
-		if (options?.dynamicPlayerType) {
-			queueInteractions.push(MusicInteractionConstant.STOP_DYNAMIC_PLAYER);
-		}
-
-		const queueRow = new MessageActionRow({
-			components: queueInteractions.map((interaction) => {
-				return this.createButton(interaction);
-			}),
-		});
-
-		const playerInteractions: PartialInteractionButtonOptions[] = [
-			MusicInteractionConstant.REPEAT,
-			MusicInteractionConstant.REPEAT_ALL,
-			MusicInteractionConstant.DISCONNECT,
-		];
-
-		const playerRow = new MessageActionRow({
-			components: playerInteractions.map((interaction) => {
-				return this.createButton(interaction);
-			}),
-		});
-
-		return [queueRow, playerRow];
-	}
-
 	createNowPlayingWidget(context: MusicContext, options?: PlayerButtonsOptions) {
 		const queue = this.getQueueOf(context);
 
@@ -278,79 +238,7 @@ export class PlayerService extends Player {
 			throw new InformError(`Nothing is currently playing!`);
 		}
 
-		const song = queue.nowPlaying;
-
-		const progressBar = queue.createProgressBar().prettier;
-
-		let repeatMode: string;
-
-		switch (queue.repeatMode) {
-			case RepeatMode.SONG:
-				repeatMode = 'Looping Song';
-				break;
-			case RepeatMode.QUEUE:
-				repeatMode = 'Looping Queue';
-				break;
-			case RepeatMode.DISABLED:
-			default:
-				repeatMode = 'Disabled';
-				break;
-		}
-
-		const playerButtons = this.createPlayerButtons(options);
-
-		const fields: EmbedFieldData[] = [
-			{
-				name: 'Requester',
-				value: song.requestedBy!.tag,
-				inline: true,
-			},
-			{
-				name: 'Author',
-				value: inlineCode(song.author),
-				inline: true,
-			},
-			{
-				name: 'Remaining songs',
-				value: queue.songs.length.toString(),
-				inline: true,
-			},
-			{
-				name: 'Repeat Mode',
-				value: repeatMode,
-				inline: true,
-			},
-			{
-				name: 'Volume',
-				value: `${queue.volume}/${VOLUME_MAXIMUM}`,
-				inline: true,
-			},
-		];
-
-		const dynamicPlayerType = options?.dynamicPlayerType ?? queue.data.dynamicPlayer?.type;
-
-		if (dynamicPlayerType) {
-			fields.push({
-				name: 'Dynamic Player Type',
-				value: dynamicPlayerType,
-				inline: true,
-			});
-		}
-
-		fields.push({
-			name: 'Progress',
-			value: inlineCode(progressBar),
-		});
-
-		return {
-			title: `Now playing : ${inlineCode(song.name)}!`,
-			thumbnail: {
-				url: song.thumbnail,
-			},
-			components: [...playerButtons],
-			fields,
-			url: song.url,
-		} as SendableOptions;
+		return this.buttonService.createNowPlayingWidget(queue, options);
 	}
 
 	async play<SongType, PlaylistType>(
