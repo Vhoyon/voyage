@@ -5,9 +5,11 @@ import { Guild, GuildChannelResolvable, Message, TextChannel, User } from 'disco
 import { DynamicPlayerType } from './player.service';
 
 export type QueueData = {
+	/** TextChannel where the last command was sent in. */
 	textChannel?: TextChannel;
 	isPaused?: boolean;
-	lastPlayedSong?: Song;
+	/** Array of recently played songs, lower index being more recent. */
+	history?: Song[];
 	dynamicPlayer?: DynamicPlayerData;
 	playerMessage?: Message;
 };

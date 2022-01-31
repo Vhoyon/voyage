@@ -7,8 +7,8 @@ function createInteractionButtonMap<T extends { [name: string]: PartialInteracti
 }
 
 export const MusicInteractionConstant = createInteractionButtonMap({
-	LAST_SONG: {
-		customId: 'voyage_i_music_last_song',
+	REWIND: {
+		customId: 'voyage_i_music_rewind',
 		emoji: '⏮',
 	},
 	PLAY_PAUSE: {

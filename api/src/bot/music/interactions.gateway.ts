@@ -1,6 +1,9 @@
 import { On, UseGuards } from '@discord-nestjs/core';
+import { inlineCode } from '@discordjs/builders';
 import { Controller, Logger } from '@nestjs/common';
+import { Song } from 'discord-music-player';
 import { ButtonInteraction, GuildMember } from 'discord.js';
+import { InformError } from '../common/error/inform-error';
 import { ButtonInteractionWithId } from '../common/guards/interaction-custom-id.guard';
 import { IsChannelButtonInteractionGuard } from '../common/guards/is-channel-button-interaction.guard';
 import { MessageService } from '../common/message.service';
@@ -20,16 +23,23 @@ export class InteractionsGateway {
 	) {}
 
 	@On('interactionCreate')
-	@UseGuards(ButtonInteractionWithId(MusicInteractionConstant.LAST_SONG))
-	async onLastPlayedInteraction(interaction: ButtonInteraction) {
+	@UseGuards(ButtonInteractionWithId(MusicInteractionConstant.REWIND))
+	async onStartAgainInteraction(interaction: ButtonInteraction) {
 		if (interaction.member instanceof GuildMember && !interaction.member.voice.channel) {
-			await this.messageService.sendError(interaction, 'You need to be in a voice channel to play the last played song!');
+			await this.messageService.sendError(interaction, 'You need to be in a voice channel to rewind the current song to the beginning!');
 			return;
 		}
 
-		const reply = await this.musicService.playLastPlayedSong(interaction);
+		let song: Song;
 
-		await this.messageService.send(interaction, reply);
+		try {
+			song = await this.musicService.playFromHistory(interaction, { updateQueue: false });
+		} catch (error) {
+			// shouldn't happen in theory.
+			throw new InformError(`You can only start a song over if it is currently playing!`, { error });
+		}
+
+		await this.messageService.send(interaction, `Starting the song ${inlineCode(song.name)} back from the beginning!`, { timeout: true });
 
 		this.player.updateDynamic(interaction);
 	}

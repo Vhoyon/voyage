@@ -72,11 +72,11 @@ export class PlayerService extends Player {
 			}
 		});
 
-		this.on('songChanged', async (queue, _newSong, oldSong) => {
+		this.on('songChanged', async (queue, newSong, _oldSong) => {
 			const queueData = queue.data as QueueData;
 
 			if (queue.repeatMode != RepeatMode.SONG) {
-				queueData.lastPlayedSong = oldSong;
+				queueData.history!.push(newSong);
 			}
 
 			const loadingSongDelay = 500;
@@ -234,7 +234,7 @@ export class PlayerService extends Player {
 
 	createPlayerButtons(options?: PlayerButtonsOptions) {
 		const queueInteractions: PartialInteractionButtonOptions[] = [
-			MusicInteractionConstant.LAST_SONG,
+			MusicInteractionConstant.REWIND,
 			MusicInteractionConstant.PLAY_PAUSE,
 			MusicInteractionConstant.SKIP,
 		];
@@ -438,7 +438,11 @@ export class PlayerService extends Player {
 		} else {
 			queue.setVolume(volume);
 
-			queue.data.lastPlayedSong = song;
+			if (queue.data.history == undefined) {
+				queue.data.history = [song];
+			} else {
+				queue.data.history.unshift(song);
+			}
 
 			if (searchContext) {
 				await options?.onSongPlay?.(song, searchContext);
@@ -484,7 +488,11 @@ export class PlayerService extends Player {
 		} else {
 			queue.setVolume(volume);
 
-			queue.data.lastPlayedSong = playlist.songs[0];
+			if (queue.data.history == undefined) {
+				queue.data.history = [playlist.songs[0]];
+			} else {
+				queue.data.history.unshift(playlist.songs[0]);
+			}
 
 			if (searchContext) {
 				await options?.onPlaylistPlay?.(playlist, searchContext);

@@ -98,33 +98,43 @@ export class MusicService {
 		return !!this.player.hasQueueAndPlaying(queue);
 	}
 
-	async playLastPlayedSong(context: MusicContext) {
+	async playFromHistory(context: MusicContext, options?: Partial<{ index: number; updateQueue: boolean }>) {
+		const { index = 0, updateQueue = true } = options || {};
+
 		const queue = this.player.getQueueOf(context);
 
-		if (!queue?.data.lastPlayedSong) {
-			throw new InformError(`You need to at least play one song before I can play the last played song!`);
+		if (!queue?.data.history?.length) {
+			throw new InformError(`You need to at least play one song before I can play a song from history!`);
 		}
 
-		const lastPlayedSong = queue.data.lastPlayedSong;
-
-		const isSameSong = lastPlayedSong == queue.nowPlaying;
-
-		if (isSameSong) {
-			queue.songs.shift();
+		if (index < 0) {
+			throw new InformError(`Negative history does not make any sense!`);
+		} else if (index + 1 > queue.data.history.length) {
+			throw new InformError(`Cannot play a song at index ${index + 1} as the history size is ${queue.data.history.length}!`);
 		}
 
-		queue.songs = [lastPlayedSong, ...queue.songs];
+		const lastPlayedSong = queue.data.history[index];
 
-		await queue.play(lastPlayedSong, {
+		// const isSameSong = lastPlayedSong == queue.nowPlaying;
+
+		// if (isSameSong) {
+		// 	queue.songs.shift();
+		// }
+
+		if (updateQueue) {
+			queue.songs = [lastPlayedSong, ...queue.songs];
+		}
+
+		return queue.play(lastPlayedSong, {
 			immediate: true,
 			data: lastPlayedSong.data,
 		});
 
-		if (isSameSong) {
-			return `No more songs to go back to, starting song ${inlineCode(lastPlayedSong.name)} from the beginning!`;
-		} else {
-			return `Playing back ${inlineCode(lastPlayedSong.name)}!`;
-		}
+		// if (isSameSong) {
+		// 	return `No more songs to go back to, starting song ${inlineCode(lastPlayedSong.name)} from the beginning!`;
+		// } else {
+		// 	return `Playing back ${inlineCode(lastPlayedSong.name)}!`;
+		// }
 	}
 
 	skip(context: MusicContext) {
