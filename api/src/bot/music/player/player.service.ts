@@ -232,6 +232,13 @@ export class PlayerService extends Player {
 		return true;
 	}
 
+	createButton(options: PartialInteractionButtonOptions) {
+		return new MessageButton({
+			style: 'SECONDARY',
+			...options,
+		});
+	}
+
 	createPlayerButtons(options?: PlayerButtonsOptions) {
 		const queueInteractions: PartialInteractionButtonOptions[] = [
 			MusicInteractionConstant.REWIND,
@@ -245,10 +252,7 @@ export class PlayerService extends Player {
 
 		const queueRow = new MessageActionRow({
 			components: queueInteractions.map((interaction) => {
-				return new MessageButton({
-					style: 'SECONDARY',
-					...interaction,
-				});
+				return this.createButton(interaction);
 			}),
 		});
 
@@ -260,10 +264,7 @@ export class PlayerService extends Player {
 
 		const playerRow = new MessageActionRow({
 			components: playerInteractions.map((interaction) => {
-				return new MessageButton({
-					style: 'SECONDARY',
-					...interaction,
-				});
+				return this.createButton(interaction);
 			}),
 		});
 
