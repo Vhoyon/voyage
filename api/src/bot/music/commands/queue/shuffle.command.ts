@@ -4,21 +4,21 @@ import { MessageService } from '$/bot/common/message.service';
 import { Command, DiscordCommand, UseGuards } from '@discord-nestjs/core';
 import { Logger } from '@nestjs/common';
 import { CommandInteraction } from 'discord.js';
-import { MusicGuard } from '../guards/music.guard';
-import { MusicService } from '../services/music.service';
+import { MusicGuard } from '../../guards/music.guard';
+import { MusicService } from '../../services/music.service';
 
 @Command({
-	name: 'disconnect',
-	description: 'Stops the queue and disconnect the bot',
+	name: 'shuffle',
+	description: 'Shuffles the current music queue',
 })
-@UseGuards(InteractionFromServer, MusicGuard, IsInVoiceChannel(`You need to be in a voice channel to stop me from playing music!`))
-export class DisconnectCommand implements DiscordCommand {
-	private readonly logger = new Logger(DisconnectCommand.name);
+@UseGuards(InteractionFromServer, MusicGuard, IsInVoiceChannel(`You need to be in a voice channel to shuffle the queued songs!`))
+export class ShuffleCommand implements DiscordCommand {
+	private readonly logger = new Logger(ShuffleCommand.name);
 
 	constructor(private readonly messageService: MessageService, private readonly musicService: MusicService) {}
 
 	async handler(interaction: CommandInteraction) {
-		const reply = await this.musicService.disconnect(interaction);
+		const reply = this.musicService.shuffle(interaction);
 
 		await this.messageService.send(interaction, reply);
 	}

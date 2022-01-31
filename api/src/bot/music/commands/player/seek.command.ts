@@ -5,23 +5,23 @@ import { TransformPipe, ValidationPipe } from '@discord-nestjs/common';
 import { Command, DiscordTransformedCommand, Payload, UseGuards, UsePipes } from '@discord-nestjs/core';
 import { Logger } from '@nestjs/common';
 import { CommandInteraction } from 'discord.js';
-import { QueueDto } from '../dtos/queue.dto';
-import { MusicGuard } from '../guards/music.guard';
-import { MusicService } from '../services/music.service';
+import { SeekDto } from '../../dtos/seek.dto';
+import { MusicGuard } from '../../guards/music.guard';
+import { MusicService } from '../../services/music.service';
 
 @Command({
-	name: 'queue',
-	description: 'Gets a formatted version of the current queued songs',
+	name: 'seek',
+	description: 'Seeks the current song to the given timestamp',
 })
-@UseGuards(InteractionFromServer, MusicGuard, IsInVoiceChannel(`You need to be in a voice channel to view the queue!`))
+@UseGuards(InteractionFromServer, MusicGuard, IsInVoiceChannel(`You need to be in a voice channel to seek music!`))
 @UsePipes(TransformPipe, ValidationPipe)
-export class QueueCommand implements DiscordTransformedCommand<QueueDto> {
-	private readonly logger = new Logger(QueueCommand.name);
+export class SeekCommand implements DiscordTransformedCommand<SeekDto> {
+	private readonly logger = new Logger(SeekCommand.name);
 
 	constructor(private readonly messageService: MessageService, private readonly musicService: MusicService) {}
 
-	async handler(@Payload() { count }: QueueDto, interaction: CommandInteraction) {
-		const reply = this.musicService.viewQueue(interaction, count);
+	async handler(@Payload() { timestamp }: SeekDto, interaction: CommandInteraction) {
+		const reply = await this.musicService.seek(interaction, timestamp);
 
 		await this.messageService.send(interaction, reply);
 	}

@@ -8,10 +8,10 @@ import { bold, inlineCode } from '@discordjs/builders';
 import { Logger } from '@nestjs/common';
 import { Playlist, Song } from 'discord-music-player';
 import { CommandInteraction, GuildMember, TextChannel } from 'discord.js';
-import { PlayDto } from '../dtos/play.dto';
-import { MAXIMUM as VOLUME_MAXIMUM } from '../dtos/volume.dto';
-import { MusicGuard } from '../guards/music.guard';
-import { DynamicPlayerType, PlayerService } from '../player/player.service';
+import { PlayDto } from '../../dtos/play.dto';
+import { MAXIMUM as VOLUME_MAXIMUM } from '../../dtos/volume.dto';
+import { MusicGuard } from '../../guards/music.guard';
+import { DynamicPlayerType, PlayerService } from '../../player/player.service';
 
 const VoicePermGuard = VoicePermissionChecker(['CONNECT', 'SPEAK'], `I need the permissions to join and speak in your voice channel!`);
 

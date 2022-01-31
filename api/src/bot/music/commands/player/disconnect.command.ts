@@ -4,21 +4,21 @@ import { MessageService } from '$/bot/common/message.service';
 import { Command, DiscordCommand, UseGuards } from '@discord-nestjs/core';
 import { Logger } from '@nestjs/common';
 import { CommandInteraction } from 'discord.js';
-import { MusicGuard } from '../guards/music.guard';
-import { MusicService } from '../services/music.service';
+import { MusicGuard } from '../../guards/music.guard';
+import { MusicService } from '../../services/music.service';
 
 @Command({
-	name: 'loop',
-	description: 'Toggles the loop of the music player',
+	name: 'disconnect',
+	description: 'Stops the queue and disconnect the bot',
 })
-@UseGuards(InteractionFromServer, MusicGuard, IsInVoiceChannel(`You need to be in a voice channel to loop a song!`))
-export class LoopCommand implements DiscordCommand {
-	private readonly logger = new Logger(LoopCommand.name);
+@UseGuards(InteractionFromServer, MusicGuard, IsInVoiceChannel(`You need to be in a voice channel to stop me from playing music!`))
+export class DisconnectCommand implements DiscordCommand {
+	private readonly logger = new Logger(DisconnectCommand.name);
 
 	constructor(private readonly messageService: MessageService, private readonly musicService: MusicService) {}
 
 	async handler(interaction: CommandInteraction) {
-		const reply = this.musicService.toggleLoop(interaction);
+		const reply = await this.musicService.disconnect(interaction);
 
 		await this.messageService.send(interaction, reply);
 	}

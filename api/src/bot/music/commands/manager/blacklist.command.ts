@@ -3,7 +3,7 @@ import { MessageService } from '$/bot/common/message.service';
 import { Command, DiscordCommand, UseGuards } from '@discord-nestjs/core';
 import { Logger } from '@nestjs/common';
 import { CommandInteraction } from 'discord.js';
-import { BlacklistService } from '../services/blacklist.service';
+import { BlacklistService } from '../../services/blacklist.service';
 
 @Command({
 	name: 'blacklist',

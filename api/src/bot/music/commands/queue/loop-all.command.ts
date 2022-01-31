@@ -4,8 +4,8 @@ import { MessageService } from '$/bot/common/message.service';
 import { Command, DiscordCommand, UseGuards } from '@discord-nestjs/core';
 import { Logger } from '@nestjs/common';
 import { CommandInteraction } from 'discord.js';
-import { MusicGuard } from '../guards/music.guard';
-import { MusicService } from '../services/music.service';
+import { MusicGuard } from '../../guards/music.guard';
+import { MusicService } from '../../services/music.service';
 
 @Command({
 	name: 'loopall',

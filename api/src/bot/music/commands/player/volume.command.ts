@@ -5,9 +5,9 @@ import { TransformPipe, ValidationPipe } from '@discord-nestjs/common';
 import { Command, DiscordTransformedCommand, Payload, UseGuards, UsePipes } from '@discord-nestjs/core';
 import { Logger } from '@nestjs/common';
 import { CommandInteraction } from 'discord.js';
-import { VolumeDto } from '../dtos/volume.dto';
-import { MusicGuard } from '../guards/music.guard';
-import { MusicService } from '../services/music.service';
+import { VolumeDto } from '../../dtos/volume.dto';
+import { MusicGuard } from '../../guards/music.guard';
+import { MusicService } from '../../services/music.service';
 
 @Command({
 	name: 'volume',
