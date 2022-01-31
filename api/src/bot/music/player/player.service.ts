@@ -86,8 +86,20 @@ export class PlayerService extends Player {
 			this.updateDynamic(queue);
 		});
 
-		this.on('clientDisconnect', (queue) => {
+		this.on('clientDisconnect', async (queue) => {
 			this.clearDynamic(queue);
+
+			const timeout = this.env.DISCORD_INTERACTION_MESSAGE_TIMEOUT;
+
+			await sleep(timeout * 1000);
+
+			const queueData = queue.data as QueueData;
+
+			try {
+				await queueData.playerMessage?.delete();
+			} catch (error) {
+				// do nothing if error happens
+			}
 		});
 
 		this.on('queueEnd', (queue) => {
@@ -350,6 +362,8 @@ export class PlayerService extends Player {
 		const { query, voiceChannel, requester, ...options } = data;
 		const { queue, musicSettings } = await this.getOrCreateQueueOf(voiceChannel.guild, options?.textChannel);
 
+		const previousPlayerMessage = queue.data.playerMessage;
+
 		const playType = await this.playMusic({
 			query,
 			queue,
@@ -359,20 +373,12 @@ export class PlayerService extends Player {
 			options,
 		});
 
-		if (playType == PlayType.NEW) {
-			this.on('clientDisconnect', async (queue) => {
-				const timeout = this.env.DISCORD_INTERACTION_MESSAGE_TIMEOUT;
-
-				await sleep(timeout * 1000);
-
-				const queueData = queue.data as QueueData;
-
-				try {
-					await queueData.playerMessage?.delete();
-				} catch (error) {
-					// do nothing if error happens
-				}
-			});
+		if (playType == PlayType.NEW && queue.data.playerMessage != previousPlayerMessage) {
+			try {
+				await previousPlayerMessage?.delete();
+			} catch (error) {
+				// do nothing if error happens
+			}
 		}
 
 		return playType;
