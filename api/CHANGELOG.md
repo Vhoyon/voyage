@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.5.4](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.5.3...voyage-discord-bot-v0.5.4) (2022-01-31)
+
+
+### Bug Fixes
+
+* **PlayerService:** event listener memory leaks ([b99c1fc](https://github.com/Vhoyon/voyage/commit/b99c1fc37a3bed1547daab99f5180c998840d935))
+
 ### [0.5.3](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.5.2...voyage-discord-bot-v0.5.3) (2022-01-28)
 
 
