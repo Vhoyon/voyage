@@ -48,7 +48,7 @@ export class ButtonService {
 		return [queueRow, playerRow];
 	}
 
-	createNowPlayingWidget(queue: VQueue & { nowPlaying: Song }, options?: PlayerButtonsOptions) {
+	createNowPlayingWidget(queue: VQueue & { nowPlaying: Song }, options?: PlayerButtonsOptions): SendableOptions {
 		const song = queue.nowPlaying;
 
 		const progressBar = queue.createProgressBar().prettier;
@@ -121,6 +121,6 @@ export class ButtonService {
 			components: [...playerButtons],
 			fields,
 			url: song.url,
-		} as SendableOptions;
+		};
 	}
 }
