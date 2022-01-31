@@ -78,11 +78,9 @@ export class PlayerService extends Player {
 				queueData.history!.push(newSong);
 			}
 
-			const loadingSongDelay = 500;
+			const delay = 500;
 
-			await sleep(loadingSongDelay);
-
-			this.updateDynamic(queue);
+			this.updateDynamic(queue, { delay });
 		});
 
 		this.on('clientDisconnect', async (queue) => {
@@ -449,11 +447,15 @@ export class PlayerService extends Player {
 		queue.data.dynamicPlayer = { type, interval, updater };
 	}
 
-	updateDynamic(context: MusicContext) {
+	async updateDynamic(context: MusicContext, options?: Partial<{ delay: number }>) {
 		const queue = this.getQueueOf(context);
 
 		if (!queue?.data.dynamicPlayer) {
 			return null;
+		}
+
+		if (options?.delay) {
+			await sleep(options?.delay);
 		}
 
 		return queue.data.dynamicPlayer?.updater();
