@@ -207,11 +207,9 @@ export class MessageService {
 				const message = await this.get(dirtyMessage);
 
 				if (!isEphemeral) {
-					try {
-						await this.delete(message, true);
-					} catch (error) {
+					this.delete(message, true).catch(() => {
 						// Can't delete, pass on
-					}
+					});
 				}
 
 				return message;
@@ -222,11 +220,9 @@ export class MessageService {
 				const message = await this.get(dirtyMessage);
 
 				if (!isEphemeral && payload?.timeout) {
-					try {
-						await this.delete(message, payload.timeout);
-					} catch (error) {
+					this.delete(message, payload.timeout).catch(() => {
 						// Can't delete, pass on
-					}
+					});
 				}
 
 				return message;
@@ -242,11 +238,9 @@ export class MessageService {
 			});
 
 			if (!isEphemeral && payload?.timeout) {
-				try {
-					await this.delete(message, payload.timeout);
-				} catch (error) {
+				this.delete(message, payload.timeout).catch(() => {
 					// Can't delete, pass on
-				}
+				});
 			}
 
 			return message;
@@ -254,11 +248,9 @@ export class MessageService {
 			const message = await context.send({ ...payload });
 
 			if (!isEphemeral && payload?.timeout) {
-				try {
-					await this.delete(message, payload.timeout);
-				} catch (error) {
+				this.delete(message, payload.timeout).catch(() => {
 					// Can't delete, pass on
-				}
+				});
 			}
 
 			return message;
@@ -330,7 +322,11 @@ export class MessageService {
 	 */
 	async delete(context: Message | InteractionContext, timeout?: number | boolean) {
 		if (timeout) {
-			const finalTimeout = typeof timeout == 'number' && timeout > 0 ? timeout : this.env.DISCORD_INTERACTION_MESSAGE_TIMEOUT;
+			const finalTimeout = typeof timeout == 'number' ? timeout : this.env.DISCORD_INTERACTION_MESSAGE_TIMEOUT;
+
+			if (finalTimeout < 0) {
+				return;
+			}
 
 			if (finalTimeout > 0) {
 				await sleep(finalTimeout * 1000);
