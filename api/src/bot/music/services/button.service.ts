@@ -1,5 +1,5 @@
 import { SendableOptions } from '$/bot/common/message.service';
-import { inlineCode } from '@discordjs/builders';
+import { hyperlink, inlineCode } from '@discordjs/builders';
 import { Injectable } from '@nestjs/common';
 import { RepeatMode, Song } from 'discord-music-player';
 import { EmbedFieldData, MessageActionRow, MessageButton } from 'discord.js';
@@ -145,7 +145,7 @@ export class ButtonService {
 		const history = displayAll ? queue.data.history : queue.data.history.slice(0, countToDisplay);
 
 		const formattedHistory = history.map(({ name, url }, index) => {
-			return `${index + 1} : ${inlineCode(`[${name}](${url})`)}`;
+			return `${inlineCode(`${index + 1}`)} : ${hyperlink(name, url)}`;
 		});
 
 		const historyString = formattedHistory.join(`\n`);

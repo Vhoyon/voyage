@@ -6,7 +6,7 @@ import { sleep } from '$common/utils/funcs';
 import { DiscordClientProvider } from '@discord-nestjs/core';
 import { Injectable, Logger } from '@nestjs/common';
 import { Player, PlayerOptions, Playlist, Queue, RepeatMode, Song } from 'discord-music-player';
-import { Guild, Message, StageChannel, TextChannel, User, VoiceChannel } from 'discord.js';
+import { Guild, Message, TextChannel } from 'discord.js';
 import { ButtonService } from '../services/button.service';
 import {
 	DynamicPlayerData,
@@ -15,6 +15,7 @@ import {
 	PlayerButtonsOptions,
 	PlayMusicData,
 	PlayMusicOptions,
+	PlayMusicQuery,
 	PlayPlaylistCallbacks,
 	PlaySongCallbacks,
 	QueueData,
@@ -218,14 +219,8 @@ export class PlayerService extends Player {
 		return this.buttonService.createNowPlayingWidget(queue, options);
 	}
 
-	async play<SongType, PlaylistType>(
-		data: {
-			query: string;
-			voiceChannel: VoiceChannel | StageChannel;
-			requester: User;
-		} & PlayMusicOptions<SongType, PlaylistType>,
-	): Promise<PlayType> {
-		const { query, voiceChannel, requester, ...options } = data;
+	async play<SongType, PlaylistType>(data: PlayMusicQuery & PlayMusicOptions<SongType, PlaylistType>): Promise<PlayType> {
+		const { query, voiceChannel, requester, playOptions, ...options } = data;
 		const { queue, musicSettings } = await this.getOrCreateQueueOf(voiceChannel.guild, options?.textChannel);
 
 		const previousPlayerMessage = queue.data.playerMessage;
@@ -237,6 +232,7 @@ export class PlayerService extends Player {
 			requester,
 			volume: musicSettings.volume,
 			options,
+			playOptions,
 		});
 
 		if (playType == PlayType.NEW && queue.data.playerMessage != previousPlayerMessage) {
@@ -262,10 +258,8 @@ export class PlayerService extends Player {
 		}
 	}
 
-	protected createSongData(query: string): SongData {
-		return {
-			query,
-		};
+	protected createSongData(data: SongData): SongData {
+		return data;
 	}
 
 	protected async playSong<T>({
@@ -274,6 +268,7 @@ export class PlayerService extends Player {
 		volume,
 		requester,
 		options,
+		playOptions,
 	}: PlayMusicData<T, undefined, PlaySongCallbacks<T>>): Promise<PlayType> {
 		let song: Song;
 
@@ -284,6 +279,7 @@ export class PlayerService extends Player {
 		try {
 			song = await queue.play(query, {
 				requestedBy: requester,
+				...playOptions,
 			});
 		} catch (error) {
 			if (searchContext) {
@@ -293,7 +289,7 @@ export class PlayerService extends Player {
 			return PlayType.ERROR;
 		}
 
-		song.setData(this.createSongData(query));
+		song.setData(this.createSongData({ query }));
 
 		if (hadSongs) {
 			if (searchContext) {
@@ -318,6 +314,7 @@ export class PlayerService extends Player {
 		volume,
 		requester,
 		options,
+		playOptions,
 	}: PlayMusicData<undefined, T, PlayPlaylistCallbacks<T>>): Promise<PlayType> {
 		let playlist: Playlist;
 
@@ -328,6 +325,7 @@ export class PlayerService extends Player {
 		try {
 			playlist = await queue.playlist(query, {
 				requestedBy: requester,
+				...playOptions,
 			});
 		} catch (error) {
 			if (searchContext) {
@@ -337,7 +335,7 @@ export class PlayerService extends Player {
 			return PlayType.ERROR;
 		}
 
-		playlist.songs.forEach((s) => s.setData(this.createSongData(query)));
+		playlist.songs.forEach((s) => s.setData(this.createSongData({ query })));
 
 		if (hadSongs) {
 			if (searchContext) {

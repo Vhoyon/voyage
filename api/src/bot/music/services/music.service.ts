@@ -9,7 +9,7 @@ import { Guild, Message, TextChannel } from 'discord.js';
 import { DEFAULT_COUNT as DEFAULT_HISTORY_COUNT } from '../dtos/history.dto';
 import { DEFAULT_COUNT as DEFAULT_QUEUE_COUNT } from '../dtos/queue.dto';
 import { PlayerService } from '../player/player.service';
-import { DynamicPlayerOptions, MusicContext, PlayMusicOptions, QueueData, SongData } from '../player/player.types';
+import { DynamicPlayerOptions, MusicContext, PlayMusicOptions, PlayMusicQuery, QueueData, SongData } from '../player/player.types';
 import { ButtonService } from './button.service';
 
 @Injectable()
@@ -100,7 +100,7 @@ export class MusicService {
 		return !!this.player.hasQueueAndPlaying(queue);
 	}
 
-	async playFromHistory(context: MusicContext, options?: Partial<{ index: number; updateQueue: boolean }>) {
+	async playFromLocalHistory(context: MusicContext, options?: Partial<{ index: number; updateQueue: boolean }>) {
 		const { index = 0, updateQueue = true } = options ?? {};
 
 		const queue = this.player.getQueueOf(context);
@@ -111,32 +111,58 @@ export class MusicService {
 
 		if (index < 0) {
 			throw new InformError(`Negative history does not make any sense!`);
-		} else if (index + 1 > queue.data.history.length) {
-			throw new InformError(`Cannot play a song at index ${index + 1} as the history size is ${queue.data.history.length}!`);
 		}
 
-		const lastPlayedSong = queue.data.history[index];
+		const properIndex = Math.min(queue.data.history.length, index);
 
-		// const isSameSong = lastPlayedSong == queue.nowPlaying;
-
-		// if (isSameSong) {
-		// 	queue.songs.shift();
-		// }
+		const pastSong = queue.data.history[properIndex];
 
 		if (updateQueue) {
-			queue.songs = [lastPlayedSong, ...queue.songs];
+			queue.songs = [pastSong, ...queue.songs];
 		}
 
-		return queue.play(lastPlayedSong, {
+		return queue.play(pastSong, {
 			immediate: true,
-			data: lastPlayedSong.data,
+			data: pastSong.data,
+		});
+	}
+
+	async playFromHistory<SongType, PlaylistType>(
+		data: Omit<PlayMusicQuery, 'query'>,
+		options?: Partial<{ index: number } & PlayMusicOptions<SongType, PlaylistType>>,
+	) {
+		const { index = 0, ...rest } = options ?? {};
+
+		if (index < 0) {
+			throw new InformError(`Negative history does not make any sense!`);
+		}
+
+		const pastLoggedSong = await this.prisma.musicLog.findFirst({
+			where: {
+				guild: {
+					guildId: data.voiceChannel.guild.id,
+				},
+			},
+			orderBy: {
+				createdAt: 'desc',
+			},
+			skip: index + 1,
 		});
 
-		// if (isSameSong) {
-		// 	return `No more songs to go back to, starting song ${inlineCode(lastPlayedSong.name)} from the beginning!`;
-		// } else {
-		// 	return `Playing back ${inlineCode(lastPlayedSong.name)}!`;
-		// }
+		if (!pastLoggedSong) {
+			throw new InformError(`You need to at least play one song before I can play a song from history!`);
+		}
+
+		const immediate = !!this.player.getQueueOf(data.voiceChannel.guild);
+
+		return this.player.play({
+			playOptions: {
+				immediate,
+			},
+			query: pastLoggedSong.url,
+			...rest,
+			...data,
+		});
 	}
 
 	skip(context: MusicContext) {
