@@ -131,4 +131,17 @@ export class InteractionsGateway {
 			await this.messageService.sendError(interaction, `The player is already not dynamic!`);
 		}
 	}
+
+	@On('interactionCreate')
+	@UseGuards(ButtonInteractionWithId(MusicInteractionConstant.PLAY_FROM_HISTORY))
+	async onPlayFromHistoryInteraction(interaction: ButtonInteraction) {
+		if (interaction.member instanceof GuildMember && !interaction.member.voice.channel) {
+			await this.messageService.sendError(interaction, 'You need to be in a voice channel to play the last song from history!');
+			return;
+		}
+
+		const song = await this.musicService.playFromHistory(interaction);
+
+		await this.messageService.send(interaction, `${inlineCode(song.name)}`);
+	}
 }

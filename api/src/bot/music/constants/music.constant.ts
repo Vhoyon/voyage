@@ -35,4 +35,8 @@ export const MusicInteractionConstant = createInteractionButtonMap({
 		customId: 'voyage_i_music_stop_dynamic_player',
 		emoji: '🛑',
 	},
+	PLAY_FROM_HISTORY: {
+		customId: 'voyage_i_music_play_from_history',
+		emoji: '▶',
+	},
 });

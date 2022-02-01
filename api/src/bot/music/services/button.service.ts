@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { RepeatMode, Song } from 'discord-music-player';
 import { EmbedFieldData, MessageActionRow, MessageButton } from 'discord.js';
 import { MusicInteractionConstant, PartialInteractionButtonOptions } from '../constants/music.constant';
+import { DEFAULT_COUNT as DEFAULT_HISTORY_COUNT } from '../dtos/history.dto';
 import { MAXIMUM as VOLUME_MAXIMUM } from '../dtos/volume.dto';
 import { PlayerButtonsOptions, VQueue } from '../player/player.types';
 
@@ -13,6 +14,14 @@ export class ButtonService {
 		return new MessageButton({
 			style: 'SECONDARY',
 			...options,
+		});
+	}
+
+	createRow(options: PartialInteractionButtonOptions[]) {
+		return new MessageActionRow({
+			components: options.map((buttonOptions) => {
+				return this.createButton(buttonOptions);
+			}),
 		});
 	}
 
@@ -27,11 +36,7 @@ export class ButtonService {
 			queueInteractions.push(MusicInteractionConstant.STOP_DYNAMIC_PLAYER);
 		}
 
-		const queueRow = new MessageActionRow({
-			components: queueInteractions.map((interaction) => {
-				return this.createButton(interaction);
-			}),
-		});
+		const queueRow = this.createRow(queueInteractions);
 
 		const playerInteractions: PartialInteractionButtonOptions[] = [
 			MusicInteractionConstant.REPEAT,
@@ -39,11 +44,7 @@ export class ButtonService {
 			MusicInteractionConstant.DISCONNECT,
 		];
 
-		const playerRow = new MessageActionRow({
-			components: playerInteractions.map((interaction) => {
-				return this.createButton(interaction);
-			}),
-		});
+		const playerRow = this.createRow(playerInteractions);
 
 		return [queueRow, playerRow];
 	}
@@ -121,6 +122,40 @@ export class ButtonService {
 			components: [...playerButtons],
 			fields,
 			url: song.url,
+		};
+	}
+
+	createHistoryButtons() {
+		const historyInteractions: PartialInteractionButtonOptions[] = [MusicInteractionConstant.PLAY_FROM_HISTORY];
+
+		const historyRow = this.createRow(historyInteractions);
+
+		return [historyRow];
+	}
+
+	createHistoryWidget(queue: VQueue, options?: Partial<{ displayAll: boolean; countToDisplay: number }>): SendableOptions {
+		const { displayAll = false, countToDisplay = DEFAULT_HISTORY_COUNT } = options ?? {};
+
+		if (!queue.data.history) {
+			return {
+				title: `No history recorded yet, play a song!`,
+			};
+		}
+
+		const history = displayAll ? queue.data.history : queue.data.history.slice(0, countToDisplay);
+
+		const formattedHistory = history.map(({ name, url }, index) => {
+			return `${index + 1} : ${inlineCode(`[${name}](${url})`)}`;
+		});
+
+		const historyString = formattedHistory.join(`\n`);
+
+		const historyButtons = this.createHistoryButtons();
+
+		return {
+			title: `Showing history for the last ${Math.min(history.length)} songs!`,
+			components: [...historyButtons],
+			description: historyString,
 		};
 	}
 }

@@ -29,6 +29,7 @@ model Guild {
   momsLogs                 MomsLog[]
 
   musicSettings MusicSetting?
+  MusicLog      MusicLog[]
 
   @@map("guilds")
 }
@@ -60,11 +61,9 @@ model MusicBlacklistedChannel {
 }
 
 model MusicSetting {
-  id              Int     @id @default(autoincrement())
-  volume          Int     @default(50)
-  lastSongPlayed  String?
-  nbOfSongsPlayed Int?    @default(0)
-  guild           Guild   @relation(fields: [guildId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id     Int   @id @default(autoincrement())
+  volume Int   @default(50)
+  guild  Guild @relation(fields: [guildId], references: [id], onDelete: Cascade, onUpdate: Cascade)
 
   guildId Int @unique
 
@@ -85,4 +84,20 @@ model MomsLog {
   createdAt DateTime @default(now())
 
   @@map("moms_logs")
+}
+
+model MusicLog {
+  id        Int    @id @default(autoincrement())
+  name      String
+  author    String
+  url       String
+  requester String
+  guild     Guild  @relation(fields: [guildId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  guildId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("music_logs")
 }

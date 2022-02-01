@@ -6,9 +6,11 @@ import { bold, inlineCode } from '@discordjs/builders';
 import { Injectable, Logger } from '@nestjs/common';
 import { Queue, RepeatMode, Song } from 'discord-music-player';
 import { Guild, Message, TextChannel } from 'discord.js';
+import { DEFAULT_COUNT as DEFAULT_HISTORY_COUNT } from '../dtos/history.dto';
 import { DEFAULT_COUNT as DEFAULT_QUEUE_COUNT } from '../dtos/queue.dto';
 import { PlayerService } from '../player/player.service';
 import { DynamicPlayerOptions, MusicContext, PlayMusicOptions, QueueData, SongData } from '../player/player.types';
+import { ButtonService } from './button.service';
 
 @Injectable()
 export class MusicService {
@@ -18,6 +20,7 @@ export class MusicService {
 		private readonly player: PlayerService,
 		private readonly prisma: PrismaService,
 		private readonly messageService: MessageService,
+		private readonly buttonService: ButtonService,
 	) {
 		this.player.on('channelEmpty', async (queue) => {
 			const channel = this.getChannelContext(queue);
@@ -98,7 +101,7 @@ export class MusicService {
 	}
 
 	async playFromHistory(context: MusicContext, options?: Partial<{ index: number; updateQueue: boolean }>) {
-		const { index = 0, updateQueue = true } = options || {};
+		const { index = 0, updateQueue = true } = options ?? {};
 
 		const queue = this.player.getQueueOf(context);
 
@@ -377,5 +380,15 @@ export class MusicService {
 				await this.player.setDynamic(message, dynamicPlayerOptions);
 			}
 		}
+	}
+
+	history(context: MusicContext, nbOfSongsToDisplay = DEFAULT_HISTORY_COUNT) {
+		const queue = this.player.getQueueOf(context);
+
+		if (!queue) {
+			throw new InformError(`Nothing is currently playing!`);
+		}
+
+		return this.buttonService.createHistoryWidget(queue, { countToDisplay: nbOfSongsToDisplay });
 	}
 }

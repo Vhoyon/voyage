@@ -4,6 +4,7 @@ import { ConfigModule } from '$common/configs/config.module';
 import { PrismaModule } from '$common/prisma/prisma.module';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PlayerModule } from '../player/player.module';
+import { ButtonService } from './button.service';
 import { MusicService } from './music.service';
 
 describe('MusicService', () => {
@@ -12,7 +13,7 @@ describe('MusicService', () => {
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ConfigModule, PrismaModule, discordModule, PlayerModule],
-			providers: [MusicService, MessageService],
+			providers: [MusicService, MessageService, ButtonService],
 		}).compile();
 
 		service = module.get<MusicService>(MusicService);

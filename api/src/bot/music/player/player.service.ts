@@ -51,49 +51,28 @@ export class PlayerService extends Player {
 			timeout: env.DISCORD_MUSIC_DISCONNECT_TIMEOUT * 1000,
 		});
 
-		this.on('songChanged', async (queue, newSong) => {
-			try {
-				await this.prisma.musicSetting.updateMany({
-					data: {
-						lastSongPlayed: (newSong.data as SongData).query,
-						nbOfSongsPlayed: {
-							increment: 1,
-						},
-					},
-					where: {
-						guild: {
-							guildId: queue.guild.id,
-						},
-					},
-				});
-			} catch (error) {
-				this.logger.error(error);
-			}
-		});
+		this.on('songFirst', this.createMusicLog);
+		this.on('songChanged', this.createMusicLog);
 
-		this.on('songChanged', async (queue, newSong, _oldSong) => {
-			const queueData = queue.data as QueueData;
-
-			if (queue.repeatMode != RepeatMode.SONG) {
-				queueData.history!.push(newSong);
-			}
-
+		this.on('songChanged', (queue) => {
 			const delay = 500;
 
 			this.updateDynamic(queue, { delay });
 		});
 
-		this.on('clientDisconnect', async (queue) => {
+		this.on('clientDisconnect', async (badQueue) => {
+			const queue = badQueue as VQueue;
+
 			this.clearDynamic(queue);
 
-			const timeout = this.env.DISCORD_INTERACTION_MESSAGE_TIMEOUT;
+			if (!queue.data.playerMessage) {
+				return;
+			}
 
-			await sleep(timeout * 1000);
-
-			const queueData = queue.data as QueueData;
+			const historyWidget = this.buttonService.createHistoryWidget(queue);
 
 			try {
-				await queueData.playerMessage?.delete();
+				await this.messageService.edit(queue.data.playerMessage, historyWidget);
 			} catch (error) {
 				// do nothing if error happens
 			}
@@ -325,12 +304,6 @@ export class PlayerService extends Player {
 		} else {
 			queue.setVolume(volume);
 
-			if (queue.data.history == undefined) {
-				queue.data.history = [song];
-			} else {
-				queue.data.history.unshift(song);
-			}
-
 			if (searchContext) {
 				await options?.onSongPlay?.(song, searchContext);
 			}
@@ -374,12 +347,6 @@ export class PlayerService extends Player {
 			return PlayType.ADD;
 		} else {
 			queue.setVolume(volume);
-
-			if (queue.data.history == undefined) {
-				queue.data.history = [playlist.songs[0]];
-			} else {
-				queue.data.history.unshift(playlist.songs[0]);
-			}
 
 			if (searchContext) {
 				await options?.onPlaylistPlay?.(playlist, searchContext);
@@ -480,5 +447,46 @@ export class PlayerService extends Player {
 		}
 
 		return type;
+	}
+
+	async createMusicLog(badQueue: Queue, song: Song) {
+		const queue = badQueue as VQueue;
+
+		if (queue.repeatMode != RepeatMode.SONG) {
+			if (!queue.data.history?.length) {
+				queue.data.history = [];
+			}
+
+			queue.data.history.unshift(song);
+		}
+
+		const { name, author, url } = song;
+
+		const guildId = queue.guild.id;
+
+		try {
+			await this.prisma.musicLog.create({
+				data: {
+					name,
+					author,
+					url,
+					requester: song.requestedBy!.tag,
+					guild: {
+						connect: {
+							guildId,
+						},
+					},
+				},
+			});
+		} catch (error) {
+			if (queue.data.textChannel) {
+				await this.messageService.sendInternalError(
+					queue.data.textChannel,
+					`Couldn't log the current song to my database, you won't find it in your history :(`,
+				);
+			}
+
+			this.logger.error(`Error trying to log played music for guild id ${guildId}`);
+		}
 	}
 }
