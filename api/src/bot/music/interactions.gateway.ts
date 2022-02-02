@@ -1,5 +1,5 @@
 import { On, UseGuards } from '@discord-nestjs/core';
-import { inlineCode } from '@discordjs/builders';
+import { bold, inlineCode } from '@discordjs/builders';
 import { Controller, Logger } from '@nestjs/common';
 import { Song } from 'discord-music-player';
 import { ButtonInteraction, GuildMember } from 'discord.js';
@@ -33,7 +33,7 @@ export class InteractionsGateway {
 		let song: Song;
 
 		try {
-			song = await this.musicService.playFromHistory(interaction, { updateQueue: false });
+			song = await this.musicService.playFromLocalHistory(interaction);
 		} catch (error) {
 			// shouldn't happen in theory.
 			throw new InformError(`You can only start a song over if it is currently playing!`, { error });
@@ -130,5 +130,55 @@ export class InteractionsGateway {
 		} else {
 			await this.messageService.sendError(interaction, `The player is already not dynamic!`);
 		}
+	}
+
+	@On('interactionCreate')
+	@UseGuards(ButtonInteractionWithId(MusicInteractionConstant.PLAY_FROM_HISTORY))
+	async onPlayFromHistoryInteraction(interaction: ButtonInteraction) {
+		if (!(interaction.member instanceof GuildMember) || !interaction.member.voice.channel) {
+			await this.messageService.sendError(interaction, 'You need to be in a voice channel to play the last song from history!');
+			return;
+		}
+
+		if (this.player.isPlaying(interaction)) {
+			await this.messageService.sendError(interaction, 'You can only play the last played song when the bot is not playing!');
+			return;
+		}
+
+		const onSongSearch = () => {
+			return this.messageService.send(interaction, bold(`Trying to play last played song...`));
+		};
+
+		const onSongSearchError = () => {
+			return this.messageService.replace(
+				interaction,
+				`Couldn't find a match for the url of the last song played. Check if the video is still publicly available!`,
+				{
+					type: 'error',
+				},
+			);
+		};
+
+		const onSongPlay = async () => {
+			const nowPlayingWidget = this.player.createNowPlayingWidget(interaction);
+
+			const playerMessage = await this.messageService.replace(interaction, nowPlayingWidget);
+
+			if (playerMessage) {
+				await this.player.setPlayerMessage(playerMessage);
+			}
+		};
+
+		await this.musicService.playFromHistory(
+			{
+				requester: interaction.user,
+				voiceChannel: interaction.member.voice.channel,
+			},
+			{
+				onSongSearch,
+				onSongSearchError,
+				onSongPlay,
+			},
+		);
 	}
 }

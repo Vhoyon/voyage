@@ -1,7 +1,7 @@
 import { GuildChannelsContext } from '$/bot/common/message.service';
 import { CallbackResult, Promiseable } from '$common/utils/types';
-import { Playlist, Queue, Song } from 'discord-music-player';
-import { Guild, GuildChannelResolvable, Message, TextChannel, User } from 'discord.js';
+import { Playlist, PlayOptions, Queue, Song } from 'discord-music-player';
+import { Guild, GuildChannelResolvable, Message, StageChannel, TextChannel, User, VoiceChannel } from 'discord.js';
 import { DynamicPlayerType } from './player.service';
 
 export type QueueData = {
@@ -43,6 +43,19 @@ export type PlayPlaylistCallbacks<T> = {
 
 export type PlayMusicCallbacks<SongType, PlaylistType> = PlaySongCallbacks<SongType> & PlayPlaylistCallbacks<PlaylistType>;
 
+export type DMPPlayOptions = PlayOptions & {
+	immediate?: boolean;
+	seek?: number;
+	data?: SongData;
+};
+
+export type PlayMusicQuery = {
+	query: string;
+	voiceChannel: VoiceChannel | StageChannel;
+	requester: User;
+	playOptions?: DMPPlayOptions;
+};
+
 export type PlayMusicOptions<SongType, PlaylistType> = PlayMusicCallbacks<SongType, PlaylistType> & {
 	/** This allows to setup the queue with the textChannel data property, therefore sending messages on different events. */
 	textChannel?: TextChannel;
@@ -59,6 +72,7 @@ export type PlayMusicData<
 	volume: number;
 	requester: User;
 	options?: Options;
+	playOptions?: DMPPlayOptions;
 };
 
 export type DynamicPlayerData = {

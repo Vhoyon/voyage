@@ -6,7 +6,7 @@ import { sleep } from '$common/utils/funcs';
 import { DiscordClientProvider } from '@discord-nestjs/core';
 import { Injectable, Logger } from '@nestjs/common';
 import { Player, PlayerOptions, Playlist, Queue, RepeatMode, Song } from 'discord-music-player';
-import { Guild, Message, StageChannel, TextChannel, User, VoiceChannel } from 'discord.js';
+import { Guild, Message, TextChannel } from 'discord.js';
 import { ButtonService } from '../services/button.service';
 import {
 	DynamicPlayerData,
@@ -15,6 +15,7 @@ import {
 	PlayerButtonsOptions,
 	PlayMusicData,
 	PlayMusicOptions,
+	PlayMusicQuery,
 	PlayPlaylistCallbacks,
 	PlaySongCallbacks,
 	QueueData,
@@ -51,49 +52,28 @@ export class PlayerService extends Player {
 			timeout: env.DISCORD_MUSIC_DISCONNECT_TIMEOUT * 1000,
 		});
 
-		this.on('songChanged', async (queue, newSong) => {
-			try {
-				await this.prisma.musicSetting.updateMany({
-					data: {
-						lastSongPlayed: (newSong.data as SongData).query,
-						nbOfSongsPlayed: {
-							increment: 1,
-						},
-					},
-					where: {
-						guild: {
-							guildId: queue.guild.id,
-						},
-					},
-				});
-			} catch (error) {
-				this.logger.error(error);
-			}
-		});
+		this.on('songFirst', this.createMusicLog);
+		this.on('songChanged', this.createMusicLog);
 
-		this.on('songChanged', async (queue, newSong, _oldSong) => {
-			const queueData = queue.data as QueueData;
-
-			if (queue.repeatMode != RepeatMode.SONG) {
-				queueData.history!.push(newSong);
-			}
-
+		this.on('songChanged', (queue) => {
 			const delay = 500;
 
 			this.updateDynamic(queue, { delay });
 		});
 
-		this.on('clientDisconnect', async (queue) => {
+		this.on('clientDisconnect', async (badQueue) => {
+			const queue = badQueue as VQueue;
+
 			this.clearDynamic(queue);
 
-			const timeout = this.env.DISCORD_INTERACTION_MESSAGE_TIMEOUT;
+			if (!queue.data.playerMessage) {
+				return;
+			}
 
-			await sleep(timeout * 1000);
-
-			const queueData = queue.data as QueueData;
+			const historyWidget = await this.buttonService.createHistoryWidget(queue.data.history);
 
 			try {
-				await queueData.playerMessage?.delete();
+				await this.messageService.edit(queue.data.playerMessage, historyWidget);
 			} catch (error) {
 				// do nothing if error happens
 			}
@@ -200,6 +180,12 @@ export class PlayerService extends Player {
 		return { queue: finalQueue, musicSettings: guildMusicSettings, isNewQueue: !queue };
 	}
 
+	isPlaying(context: MusicContext) {
+		const queue = this.getQueueOf(context);
+
+		return this.hasQueueAndPlaying(queue);
+	}
+
 	isQueuePlaying(queue: Queue): queue is Queue & { nowPlaying: Song } {
 		return !!queue.nowPlaying;
 	}
@@ -239,14 +225,8 @@ export class PlayerService extends Player {
 		return this.buttonService.createNowPlayingWidget(queue, options);
 	}
 
-	async play<SongType, PlaylistType>(
-		data: {
-			query: string;
-			voiceChannel: VoiceChannel | StageChannel;
-			requester: User;
-		} & PlayMusicOptions<SongType, PlaylistType>,
-	): Promise<PlayType> {
-		const { query, voiceChannel, requester, ...options } = data;
+	async play<SongType, PlaylistType>(data: PlayMusicQuery & PlayMusicOptions<SongType, PlaylistType>): Promise<PlayType> {
+		const { query, voiceChannel, requester, playOptions, ...options } = data;
 		const { queue, musicSettings } = await this.getOrCreateQueueOf(voiceChannel.guild, options?.textChannel);
 
 		const previousPlayerMessage = queue.data.playerMessage;
@@ -258,6 +238,7 @@ export class PlayerService extends Player {
 			requester,
 			volume: musicSettings.volume,
 			options,
+			playOptions,
 		});
 
 		if (playType == PlayType.NEW && queue.data.playerMessage != previousPlayerMessage) {
@@ -283,10 +264,8 @@ export class PlayerService extends Player {
 		}
 	}
 
-	protected createSongData(query: string): SongData {
-		return {
-			query,
-		};
+	protected createSongData(data: SongData): SongData {
+		return data;
 	}
 
 	protected async playSong<T>({
@@ -295,6 +274,7 @@ export class PlayerService extends Player {
 		volume,
 		requester,
 		options,
+		playOptions,
 	}: PlayMusicData<T, undefined, PlaySongCallbacks<T>>): Promise<PlayType> {
 		let song: Song;
 
@@ -305,6 +285,7 @@ export class PlayerService extends Player {
 		try {
 			song = await queue.play(query, {
 				requestedBy: requester,
+				...playOptions,
 			});
 		} catch (error) {
 			if (searchContext) {
@@ -314,7 +295,7 @@ export class PlayerService extends Player {
 			return PlayType.ERROR;
 		}
 
-		song.setData(this.createSongData(query));
+		song.setData(this.createSongData({ query }));
 
 		if (hadSongs) {
 			if (searchContext) {
@@ -324,12 +305,6 @@ export class PlayerService extends Player {
 			return PlayType.ADD;
 		} else {
 			queue.setVolume(volume);
-
-			if (queue.data.history == undefined) {
-				queue.data.history = [song];
-			} else {
-				queue.data.history.unshift(song);
-			}
 
 			if (searchContext) {
 				await options?.onSongPlay?.(song, searchContext);
@@ -345,6 +320,7 @@ export class PlayerService extends Player {
 		volume,
 		requester,
 		options,
+		playOptions,
 	}: PlayMusicData<undefined, T, PlayPlaylistCallbacks<T>>): Promise<PlayType> {
 		let playlist: Playlist;
 
@@ -355,6 +331,7 @@ export class PlayerService extends Player {
 		try {
 			playlist = await queue.playlist(query, {
 				requestedBy: requester,
+				...playOptions,
 			});
 		} catch (error) {
 			if (searchContext) {
@@ -364,7 +341,7 @@ export class PlayerService extends Player {
 			return PlayType.ERROR;
 		}
 
-		playlist.songs.forEach((s) => s.setData(this.createSongData(query)));
+		playlist.songs.forEach((s) => s.setData(this.createSongData({ query })));
 
 		if (hadSongs) {
 			if (searchContext) {
@@ -374,12 +351,6 @@ export class PlayerService extends Player {
 			return PlayType.ADD;
 		} else {
 			queue.setVolume(volume);
-
-			if (queue.data.history == undefined) {
-				queue.data.history = [playlist.songs[0]];
-			} else {
-				queue.data.history.unshift(playlist.songs[0]);
-			}
 
 			if (searchContext) {
 				await options?.onPlaylistPlay?.(playlist, searchContext);
@@ -480,5 +451,46 @@ export class PlayerService extends Player {
 		}
 
 		return type;
+	}
+
+	async createMusicLog(badQueue: Queue, song: Song) {
+		const queue = badQueue as VQueue;
+
+		if (queue.repeatMode != RepeatMode.SONG) {
+			if (!queue.data.history?.length) {
+				queue.data.history = [];
+			}
+
+			queue.data.history.unshift(song);
+		}
+
+		const { name, author, url } = song;
+
+		const guildId = queue.guild.id;
+
+		try {
+			await this.prisma.musicLog.create({
+				data: {
+					name,
+					author,
+					url,
+					requester: song.requestedBy!.tag,
+					guild: {
+						connect: {
+							guildId,
+						},
+					},
+				},
+			});
+		} catch (error) {
+			if (queue.data.textChannel) {
+				await this.messageService.sendInternalError(
+					queue.data.textChannel,
+					`Couldn't log the current song to my database, you won't find it in your history :(`,
+				);
+			}
+
+			this.logger.error(`Error trying to log played music for guild id ${guildId}`);
+		}
 	}
 }

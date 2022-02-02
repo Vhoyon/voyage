@@ -1,18 +1,30 @@
 import { SendableOptions } from '$/bot/common/message.service';
-import { inlineCode } from '@discordjs/builders';
+import { PrismaService } from '$common/prisma/prisma.service';
+import { hyperlink, inlineCode } from '@discordjs/builders';
 import { Injectable } from '@nestjs/common';
 import { RepeatMode, Song } from 'discord-music-player';
 import { EmbedFieldData, MessageActionRow, MessageButton } from 'discord.js';
 import { MusicInteractionConstant, PartialInteractionButtonOptions } from '../constants/music.constant';
+import { DEFAULT_COUNT as DEFAULT_HISTORY_COUNT } from '../dtos/history.dto';
 import { MAXIMUM as VOLUME_MAXIMUM } from '../dtos/volume.dto';
 import { PlayerButtonsOptions, VQueue } from '../player/player.types';
 
 @Injectable()
 export class ButtonService {
+	constructor(private readonly prisma: PrismaService) {}
+
 	createButton(options: PartialInteractionButtonOptions) {
 		return new MessageButton({
 			style: 'SECONDARY',
 			...options,
+		});
+	}
+
+	createRow(options: PartialInteractionButtonOptions[]) {
+		return new MessageActionRow({
+			components: options.map((buttonOptions) => {
+				return this.createButton(buttonOptions);
+			}),
 		});
 	}
 
@@ -27,11 +39,7 @@ export class ButtonService {
 			queueInteractions.push(MusicInteractionConstant.STOP_DYNAMIC_PLAYER);
 		}
 
-		const queueRow = new MessageActionRow({
-			components: queueInteractions.map((interaction) => {
-				return this.createButton(interaction);
-			}),
-		});
+		const queueRow = this.createRow(queueInteractions);
 
 		const playerInteractions: PartialInteractionButtonOptions[] = [
 			MusicInteractionConstant.REPEAT,
@@ -39,11 +47,7 @@ export class ButtonService {
 			MusicInteractionConstant.DISCONNECT,
 		];
 
-		const playerRow = new MessageActionRow({
-			components: playerInteractions.map((interaction) => {
-				return this.createButton(interaction);
-			}),
-		});
+		const playerRow = this.createRow(playerInteractions);
 
 		return [queueRow, playerRow];
 	}
@@ -121,6 +125,90 @@ export class ButtonService {
 			components: [...playerButtons],
 			fields,
 			url: song.url,
+		};
+	}
+
+	createHistoryButtons() {
+		const historyInteractions: PartialInteractionButtonOptions[] = [MusicInteractionConstant.PLAY_FROM_HISTORY];
+
+		const historyRow = this.createRow(historyInteractions);
+
+		return [historyRow];
+	}
+
+	/**
+	 *
+	 * @param data The context where to search the history for ; if given a string, it will be considered to be the guild's id and search through the database for the guild's play history.
+	 * Otherwise, it'll simply format the songs array provided.
+	 * @param options
+	 * @returns
+	 */
+	async createHistoryWidget(
+		data: string | Song[] | undefined,
+		options?: Partial<{ displayAll: boolean; countToDisplay: number }>,
+	): Promise<SendableOptions> {
+		const { displayAll = false, countToDisplay = DEFAULT_HISTORY_COUNT } = options ?? {};
+
+		const getSongDataHistory = async (): Promise<{ name: string; url: string }[] | SendableOptions> => {
+			if (typeof data == 'string') {
+				const MAX_FETCH_HISTORY = 50;
+
+				const history = await this.prisma.musicLog.findMany({
+					where: {
+						guild: {
+							guildId: data,
+						},
+					},
+					orderBy: {
+						createdAt: 'desc',
+					},
+					take: displayAll ? Math.max(MAX_FETCH_HISTORY, countToDisplay) : Math.min(countToDisplay, MAX_FETCH_HISTORY),
+				});
+
+				if (!history.length) {
+					return {
+						title: `No history recorded yet, play a song!`,
+					};
+				}
+
+				return history;
+			} else {
+				if (!data?.length) {
+					return {
+						title: `No history recorded yet, play a song!`,
+					};
+				}
+
+				const history = displayAll ? data : data.slice(0, countToDisplay);
+
+				return history;
+			}
+		};
+
+		const history = await getSongDataHistory();
+
+		if (!Array.isArray(history)) {
+			// If not actual history, it is custom message
+			return history;
+		}
+
+		const formattedHistory = history.map(({ name, url }, index) => {
+			return `${inlineCode(`${index + 1}`)} : ${hyperlink(name, url)}`;
+		});
+
+		const historyString = formattedHistory.join(`\n`);
+
+		const historyButtons = this.createHistoryButtons();
+
+		const titleSubject = `Showing history for the last`;
+		const titleData = history.length > 1 ? ` ${Math.min(history.length)} songs` : ` played song`;
+		// If fetched from db, say it
+		const titleEnding = typeof data == 'string' ? ` logged` : '';
+
+		return {
+			title: `${titleSubject}${titleData}${titleEnding}!`,
+			components: [...historyButtons],
+			description: historyString,
 		};
 	}
 }
