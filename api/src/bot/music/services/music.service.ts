@@ -146,7 +146,7 @@ export class MusicService {
 			orderBy: {
 				createdAt: 'desc',
 			},
-			skip: index + 1,
+			skip: index,
 		});
 
 		if (!pastLoggedSong) {
