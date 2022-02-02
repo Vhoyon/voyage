@@ -1,5 +1,4 @@
 import { InteractionFromServer } from '$/bot/common/guards/interaction-from-server.guard';
-import { IsInVoiceChannel } from '$/bot/common/guards/is-in-voicechannel.guard';
 import { MessageService } from '$/bot/common/message.service';
 import { TransformPipe, ValidationPipe } from '@discord-nestjs/common';
 import { Command, DiscordTransformedCommand, Payload, UseGuards, UsePipes } from '@discord-nestjs/core';
@@ -13,7 +12,7 @@ import { MusicService } from '../../services/music.service';
 	name: 'history',
 	description: 'Shows the history of played songs',
 })
-@UseGuards(InteractionFromServer, MusicGuard, IsInVoiceChannel(`You need to be in a voice channel to view the queue!`))
+@UseGuards(InteractionFromServer, MusicGuard)
 @UsePipes(TransformPipe, ValidationPipe)
 export class HistoryCommand implements DiscordTransformedCommand<HistoryDto> {
 	private readonly logger = new Logger(HistoryCommand.name);
@@ -21,8 +20,10 @@ export class HistoryCommand implements DiscordTransformedCommand<HistoryDto> {
 	constructor(private readonly messageService: MessageService, private readonly musicService: MusicService) {}
 
 	async handler(@Payload() { count }: HistoryDto, interaction: CommandInteraction) {
-		const reply = this.musicService.history(interaction, count);
+		const message = await this.messageService.send(interaction, `Fetching recent played songs from server...`);
 
-		await this.messageService.send(interaction, reply);
+		const reply = await this.musicService.history(interaction, count);
+
+		await this.messageService.edit(message, reply);
 	}
 }

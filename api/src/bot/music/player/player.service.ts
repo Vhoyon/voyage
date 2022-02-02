@@ -70,7 +70,7 @@ export class PlayerService extends Player {
 				return;
 			}
 
-			const historyWidget = this.buttonService.createHistoryWidget(queue);
+			const historyWidget = await this.buttonService.createHistoryWidget(queue.data.history);
 
 			try {
 				await this.messageService.edit(queue.data.playerMessage, historyWidget);

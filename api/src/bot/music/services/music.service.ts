@@ -9,7 +9,7 @@ import { Guild, Message, TextChannel } from 'discord.js';
 import { DEFAULT_COUNT as DEFAULT_HISTORY_COUNT } from '../dtos/history.dto';
 import { DEFAULT_COUNT as DEFAULT_QUEUE_COUNT } from '../dtos/queue.dto';
 import { PlayerService } from '../player/player.service';
-import { DynamicPlayerOptions, MusicContext, PlayMusicOptions, PlayMusicQuery, QueueData, SongData } from '../player/player.types';
+import { DynamicPlayerOptions, MusicContext, PlayMusicOptions, PlayMusicQuery, QueueData, SongData, VQueue } from '../player/player.types';
 import { ButtonService } from './button.service';
 
 @Injectable()
@@ -408,13 +408,15 @@ export class MusicService {
 		}
 	}
 
-	history(context: MusicContext, nbOfSongsToDisplay = DEFAULT_HISTORY_COUNT) {
-		const queue = this.player.getQueueOf(context);
+	/**
+	 *
+	 * @param context The context where to search the history for ; if given a queue, it will only search through the queue and not the database, make sure to give the guild if the latter is desired.
+	 * @param nbOfSongsToDisplay The number of songs to display. If fetching from the database, a max of 50 can be shown at once.
+	 * @returns
+	 */
+	async history(context: MusicContext, nbOfSongsToDisplay = DEFAULT_HISTORY_COUNT) {
+		const data = context instanceof Queue ? (context as VQueue).data.history : context instanceof Guild ? context.id : context.guild?.id;
 
-		if (!queue) {
-			throw new InformError(`Nothing is currently playing!`);
-		}
-
-		return this.buttonService.createHistoryWidget(queue, { countToDisplay: nbOfSongsToDisplay });
+		return this.buttonService.createHistoryWidget(data, { countToDisplay: nbOfSongsToDisplay });
 	}
 }

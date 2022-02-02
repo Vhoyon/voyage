@@ -38,5 +38,6 @@ export const MusicInteractionConstant = createInteractionButtonMap({
 	PLAY_FROM_HISTORY: {
 		customId: 'voyage_i_music_play_from_history',
 		emoji: '▶',
+		label: `Last Played Song`,
 	},
 });
