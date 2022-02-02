@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.6.0](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.5.4...voyage-discord-bot-v0.6.0) (2022-02-02)
+
+
+### Features
+
+* history command and traceback on player messages ([#42](https://github.com/Vhoyon/voyage/issues/42)) ([d9d1a30](https://github.com/Vhoyon/voyage/commit/d9d1a30dbe7d12be026426e75247e5633749a955))
+* song history and change last song button to rewind ([bd43bf0](https://github.com/Vhoyon/voyage/commit/bd43bf0f2f7aa297db9e058c7bf049338b229176))
+
+
+### Dependencies
+
+* update dependency ytdl-core to v4.10.1 ([716ac18](https://github.com/Vhoyon/voyage/commit/716ac187aa487dd16edb8070a4e6fb9c7ba718cc))
+* update prisma to v3.9.0 ([5f9856c](https://github.com/Vhoyon/voyage/commit/5f9856c2417c53858b84a50d754909298dc193a3))
+* update prisma to v3.9.1 ([8e39fc2](https://github.com/Vhoyon/voyage/commit/8e39fc2a5b5773c9c39955565d0027324ec4d428))
+
+
 ### [0.5.4](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.5.3...voyage-discord-bot-v0.5.4) (2022-01-31)
 
 
