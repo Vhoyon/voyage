@@ -2,8 +2,8 @@ name: CD - Client
 
 on:
   push:
-    tags:
-      - 'client-v*'
+    paths:
+      - 'client/CHANGELOG.md'
 
 env:
   NODE_VERSION: '16'
