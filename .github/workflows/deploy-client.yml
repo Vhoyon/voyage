@@ -2,9 +2,8 @@ name: CD - Client
 
 on:
   push:
-    paths:
-      - 'client/CHANGELOG.md'
-  workflow_dispatch:
+    tags:
+      - 'client-v*'
 
 env:
   NODE_VERSION: '16'

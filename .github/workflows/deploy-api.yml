@@ -2,9 +2,8 @@ name: CD - API
 
 on:
   push:
-    paths:
-      - 'api/CHANGELOG.md'
-  workflow_dispatch:
+    tags:
+      - 'voyage-discord-bot-v*'
 
 env:
   NODE_VERSION: '16'
