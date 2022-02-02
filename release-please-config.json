@@ -3,7 +3,6 @@
 	"release-type": "node",
 	"bump-minor-pre-major": true,
 	"monorepo-tags": true,
-	"plugins": ["node-workspace"],
 	"packages": {
 		"api": {},
 		"client": {}
