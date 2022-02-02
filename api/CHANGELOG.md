@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.6.1](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.6.0...voyage-discord-bot-v0.6.1) (2022-02-02)
+
+
+### Bug Fixes
+
+* do not wait for delete when using play method ([5f0dc86](https://github.com/Vhoyon/voyage/commit/5f0dc865a9d686102ec3ca73b6c634c0acd52357))
+
 ## [0.6.0](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.5.4...voyage-discord-bot-v0.6.0) (2022-02-02)
 
 
