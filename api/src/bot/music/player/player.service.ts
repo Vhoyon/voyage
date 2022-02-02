@@ -242,11 +242,9 @@ export class PlayerService extends Player {
 		});
 
 		if (playType == PlayType.NEW && queue.data.playerMessage != previousPlayerMessage) {
-			try {
-				await previousPlayerMessage?.delete();
-			} catch (error) {
+			previousPlayerMessage?.delete().catch(() => {
 				// do nothing if error happens
-			}
+			});
 		}
 
 		return playType;
