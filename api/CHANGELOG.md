@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.6.2](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.6.1...voyage-discord-bot-v0.6.2) (2022-02-02)
+
+
+### Dependencies
+
+* move dotenv and dotenv-expand to prod deps ([b35102d](https://github.com/Vhoyon/voyage/commit/b35102dffb19be6565901091fcc06acd0d0debd8))
+
 ### [0.6.1](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.6.0...voyage-discord-bot-v0.6.1) (2022-02-02)
 
 
