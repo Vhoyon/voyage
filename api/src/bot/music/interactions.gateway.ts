@@ -140,6 +140,11 @@ export class InteractionsGateway {
 			return;
 		}
 
+		if (this.player.isPlaying(interaction)) {
+			await this.messageService.sendError(interaction, 'You can only play the last played song when the bot is not playing!');
+			return;
+		}
+
 		const onSongSearch = () => {
 			return this.messageService.send(interaction, bold(`Trying to play last played song...`));
 		};

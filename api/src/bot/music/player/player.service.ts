@@ -180,6 +180,12 @@ export class PlayerService extends Player {
 		return { queue: finalQueue, musicSettings: guildMusicSettings, isNewQueue: !queue };
 	}
 
+	isPlaying(context: MusicContext) {
+		const queue = this.getQueueOf(context);
+
+		return this.hasQueueAndPlaying(queue);
+	}
+
 	isQueuePlaying(queue: Queue): queue is Queue & { nowPlaying: Song } {
 		return !!queue.nowPlaying;
 	}
