@@ -63,7 +63,7 @@
     "nest-typed-config": "2.3.0",
     "reflect-metadata": "0.1.13",
     "rxjs": "7.5.2",
-    "ytdl-core": "4.10.0"
+    "ytdl-core": "4.10.1"
   },
   "devDependencies": {
     "@nestjs/cli": "8.2.0",
