@@ -8,7 +8,9 @@
 			"schedule": [
 				"at any time"
 			],
-			"automerge": true
+			"automerge": true,
+			"prConcurrentLimit": 0,
+			"prHourlyLimit": 0
 		}
 	]
 }
