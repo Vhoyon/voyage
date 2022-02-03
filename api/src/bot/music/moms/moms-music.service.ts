@@ -81,7 +81,7 @@ export class MomsMusicService {
 
 		const voiceMembers = newVoiceState.channel.members.filter((member) => !member.user.bot);
 
-		const member = voiceMembers.find((member) => member.user.id == userId);
+		const member = voiceMembers.get(userId);
 
 		if (!member) {
 			return;
@@ -115,8 +115,7 @@ export class MomsMusicService {
 		const timeoutMs = timeout * 60 * 1000;
 		const lastLoggedDate = new Date(Date.now() - timeoutMs);
 
-		const lastLogInTimeoutArray = await this.prisma.momsLog.findMany({
-			take: 1,
+		const lastLogInTimeout = await this.prisma.momsLog.findFirst({
 			where: {
 				userIdDiscord: user.id,
 				guild: {
@@ -130,8 +129,6 @@ export class MomsMusicService {
 				createdAt: 'desc',
 			},
 		});
-
-		const lastLogInTimeout = lastLogInTimeoutArray.length ? lastLogInTimeoutArray[0] : null;
 
 		const doIndeedCreateLog = typeof doCreateLog == 'boolean' ? doCreateLog : doCreateLog(lastLogInTimeout);
 
