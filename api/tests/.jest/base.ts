@@ -2,7 +2,7 @@ import type { Config } from '@jest/types';
 import deepmerge from 'deepmerge';
 import fs from 'fs';
 import JSON5 from 'json5';
-import { pathsToModuleNameMapper } from 'ts-jest/utils';
+import { pathsToModuleNameMapper } from 'ts-jest';
 
 const tsConfig = JSON5.parse(fs.readFileSync('./tsconfig.json', 'utf-8'));
 
