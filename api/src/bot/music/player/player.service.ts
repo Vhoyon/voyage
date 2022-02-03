@@ -266,14 +266,9 @@ export class PlayerService extends Player {
 		return data;
 	}
 
-	protected async playSong<T>({
-		query,
-		queue,
-		volume,
-		requester,
-		options,
-		playOptions,
-	}: PlayMusicData<T, undefined, PlaySongCallbacks<T>>): Promise<PlayType> {
+	protected async playSong<T>(data: PlayMusicData<T, undefined, PlaySongCallbacks<T>>): Promise<PlayType> {
+		const { query, queue, volume, requester, options, playOptions } = data;
+
 		let song: Song;
 
 		const searchContext = await options?.onSongSearch?.();
@@ -312,14 +307,9 @@ export class PlayerService extends Player {
 		}
 	}
 
-	protected async playPlaylist<T>({
-		query,
-		queue,
-		volume,
-		requester,
-		options,
-		playOptions,
-	}: PlayMusicData<undefined, T, PlayPlaylistCallbacks<T>>): Promise<PlayType> {
+	protected async playPlaylist<T>(data: PlayMusicData<undefined, T, PlayPlaylistCallbacks<T>>): Promise<PlayType> {
+		const { query, queue, volume, requester, options, playOptions } = data;
+
 		let playlist: Playlist;
 
 		const searchContext = await options?.onPlaylistSearch?.();
