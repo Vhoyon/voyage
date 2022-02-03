@@ -76,11 +76,6 @@ export class ButtonService {
 
 		const fields: EmbedFieldData[] = [
 			{
-				name: 'Requester',
-				value: song.requestedBy!.tag,
-				inline: true,
-			},
-			{
 				name: 'Author',
 				value: inlineCode(song.author),
 				inline: true,
@@ -101,6 +96,14 @@ export class ButtonService {
 				inline: true,
 			},
 		];
+
+		if (song.requestedBy) {
+			fields.unshift({
+				name: 'Requester',
+				value: song.requestedBy.tag,
+				inline: true,
+			});
+		}
 
 		const dynamicPlayerType = options?.dynamicPlayerType ?? queue.data.dynamicPlayer?.type;
 

@@ -52,7 +52,7 @@ export type DMPPlayOptions = PlayOptions & {
 export type PlayMusicQuery = {
 	query: string;
 	voiceChannel: VoiceChannel | StageChannel;
-	requester: User;
+	requester?: User;
 	playOptions?: DMPPlayOptions;
 };
 
@@ -70,7 +70,7 @@ export type PlayMusicData<
 	queue: VQueue;
 	voiceChannel: GuildChannelResolvable;
 	volume: number;
-	requester: User;
+	requester?: User;
 	options?: Options;
 	playOptions?: DMPPlayOptions;
 };
