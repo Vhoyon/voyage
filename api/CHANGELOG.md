@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.6.3](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.6.2...voyage-discord-bot-v0.6.3) (2022-02-03)
+
+
+### Tweaks
+
+* make song requester optional to allow automatic plays logged ([d40013f](https://github.com/Vhoyon/voyage/commit/d40013fb43a510856f17d0c9c3cfb78cba3c3c4d))
+
 ### [0.6.2](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.6.1...voyage-discord-bot-v0.6.2) (2022-02-02)
 
 
