@@ -38,12 +38,6 @@ jobs:
         with:
           node-version: ${{env.NODE_VERSION}}
 
-      - name: Setup vars
-        if: steps.release-please.outputs.releases_created != 'true' && steps.release-please.outputs.pr
-        id: vars
-        run: |
-          echo ::set-output name=commit_subject::$(git log --format=%B -n 1 HEAD)
-
       - name: Updating package-lock.json file
         if: steps.release-please.outputs.releases_created != 'true' && steps.release-please.outputs.pr
         run: npm install --no-audit --no-fund --ignore-scripts --package-lock-only
@@ -59,6 +53,6 @@ jobs:
         uses: actions-js/push@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          message: '${{ steps.vars.outputs.commit_subject }}'
+          message: '${{ steps.release-please.outputs.pr.title }}'
           branch: '${{ steps.release-please.outputs.pr.headBranchName }}'
           force: true
