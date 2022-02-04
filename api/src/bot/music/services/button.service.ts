@@ -197,16 +197,18 @@ export class ButtonService {
 		// If fetched from db, say it
 		const titleEnding = typeof data == 'string' ? ` logged` : '';
 
+		const fields = this.createConditionFields(conditions);
+
 		return {
 			title: `${titleSubject}${titleData}${titleEnding}!`,
 			components: historyButtons,
 			description: historyString,
-			fields: this.createConditionFields(conditions),
-			footer: conditions.length ? { text: `This history is based on the conditions above` } : undefined,
+			fields,
+			footer: fields && { text: `This history is based on the conditions above` },
 		};
 	}
 
-	protected createConditionFields(conditions?: Condition[]) {
+	protected createConditionFields(conditions: Condition[]) {
 		if (!conditions?.length) {
 			return;
 		}
