@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.7.0](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.6.3...voyage-discord-bot-v0.7.0) (2022-02-04)
+
+
+### Features
+
+* set conditions to fetch history ([84bd13f](https://github.com/Vhoyon/voyage/commit/84bd13f82f53dc00513e9788d478813acec22f69))
+
+
+### Bug Fixes
+
+* do not crash bot when sending message fails ([f05077e](https://github.com/Vhoyon/voyage/commit/f05077e86147b742db787d721bf9b515918e1960))
+* **History:** do not show play last song when there is conditions ([c5710b3](https://github.com/Vhoyon/voyage/commit/c5710b37caa1aa1ec673d3d21b351f9d611bb7af))
+* **MusicLog:** log user id instead of user tag ([c1caea0](https://github.com/Vhoyon/voyage/commit/c1caea0cbfd96edc1e5a3a959d821087f17f44b5))
+* reduce size of createHistoryWidget function by splitting logic ([2b3aa4a](https://github.com/Vhoyon/voyage/commit/2b3aa4a5c990096d74f940a2fe62193114898a2b))
+
 ### [0.6.3](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.6.2...voyage-discord-bot-v0.6.3) (2022-02-03)
 
 
