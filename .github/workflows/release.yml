@@ -30,7 +30,7 @@ jobs:
         if: steps.release-please.outputs.releases_created != 'true' && steps.release-please.outputs.pr
         uses: actions/checkout@v2
         with:
-          ref: release-please--branches--master
+          ref: ${{ steps.release-please.outputs.pr.headBranchName }}
           fetch-depth: 2
 
       - uses: actions/setup-node@v2
@@ -43,7 +43,6 @@ jobs:
         id: vars
         run: |
           echo ::set-output name=commit_subject::$(git log --format=%B -n 1 HEAD)
-          echo ::set-output name=git_branch::$(git rev-parse --abbrev-ref HEAD)
 
       - name: Updating package-lock.json file
         if: steps.release-please.outputs.releases_created != 'true' && steps.release-please.outputs.pr
@@ -61,5 +60,5 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           message: '${{ steps.vars.outputs.commit_subject }}'
-          branch: '${{ steps.vars.outputs.git_branch }}'
+          branch: '${{ steps.release-please.outputs.pr.headBranchName }}'
           force: true
