@@ -5,7 +5,7 @@ import { parseMsIntoTime, parseTimeIntoSeconds } from '$common/utils/funcs';
 import { bold, inlineCode } from '@discordjs/builders';
 import { Injectable, Logger } from '@nestjs/common';
 import { Queue, RepeatMode, Song } from 'discord-music-player';
-import { Guild, Message, TextChannel } from 'discord.js';
+import { Guild, Message, TextChannel, User } from 'discord.js';
 import { DEFAULT_COUNT as DEFAULT_HISTORY_COUNT } from '../dtos/history.dto';
 import { DEFAULT_COUNT as DEFAULT_QUEUE_COUNT } from '../dtos/queue.dto';
 import { PlayerService } from '../player/player.service';
@@ -411,12 +411,20 @@ export class MusicService {
 	/**
 	 *
 	 * @param context The context where to search the history for ; if given a queue, it will only search through the queue and not the database, make sure to give the guild if the latter is desired.
-	 * @param nbOfSongsToDisplay The number of songs to display. If fetching from the database, a max of 50 can be shown at once.
 	 * @returns
 	 */
-	async history(context: MusicContext, nbOfSongsToDisplay = DEFAULT_HISTORY_COUNT) {
+	// @param nbOfSongsToDisplay The number of songs to display. If fetching from the database, a max of 50 can be shown at once.
+	async history(
+		context: MusicContext,
+		options?: Partial<{
+			count: number;
+			user: User;
+		}>,
+	) {
+		const { count = DEFAULT_HISTORY_COUNT, user } = options ?? {};
+
 		const data = context instanceof Queue ? (context as VQueue).data.history : context instanceof Guild ? context.id : context.guild?.id;
 
-		return this.buttonService.createHistoryWidget(data, { countToDisplay: nbOfSongsToDisplay });
+		return this.buttonService.createHistoryWidget(data, { countToDisplay: count, user });
 	}
 }

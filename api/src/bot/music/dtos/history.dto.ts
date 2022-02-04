@@ -12,4 +12,8 @@ export class HistoryDto {
 	@Max(MAXIMUM)
 	@Param({ description: 'Number of songs to show', required: false, type: ParamType.INTEGER })
 	count = DEFAULT_COUNT;
+
+	@IsOptional()
+	@Param({ name: 'user', description: 'Only fetch songs from this user', required: false, type: ParamType.USER })
+	userId?: string;
 }
