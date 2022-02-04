@@ -413,7 +413,6 @@ export class MusicService {
 	 * @param context The context where to search the history for ; if given a queue, it will only search through the queue and not the database, make sure to give the guild if the latter is desired.
 	 * @returns
 	 */
-	// @param nbOfSongsToDisplay The number of songs to display. If fetching from the database, a max of 50 can be shown at once.
 	async history(
 		context: MusicContext,
 		options?: Partial<{
