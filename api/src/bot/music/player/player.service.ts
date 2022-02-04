@@ -462,7 +462,7 @@ export class PlayerService extends Player {
 					name,
 					author,
 					url,
-					requester: song.requestedBy?.tag,
+					requester: song.requestedBy?.id,
 					guild: {
 						connect: {
 							guildId,
