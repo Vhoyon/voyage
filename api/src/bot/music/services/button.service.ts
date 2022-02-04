@@ -261,7 +261,7 @@ export class ButtonService {
 
 		const historyString = formattedHistory.join(`\n`);
 
-		const historyButtons = this.createHistoryButtons();
+		const historyButtons = !conds.length ? this.createHistoryButtons() : undefined;
 
 		const titleSubject = `Showing history for the last`;
 		const titleData = history.length > 1 ? ` ${Math.min(history.length)} songs` : ` played song`;
@@ -272,7 +272,7 @@ export class ButtonService {
 
 		return {
 			title: `${titleSubject}${titleData}${titleEnding}!`,
-			components: [...historyButtons],
+			components: historyButtons,
 			description: historyString,
 			fields: condFields,
 			footer: conds.length ? { text: `This history is based on the conditions above` } : undefined,
