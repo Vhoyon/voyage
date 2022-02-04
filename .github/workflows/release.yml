@@ -30,8 +30,8 @@ jobs:
         if: steps.release-please.outputs.releases_created != 'true' && steps.release-please.outputs.pr
         id: vars
         run: |
-          echo ::set-output name=commit_subject::${{ fromJSON(steps.release-please.outputs.pr).title }}
-          echo ::set-output name=git_branch::${{ fromJSON(steps.release-please.outputs.pr).headBranchName }}
+          echo ::set-output name=commit_subject::"${{ fromJSON(steps.release-please.outputs.pr).title }}"
+          echo ::set-output name=git_branch::"${{ fromJSON(steps.release-please.outputs.pr).headBranchName }}"
 
       - name: Fetching Release Please's branch
         if: steps.release-please.outputs.releases_created != 'true' && steps.release-please.outputs.pr
