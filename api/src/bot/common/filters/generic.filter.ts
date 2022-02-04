@@ -2,6 +2,7 @@ import { Catch, DiscordArgumentMetadata, DiscordExceptionFilter } from '@discord
 import { Logger } from '@nestjs/common';
 import { Interaction } from 'discord.js';
 import { InformError, InformInternalError } from '../error/inform-error';
+import { LogWarning } from '../error/log-warning';
 import { MessageService } from '../message.service';
 
 @Catch()
@@ -11,6 +12,12 @@ export class GenericErrorFilter implements DiscordExceptionFilter {
 	constructor(private readonly messageService: MessageService) {}
 
 	async catch(error: unknown, metadata: DiscordArgumentMetadata) {
+		if (error instanceof LogWarning) {
+			error.log(this.logger);
+
+			return;
+		}
+
 		const [interaction] = metadata.context;
 
 		if (!(interaction instanceof Interaction)) {

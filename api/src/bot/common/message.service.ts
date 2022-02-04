@@ -18,6 +18,7 @@ import {
 	TextBasedChannels,
 } from 'discord.js';
 import { InformError, InformInternalError } from './error/inform-error';
+import { LogWarning } from './error/log-warning';
 
 export type CommandContext = Message | TextBasedChannels;
 export type InteractionContext = ButtonInteraction | CommandInteraction;
@@ -201,7 +202,11 @@ export class MessageService {
 
 		if (context instanceof Interaction) {
 			if (context.isButton()) {
-				await context.reply({ ...payload });
+				try {
+					await context.reply({ ...payload });
+				} catch (error) {
+					throw new LogWarning(`Error while replying to button interaction`, { error });
+				}
 
 				const dirtyMessage = await context.fetchReply();
 				const message = await this.get(dirtyMessage);
@@ -214,7 +219,11 @@ export class MessageService {
 
 				return message;
 			} else if (context.isCommand()) {
-				await context.reply({ ...payload });
+				try {
+					await context.reply({ ...payload });
+				} catch (error) {
+					throw new LogWarning(`Error while replying to command interaction`, { error });
+				}
 
 				const dirtyMessage = await context.fetchReply();
 				const message = await this.get(dirtyMessage);
@@ -230,12 +239,18 @@ export class MessageService {
 
 			throw 'Support for given Interaction context is not implemented yet!';
 		} else if (context instanceof Message) {
-			const message = await context.reply({
-				allowedMentions: {
-					repliedUser: false,
-				},
-				...payload,
-			});
+			let message;
+
+			try {
+				message = await context.reply({
+					allowedMentions: {
+						repliedUser: false,
+					},
+					...payload,
+				});
+			} catch (error) {
+				throw new LogWarning(`Error while replying to message`, { error });
+			}
 
 			if (!isEphemeral && payload?.timeout) {
 				this.delete(message, payload.timeout).catch(() => {
@@ -245,7 +260,13 @@ export class MessageService {
 
 			return message;
 		} else {
-			const message = await context.send({ ...payload });
+			let message;
+
+			try {
+				message = await context.send({ ...payload });
+			} catch (error) {
+				throw new LogWarning(`Error while sending message in channel`, { error });
+			}
 
 			if (!isEphemeral && payload?.timeout) {
 				this.delete(message, payload.timeout).catch(() => {
