@@ -22,9 +22,7 @@ jobs:
           manifest-file: .github/release-please-manifest.json
 
       - name: Release Please Output
-        env:
-          STEPS_OUTPUT: ${{ toJSON(steps.release-please.outputs) }}
-        run: echo "$STEPS_OUTPUT"
+        run: echo '${{ toJSON(steps.release-please.outputs) }}'
 
       - name: Setup vars
         if: steps.release-please.outputs.releases_created != 'true' && steps.release-please.outputs.pr
