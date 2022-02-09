@@ -126,7 +126,9 @@ export class PlayerService extends Player {
 		const previousHistoryMessage = this.historyMessages[guildId];
 
 		if (previousHistoryMessage) {
-			this.messageService.edit(previousHistoryMessage, { embeds: previousHistoryMessage.embeds, components: [] }).catch();
+			this.messageService.edit(previousHistoryMessage, { embeds: previousHistoryMessage.embeds, components: [] }).catch(() => {
+				// do nothing if edit fails
+			});
 		}
 
 		this.historyMessages[guildId] = message;
