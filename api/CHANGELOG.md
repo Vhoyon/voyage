@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.8.0](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.7.0...voyage-discord-bot-v0.8.0) (2022-02-09)
+
+
+### Features
+
+* **History:** edit last history message to remove button ([dadd9c3](https://github.com/Vhoyon/voyage/commit/dadd9c3995538f5cb4b64ab3c694f524bb0a8962))
+
+
+### Bug Fixes
+
+* properly handle history message edit error ([a6ed4fa](https://github.com/Vhoyon/voyage/commit/a6ed4fa1ff1c9ffd0ec40a6bff95cf3e0deb6d8b))
+
+
+### Dependencies
+
+* update dependency @discord-nestjs/common to v2.0.17 ([48e84bf](https://github.com/Vhoyon/voyage/commit/48e84bfc860ca2ab662f073c74e9e53216a3c062))
+
 ## [0.7.0](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.6.3...voyage-discord-bot-v0.7.0) (2022-02-04)
 
 
