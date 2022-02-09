@@ -365,7 +365,7 @@ export class MessageService {
 		let finalEmbed = embed;
 
 		try {
-			if (context instanceof Interaction) {
+			if (context instanceof Interaction && !context.isCommand()) {
 				const isEphemeral = payload && 'ephemeral' in payload && payload.ephemeral;
 
 				finalEmbed = isEphemeral ? embed : embed.addField('Action requested by', context.user.tag, true);
