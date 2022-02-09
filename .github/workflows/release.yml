@@ -38,6 +38,13 @@ jobs:
           ref: ${{ steps.vars.outputs.git_branch }}
           fetch-depth: 2
 
+      - name: Setup committer vars
+        if: steps.release-please.outputs.releases_created != 'true' && steps.release-please.outputs.pr
+        id: commit-vars
+        run: |
+          echo ::set-output name=git_author_email::"$(git show -s --format='%aE' HEAD~1)"
+          echo ::set-output name=git_author_username::"$(git show -s --format='%aN' HEAD~1)"
+
       - uses: actions/setup-node@v2
         if: steps.release-please.outputs.releases_created != 'true' && steps.release-please.outputs.pr
         with:
@@ -60,4 +67,6 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           message: '${{ steps.vars.outputs.commit_subject }}'
           branch: '${{ steps.vars.outputs.git_branch }}'
+          author_email: '${{ steps.commit-vars.outputs.git_author_email }}'
+          author_name: '${{ steps.commit-vars.outputs.git_author_username }}'
           force: true
