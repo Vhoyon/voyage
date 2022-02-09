@@ -6,7 +6,7 @@ import { sleep } from '$common/utils/funcs';
 import { DiscordClientProvider } from '@discord-nestjs/core';
 import { Injectable, Logger } from '@nestjs/common';
 import { Player, PlayerOptions, Playlist, Queue, RepeatMode, Song } from 'discord-music-player';
-import { Guild, Message, TextChannel } from 'discord.js';
+import { Guild, Message, Snowflake, TextChannel } from 'discord.js';
 import { ButtonService } from '../services/button.service';
 import {
 	DynamicPlayerData,
@@ -37,6 +37,8 @@ export enum PlayType {
 @Injectable()
 export class PlayerService extends Player {
 	private readonly logger = new Logger(PlayerService.name);
+
+	protected historyMessages: Record<Snowflake, Message | undefined> = {};
 
 	constructor(
 		readonly discordProvider: DiscordClientProvider,
@@ -73,7 +75,9 @@ export class PlayerService extends Player {
 			const historyWidget = await this.buttonService.createHistoryWidget(queue.data.history);
 
 			try {
-				await this.messageService.edit(queue.data.playerMessage, historyWidget);
+				const message = await this.messageService.edit(queue.data.playerMessage, historyWidget);
+
+				this.setHistoryMessage(queue.guild.id, message);
 			} catch (error) {
 				// do nothing if error happens
 			}
@@ -116,6 +120,16 @@ export class PlayerService extends Player {
 	/** @inheritdoc */
 	override createQueue(guildId: string, options: PlayerOptions & { data: QueueData }): VQueue {
 		return super.createQueue(guildId, options) as VQueue;
+	}
+
+	setHistoryMessage(guildId: Snowflake, message: Message) {
+		const previousHistoryMessage = this.historyMessages[guildId];
+
+		if (previousHistoryMessage) {
+			this.messageService.edit(previousHistoryMessage, { embeds: previousHistoryMessage.embeds, components: [] }).catch();
+		}
+
+		this.historyMessages[guildId] = message;
 	}
 
 	async setPlayerMessage(message: Message, options?: DynamicPlayerOptions) {
