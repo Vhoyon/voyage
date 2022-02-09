@@ -11,6 +11,10 @@
 			"automerge": true,
 			"prConcurrentLimit": 0,
 			"prHourlyLimit": 0
+		},
+		{
+			"matchPackagePrefixes": ["@discord-nestjs"],
+			"groupName": "discord-nestjs"
 		}
 	]
 }
