@@ -25,43 +25,43 @@ jobs:
         run: echo '${{ toJSON(steps.release-please.outputs) }}'
 
       - name: Setup vars
-        if: steps.release-please.outputs.releases_created != 'true' && steps.release-please.outputs.pr
+        if: steps.release-please.outputs.pr
         id: vars
         run: |
           echo ::set-output name=commit_subject::"${{ fromJSON(steps.release-please.outputs.pr).title }}"
           echo ::set-output name=git_branch::"${{ fromJSON(steps.release-please.outputs.pr).headBranchName }}"
 
       - name: Fetching Release Please's branch
-        if: steps.release-please.outputs.releases_created != 'true' && steps.release-please.outputs.pr
+        if: steps.release-please.outputs.pr
         uses: actions/checkout@v2
         with:
           ref: ${{ steps.vars.outputs.git_branch }}
           fetch-depth: 2
 
       - name: Setup committer vars
-        if: steps.release-please.outputs.releases_created != 'true' && steps.release-please.outputs.pr
+        if: steps.release-please.outputs.pr
         id: commit-vars
         run: |
           echo ::set-output name=git_author_email::"$(git show -s --format='%aE' HEAD~1)"
           echo ::set-output name=git_author_username::"$(git show -s --format='%aN' HEAD~1)"
 
       - uses: actions/setup-node@v2
-        if: steps.release-please.outputs.releases_created != 'true' && steps.release-please.outputs.pr
+        if: steps.release-please.outputs.pr
         with:
           node-version: ${{env.NODE_VERSION}}
 
       - name: Updating package-lock.json file
-        if: steps.release-please.outputs.releases_created != 'true' && steps.release-please.outputs.pr
+        if: steps.release-please.outputs.pr
         run: npm install --no-audit --no-fund --ignore-scripts --package-lock-only
 
       - name: Merging changes with last commit
-        if: steps.release-please.outputs.releases_created != 'true' && steps.release-please.outputs.pr
+        if: steps.release-please.outputs.pr
         run: |
           git reset --soft HEAD~1
           git add .
 
       - name: Commit & Push changes
-        if: steps.release-please.outputs.releases_created != 'true' && steps.release-please.outputs.pr
+        if: steps.release-please.outputs.pr
         uses: actions-js/push@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
