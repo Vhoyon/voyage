@@ -1,5 +1,17 @@
 # Changelog
 
+### [0.8.1](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.8.0...voyage-discord-bot-v0.8.1) (2022-02-09)
+
+
+### Bug Fixes
+
+* disconnect event fired twice ([ff5ec7f](https://github.com/Vhoyon/voyage/commit/ff5ec7f7b394b8c9810d42e5eced2fa7c4abf749))
+
+
+### Tweaks
+
+* only add action requested by field if not from command context ([01406e9](https://github.com/Vhoyon/voyage/commit/01406e96a197b946a2c676bf8314bb922a89aac8))
+
 ## [0.8.0](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.7.0...voyage-discord-bot-v0.8.0) (2022-02-09)
 
 
