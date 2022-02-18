@@ -64,27 +64,11 @@ export class PlayerService extends Player {
 		});
 
 		this.on('clientDisconnect', (queue) => {
-			this.clearDynamic(queue);
+			this.convertPlayerToHistory(queue);
 		});
 
-		this.on('queueEnd', async (badQueue) => {
-			const queue = badQueue as VQueue;
-
-			this.clearDynamic(queue);
-
-			if (!queue.data.playerMessage) {
-				return;
-			}
-
-			const historyWidget = await this.buttonService.createHistoryWidget(queue.data.history);
-
-			try {
-				const message = await this.messageService.edit(queue.data.playerMessage, historyWidget);
-
-				this.setHistoryMessage(queue.guild.id, message);
-			} catch (error) {
-				// do nothing if error happens
-			}
+		this.on('queueEnd', (queue) => {
+			this.convertPlayerToHistory(queue);
 		});
 
 		this.on('channelEmpty', (queue) => {
@@ -120,6 +104,28 @@ export class PlayerService extends Player {
 	/** @inheritdoc */
 	override createQueue(guildId: string, options: PlayerOptions & { data: QueueData }): VQueue {
 		return super.createQueue(guildId, options) as VQueue;
+	}
+
+	async convertPlayerToHistory(queue: Queue) {
+		const vQueue = queue as VQueue;
+
+		if (!vQueue.data.playerMessage) {
+			return;
+		}
+
+		const historyWidget = await this.buttonService.createHistoryWidget(vQueue.data.history);
+
+		try {
+			const message = await this.messageService.edit(vQueue.data.playerMessage, historyWidget);
+
+			this.setHistoryMessage(vQueue.guild.id, message);
+		} catch (error) {
+			// do nothing if error happens
+		}
+
+		vQueue.data.playerMessage = undefined;
+
+		await this.clearDynamic(queue);
 	}
 
 	setHistoryMessage(guildId: Snowflake, message: Message) {
