@@ -67,7 +67,9 @@ export class PlayerService extends Player {
 			this.clearDynamic(queue);
 		});
 
-		this.on('queueEnd', async (queue) => {
+		this.on('queueEnd', async (badQueue) => {
+			const queue = badQueue as VQueue;
+
 			this.clearDynamic(queue);
 
 			if (!queue.data.playerMessage) {
