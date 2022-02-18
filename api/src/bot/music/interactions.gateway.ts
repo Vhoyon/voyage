@@ -8,7 +8,7 @@ import { ButtonInteractionWithId } from '../common/guards/interaction-custom-id.
 import { IsChannelButtonInteractionGuard } from '../common/guards/is-channel-button-interaction.guard';
 import { MessageService } from '../common/message.service';
 import { MusicInteractionConstant } from './constants/music.constant';
-import { PlayerService } from './player/player.service';
+import { DynamicPlayerType, PlayerService } from './player/player.service';
 import { MusicService } from './services/music.service';
 
 @Controller()
@@ -160,12 +160,14 @@ export class InteractionsGateway {
 		};
 
 		const onSongPlay = async () => {
-			const nowPlayingWidget = this.player.createNowPlayingWidget(interaction);
+			const nowPlayingWidget = this.player.createNowPlayingWidget(interaction, {
+				dynamicPlayerType: DynamicPlayerType.UPDATEABLE,
+			});
 
 			const playerMessage = await this.messageService.replace(interaction, nowPlayingWidget);
 
 			if (playerMessage) {
-				await this.player.setPlayerMessage(playerMessage);
+				await this.player.setPlayerMessage(playerMessage, { type: DynamicPlayerType.UPDATEABLE });
 			}
 		};
 

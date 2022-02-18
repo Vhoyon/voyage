@@ -24,8 +24,8 @@ import {
 } from './player.types';
 
 export enum DynamicPlayerType {
-	UPDATEABLE = 'Updateable',
 	PINNED = 'Pinned',
+	UPDATEABLE = 'Updateable',
 }
 
 export enum PlayType {

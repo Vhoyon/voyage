@@ -7,5 +7,5 @@ export class PlayDto {
 
 	@Choice(DynamicPlayerType)
 	@Param({ name: 'dynamic-type', description: 'Type of dynamic player', required: false })
-	dynamicType?: DynamicPlayerType;
+	dynamicType: DynamicPlayerType = DynamicPlayerType.UPDATEABLE;
 }
