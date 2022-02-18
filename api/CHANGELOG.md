@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.9.0](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.8.1...voyage-discord-bot-v0.9.0) (2022-02-18)
+
+
+### Features
+
+* make the player updateable by default ([8a79243](https://github.com/Vhoyon/voyage/commit/8a7924362d599e5917ffb2f78bac33a54ab081a6))
+
+
+### Bug Fixes
+
+* change player message to history on queue end ([6edf2d5](https://github.com/Vhoyon/voyage/commit/6edf2d54c27c27e97a6876c820a002fcbfd72709))
+* **music:** immediate option should not be set if bot is not playing ([87c6c07](https://github.com/Vhoyon/voyage/commit/87c6c07cf78425a975dd799179e5a4ae494e1dad))
+* prevent using immediate option when queue is not playing ([58e0415](https://github.com/Vhoyon/voyage/commit/58e0415b9e355df124cba6ed2fadae410f3f4630))
+* proper fix for creating history on disconnect or queue end ([3d785d9](https://github.com/Vhoyon/voyage/commit/3d785d9bd9842a02adde978cb6fd11df23326fac))
+
+
+### Dependencies
+
+* update apollo graphql packages to v3.6.3 ([88e7372](https://github.com/Vhoyon/voyage/commit/88e73721faa5e639a670b106e8cbbb9ea307c59c))
+* update dependency @discordjs/voice to v0.8.0 ([e82ed01](https://github.com/Vhoyon/voyage/commit/e82ed0122dd61995ed9492a4315ba4351140eaee))
+* update dependency nest-typed-config to v2.4.0 ([e739142](https://github.com/Vhoyon/voyage/commit/e739142bd1de2ce906131001027afd395ff19e11))
+* update dependency rxjs to v7.5.4 ([dbf0e45](https://github.com/Vhoyon/voyage/commit/dbf0e45975675a336c77b6030e4739d63bc243e6))
+* update discord-nestjs ([01868d8](https://github.com/Vhoyon/voyage/commit/01868d8c051ce9cf82b49ff060db66acb7a2f292))
+* update prisma monorepo to v3.9.2 ([49b965a](https://github.com/Vhoyon/voyage/commit/49b965add1c8232963b75a7e245c92394374252d))
+
 ### [0.8.1](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.8.0...voyage-discord-bot-v0.8.1) (2022-02-09)
 
 
