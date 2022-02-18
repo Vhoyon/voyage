@@ -252,10 +252,6 @@ export class PlayerService extends Player {
 
 		const previousPlayerMessage = queue.data.playerMessage;
 
-		if (playOptions?.immediate && !queue.isPlaying) {
-			playOptions.immediate = false;
-		}
-
 		const playType = await this.playMusic({
 			query,
 			queue,
@@ -300,6 +296,10 @@ export class PlayerService extends Player {
 
 		const hadSongs = queue.songs.length;
 
+		if (playOptions?.immediate && !queue.isPlaying) {
+			playOptions.immediate = false;
+		}
+
 		try {
 			song = await queue.play(query, {
 				requestedBy: requester,
@@ -340,6 +340,10 @@ export class PlayerService extends Player {
 		const searchContext = await options?.onPlaylistSearch?.();
 
 		const hadSongs = queue.songs.length;
+
+		if (playOptions?.immediate && !queue.isPlaying) {
+			playOptions.immediate = false;
+		}
 
 		try {
 			playlist = await queue.playlist(query, {
