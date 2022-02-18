@@ -63,9 +63,11 @@ export class PlayerService extends Player {
 			this.updateDynamic(queue, { delay });
 		});
 
-		this.on('clientDisconnect', async (badQueue) => {
-			const queue = badQueue as VQueue;
+		this.on('clientDisconnect', (queue) => {
+			this.clearDynamic(queue);
+		});
 
+		this.on('queueEnd', async (queue) => {
 			this.clearDynamic(queue);
 
 			if (!queue.data.playerMessage) {
@@ -81,10 +83,6 @@ export class PlayerService extends Player {
 			} catch (error) {
 				// do nothing if error happens
 			}
-		});
-
-		this.on('queueEnd', (queue) => {
-			this.clearDynamic(queue);
 		});
 
 		this.on('channelEmpty', (queue) => {
