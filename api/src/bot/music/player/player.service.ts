@@ -252,6 +252,10 @@ export class PlayerService extends Player {
 
 		const previousPlayerMessage = queue.data.playerMessage;
 
+		if (playOptions?.immediate && !queue.isPlaying) {
+			playOptions.immediate = false;
+		}
+
 		const playType = await this.playMusic({
 			query,
 			queue,
