@@ -49,7 +49,7 @@
     "@prisma/client": "3.9.2",
     "apollo-server-core": "3.6.3",
     "apollo-server-express": "3.6.3",
-    "class-transformer": "0.5.1",
+    "class-transformer": "0.4.0",
     "class-validator": "0.13.2",
     "deepmerge": "4.2.2",
     "discord-music-player": "github:V-ed/discord-music-player",
