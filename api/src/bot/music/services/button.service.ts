@@ -164,11 +164,9 @@ export class ButtonService {
 	 * @returns
 	 */
 	async createHistoryWidget(data: string | Song[] | undefined, options?: Partial<HistoryWidgetOptions>): Promise<SendableOptions> {
-		// const { displayAll = false, countToDisplay = DEFAULT_HISTORY_COUNT, user } = options ?? {};
-		const opts = Object.assign<HistoryWidgetOptions, Partial<HistoryWidgetOptions>>(
-			{ displayAll: false, countToDisplay: DEFAULT_HISTORY_COUNT },
-			options ?? {},
-		);
+		const defaultOptions: HistoryWidgetOptions = { displayAll: false, countToDisplay: DEFAULT_HISTORY_COUNT };
+
+		const opts = Object.assign(defaultOptions, options ?? {});
 
 		const conditions: Condition[] = [];
 
@@ -235,6 +233,9 @@ export class ButtonService {
 					guildId,
 				},
 				requester: options.user?.id,
+				NOT: {
+					requester: null,
+				},
 			},
 			orderBy: {
 				createdAt: 'desc',
@@ -268,12 +269,12 @@ export class ButtonService {
 			};
 		}
 
-		let filteredSongs = songs;
+		let filteredSongs = songs.filter((song) => song.requestedBy) as (Song & { requestedBy: User })[];
 
 		if (options.user) {
 			const user = options.user;
 
-			filteredSongs = filteredSongs.filter((song) => song.requestedBy?.id === user.id);
+			filteredSongs = filteredSongs.filter((song) => song.requestedBy.id === user.id);
 		}
 
 		if (!filteredSongs.length) {
