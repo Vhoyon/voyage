@@ -6,6 +6,7 @@ import { MessageService } from '../common/message.service';
 import { InteractionsGateway } from './interactions.gateway';
 import { PlayerModule } from './player/player.module';
 import { ButtonService } from './services/button.service';
+import { HistoryService } from './services/history.service';
 import { MusicService } from './services/music.service';
 
 describe('PlayerGateway', () => {
@@ -15,7 +16,7 @@ describe('PlayerGateway', () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ConfigModule, PrismaModule, discordModule, PlayerModule],
 			controllers: [InteractionsGateway],
-			providers: [MusicService, MessageService, ButtonService],
+			providers: [MusicService, MessageService, ButtonService, HistoryService],
 		}).compile();
 
 		gateway = module.get<InteractionsGateway>(InteractionsGateway);

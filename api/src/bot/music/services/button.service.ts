@@ -1,34 +1,17 @@
 import { SendableOptions } from '$/bot/common/message.service';
-import { PrismaService } from '$common/prisma/prisma.service';
 import { hyperlink, inlineCode } from '@discordjs/builders';
 import { Injectable } from '@nestjs/common';
 import { RepeatMode, Song } from 'discord-music-player';
-import { EmbedFieldData, MessageActionRow, MessageButton, User } from 'discord.js';
+import { EmbedFieldData, MessageActionRow, MessageButton } from 'discord.js';
 import { MusicInteractionConstant, PartialInteractionButtonOptions } from '../constants/music.constant';
 import { DEFAULT_COUNT as DEFAULT_HISTORY_COUNT } from '../dtos/history.dto';
 import { MAXIMUM as VOLUME_MAXIMUM } from '../dtos/volume.dto';
 import { PlayerButtonsOptions, VQueue } from '../player/player.types';
-
-type HistoryWidgetOptions = {
-	displayAll: boolean;
-	countToDisplay: number;
-	user?: User;
-};
-
-type HistoryLog = {
-	name: string;
-	url: string;
-	requester: User | null;
-};
-
-type Condition = {
-	name: string;
-	value: string;
-};
+import { HistoryService, HistoryWidgetOptions } from './history.service';
 
 @Injectable()
 export class ButtonService {
-	constructor(private readonly prisma: PrismaService) {}
+	constructor(private readonly historyService: HistoryService) {}
 
 	createButton(options: PartialInteractionButtonOptions) {
 		return new MessageButton({
@@ -168,19 +151,14 @@ export class ButtonService {
 
 		const opts = Object.assign(defaultOptions, options ?? {});
 
-		const conditions: Condition[] = [];
+		const value = await this.historyService.getHistory(data, opts);
 
-		if (opts.user) {
-			conditions.push({ name: `User`, value: opts.user.tag });
-		}
-
-		const history =
-			typeof data == 'string' ? await this.getHistoryFromDB(data, conditions, opts) : this.getHistoryFromCache(data, conditions, opts);
-
-		if (!Array.isArray(history)) {
+		if (!('conditions' in value)) {
 			// If not actual history, it is custom message
-			return history;
+			return value;
 		}
+
+		const { history, conditions } = value;
 
 		const formattedHistory = history.map(({ name, url }, index) => {
 			return `${inlineCode(`${index + 1}`)} : ${hyperlink(name, url)}`;
@@ -195,7 +173,7 @@ export class ButtonService {
 		// If fetched from db, say it
 		const titleEnding = typeof data == 'string' ? ` logged` : '';
 
-		const fields = this.createConditionFields(conditions);
+		const fields = this.historyService.createConditionFields(conditions);
 
 		return {
 			title: `${titleSubject}${titleData}${titleEnding}!`,
@@ -204,91 +182,5 @@ export class ButtonService {
 			fields,
 			footer: fields && { text: `This history is based on the conditions above` },
 		};
-	}
-
-	protected createConditionFields(conditions: Condition[]) {
-		if (!conditions?.length) {
-			return;
-		}
-
-		return conditions.map(
-			(condition): EmbedFieldData => ({
-				name: condition.name,
-				value: condition.value,
-				inline: true,
-			}),
-		);
-	}
-
-	protected async getHistoryFromDB(
-		guildId: string,
-		conditions: Condition[],
-		options: HistoryWidgetOptions,
-	): Promise<HistoryLog[] | SendableOptions> {
-		const MAX_FETCH_HISTORY = 50;
-
-		const logHistory = await this.prisma.musicLog.findMany({
-			where: {
-				guild: {
-					guildId,
-				},
-				requester: options.user?.id,
-				NOT: {
-					requester: null,
-				},
-			},
-			orderBy: {
-				createdAt: 'desc',
-			},
-			take: options.displayAll ? Math.max(MAX_FETCH_HISTORY, options.countToDisplay) : Math.min(options.countToDisplay, MAX_FETCH_HISTORY),
-		});
-
-		if (!logHistory.length) {
-			return {
-				title: conditions.length
-					? `No history of songs with given conditions, try narrowing your search criterias!`
-					: `No history recorded yet, play a song!`,
-				fields: this.createConditionFields(conditions),
-			};
-		}
-
-		return logHistory.map((log) => ({
-			...log,
-			requester: options.user ?? null,
-		}));
-	}
-
-	protected getHistoryFromCache(
-		songs: Song[] | undefined,
-		conditions: Condition[],
-		options: HistoryWidgetOptions,
-	): HistoryLog[] | SendableOptions {
-		if (!songs?.length) {
-			return {
-				title: `No history recorded yet, play a song!`,
-			};
-		}
-
-		let filteredSongs = songs.filter((song) => song.requestedBy) as (Song & { requestedBy: User })[];
-
-		if (options.user) {
-			const user = options.user;
-
-			filteredSongs = filteredSongs.filter((song) => song.requestedBy.id === user.id);
-		}
-
-		if (!filteredSongs.length) {
-			return {
-				title: `No history of songs with given conditions, try narrowing your search criterias!`,
-				fields: this.createConditionFields(conditions),
-			};
-		}
-
-		const songHistory = options.displayAll ? filteredSongs : filteredSongs.slice(0, options.countToDisplay);
-
-		return songHistory.map((song) => ({
-			...song,
-			requester: options.user ?? null,
-		}));
 	}
 }
