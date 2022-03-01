@@ -36,6 +36,8 @@ export class HistoryCommand implements DiscordTransformedCommand<HistoryDto> {
 
 		const historyMessage = await this.messageService.edit(message, reply);
 
-		this.historyService.setHistoryMessage(interaction.channel as TextChannel, historyMessage);
+		if (!user) {
+			this.historyService.setHistoryMessage(interaction.channel as TextChannel, historyMessage);
+		}
 	}
 }
