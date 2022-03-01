@@ -126,11 +126,14 @@ export class HistoryService {
 			typeof data == 'string' ? await this.getHistoryFromDB(data, options) : this.getHistoryFromCache(data, conditions, options);
 
 		if (!history.length) {
+			const fields = this.createConditionFields(conditions);
+
 			return {
 				title: conditions.length
 					? `No history of songs with given conditions, try narrowing your search criterias!`
 					: `No history recorded yet, play a song!`,
-				fields: this.createConditionFields(conditions),
+				fields,
+				footer: fields && { text: `Conditions shown above` },
 			};
 		}
 
