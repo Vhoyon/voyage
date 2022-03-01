@@ -15,6 +15,7 @@ import {
 	MessageEmbedOptions,
 	MessageOptions,
 	PartialDMChannel,
+	Snowflake,
 	TextBasedChannels,
 } from 'discord.js';
 import { InformError, InformInternalError } from './error/inform-error';
@@ -43,7 +44,9 @@ export type CustomSendOptions = {
 
 export type SendableOptions = CustomSendOptions & CustomEmbedOptions & (MessageOptions | InteractionReplyOptions);
 
-export type DirtyMessage = Awaited<ReturnType<MessageComponentInteraction['fetchReply']>>;
+export type SavedHistoryMessage = { messageId: Snowflake; channelId: Snowflake };
+
+export type DirtyMessage = SavedHistoryMessage | Awaited<ReturnType<MessageComponentInteraction['fetchReply']>>;
 
 @Injectable()
 export class MessageService {
@@ -58,41 +61,55 @@ export class MessageService {
 	async get(message: DirtyMessage): Promise<Message> {
 		if (message instanceof Message) {
 			return message;
-		} else {
-			let channel = this.#client.channels.cache.get(message.channel_id);
-
-			if (!channel) {
-				try {
-					const fetchedChannel = await this.#client.channels.fetch(message.channel_id);
-
-					if (!fetchedChannel) {
-						throw `Cannot get API Message as its channel (id: ${message.channel_id}) was not found!`;
-					}
-
-					channel = fetchedChannel;
-				} catch (error) {
-					throw `An error happened while fetching the channel with id ${message.channel_id}!`;
-				}
-			}
-
-			if (!channel.isText()) {
-				throw `Cannot get API Message that doesn't come from a TextBasedChannel!`;
-			}
-
-			const apiMessage = channel.messages.cache.get(message.id);
-
-			if (!apiMessage) {
-				try {
-					const fetchMessage = await channel.messages.fetch(message.id);
-
-					return fetchMessage;
-				} catch (error) {
-					throw `Cannot get API Message that doesn't exist!`;
-				}
-			}
-
-			return apiMessage;
 		}
+
+		const { channelId, messageId } = ((): SavedHistoryMessage => {
+			if ('channelId' in message && 'messageId' in message) {
+				return {
+					channelId: message.channelId,
+					messageId: message.messageId,
+				};
+			}
+
+			return {
+				channelId: message.channel_id,
+				messageId: message.id,
+			};
+		})();
+
+		let channel = this.#client.channels.cache.get(channelId);
+
+		if (!channel) {
+			try {
+				const fetchedChannel = await this.#client.channels.fetch(channelId);
+
+				if (!fetchedChannel) {
+					throw `Cannot get API Message as its channel (id: ${channelId}) was not found!`;
+				}
+
+				channel = fetchedChannel;
+			} catch (error) {
+				throw `An error happened while fetching the channel with id ${channelId}!`;
+			}
+		}
+
+		if (!channel.isText()) {
+			throw `Cannot get API Message that doesn't come from a TextBasedChannel!`;
+		}
+
+		const apiMessage = channel.messages.cache.get(messageId);
+
+		if (!apiMessage) {
+			try {
+				const fetchMessage = await channel.messages.fetch(messageId);
+
+				return fetchMessage;
+			} catch (error) {
+				throw `Cannot get API Message that doesn't exist!`;
+			}
+		}
+
+		return apiMessage;
 	}
 
 	createEmbed(data: CustomEmbedOptions): MessageEmbed;

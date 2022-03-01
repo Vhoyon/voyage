@@ -61,9 +61,11 @@ model MusicBlacklistedChannel {
 }
 
 model MusicSetting {
-  id     Int   @id @default(autoincrement())
-  volume Int   @default(50)
-  guild  Guild @relation(fields: [guildId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  id               Int     @id @default(autoincrement())
+  volume           Int     @default(50)
+  guild            Guild   @relation(fields: [guildId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  historyChannelId String?
+  historyMessageId String?
 
   guildId Int @unique
 

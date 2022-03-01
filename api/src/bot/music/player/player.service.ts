@@ -6,8 +6,9 @@ import { sleep } from '$common/utils/funcs';
 import { DiscordClientProvider } from '@discord-nestjs/core';
 import { Injectable, Logger } from '@nestjs/common';
 import { Player, PlayerOptions, Playlist, Queue, RepeatMode, Song } from 'discord-music-player';
-import { Guild, Message, Snowflake, TextChannel } from 'discord.js';
+import { Guild, Message, TextChannel } from 'discord.js';
 import { ButtonService } from '../services/button.service';
+import { HistoryService } from '../services/history.service';
 import {
 	DynamicPlayerData,
 	DynamicPlayerOptions,
@@ -38,14 +39,13 @@ export enum PlayType {
 export class PlayerService extends Player {
 	private readonly logger = new Logger(PlayerService.name);
 
-	protected historyMessages: Record<Snowflake, Message | undefined> = {};
-
 	constructor(
 		readonly discordProvider: DiscordClientProvider,
 		private readonly env: EnvironmentConfig,
 		private readonly prisma: PrismaService,
 		private readonly messageService: MessageService,
 		private readonly buttonService: ButtonService,
+		private readonly historyService: HistoryService,
 	) {
 		super(discordProvider.getClient(), {
 			deafenOnJoin: true,
@@ -118,7 +118,7 @@ export class PlayerService extends Player {
 		try {
 			const message = await this.messageService.edit(vQueue.data.playerMessage, historyWidget);
 
-			this.setHistoryMessage(vQueue.guild.id, message);
+			this.historyService.setHistoryMessage(vQueue.data.playerMessage.channel as TextChannel, message);
 		} catch (error) {
 			// do nothing if error happens
 		}
@@ -126,18 +126,6 @@ export class PlayerService extends Player {
 		vQueue.data.playerMessage = undefined;
 
 		await this.clearDynamic(queue);
-	}
-
-	setHistoryMessage(guildId: Snowflake, message: Message) {
-		const previousHistoryMessage = this.historyMessages[guildId];
-
-		if (previousHistoryMessage) {
-			this.messageService.edit(previousHistoryMessage, { embeds: previousHistoryMessage.embeds, components: [] }).catch(() => {
-				// do nothing if edit fails
-			});
-		}
-
-		this.historyMessages[guildId] = message;
 	}
 
 	async setPlayerMessage(message: Message, options?: DynamicPlayerOptions) {

@@ -3,10 +3,10 @@ import { MessageService } from '$/bot/common/message.service';
 import { TransformPipe, ValidationPipe } from '@discord-nestjs/common';
 import { Command, DiscordClientProvider, DiscordTransformedCommand, Payload, UseGuards, UsePipes } from '@discord-nestjs/core';
 import { Logger } from '@nestjs/common';
-import { CommandInteraction } from 'discord.js';
+import { CommandInteraction, TextChannel } from 'discord.js';
 import { HistoryDto } from '../../dtos/history.dto';
 import { MusicGuard } from '../../guards/music.guard';
-import { PlayerService } from '../../player/player.service';
+import { HistoryService } from '../../services/history.service';
 import { MusicService } from '../../services/music.service';
 
 @Command({
@@ -22,7 +22,7 @@ export class HistoryCommand implements DiscordTransformedCommand<HistoryDto> {
 		private readonly messageService: MessageService,
 		private readonly musicService: MusicService,
 		private readonly discordProvider: DiscordClientProvider,
-		private readonly player: PlayerService,
+		private readonly historyService: HistoryService,
 	) {}
 
 	async handler(@Payload() { count, userId }: HistoryDto, interaction: CommandInteraction) {
@@ -36,6 +36,6 @@ export class HistoryCommand implements DiscordTransformedCommand<HistoryDto> {
 
 		const historyMessage = await this.messageService.edit(message, reply);
 
-		this.player.setHistoryMessage(interaction.guild!.id, historyMessage);
+		this.historyService.setHistoryMessage(interaction.channel as TextChannel, historyMessage);
 	}
 }

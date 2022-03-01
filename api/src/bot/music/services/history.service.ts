@@ -1,8 +1,8 @@
-import { SendableOptions } from '$/bot/common/message.service';
+import { DirtyMessage, MessageService, SavedHistoryMessage, SendableOptions } from '$/bot/common/message.service';
 import { PrismaService } from '$common/prisma/prisma.service';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Song } from 'discord-music-player';
-import { EmbedFieldData, User } from 'discord.js';
+import { EmbedFieldData, Message, Snowflake, TextChannel, User } from 'discord.js';
 
 export type Condition = {
 	name: string;
@@ -23,7 +23,74 @@ export type HistoryLog = {
 
 @Injectable()
 export class HistoryService {
-	constructor(private readonly prisma: PrismaService) {}
+	private readonly logger = new Logger(HistoryService.name);
+
+	constructor(private readonly prisma: PrismaService, private readonly messageService: MessageService) {}
+
+	protected historyMessages: Record<Snowflake, Message | undefined> = {};
+
+	setHistoryMessage(channel: TextChannel, message: Message) {
+		const previousHistoryMessage = this.historyMessages[channel.guild.id];
+
+		this.historyMessages[channel.guild.id] = message;
+
+		this.updatePreviousHistoryMessage(channel, message, previousHistoryMessage).catch((error) => {
+			this.logger.warn(`An error happened while trying to update the previous history message : ${error}`);
+		});
+	}
+
+	async updatePreviousHistoryMessage(channel: TextChannel, newMessage: Message, previousMessage?: Message) {
+		let dirtyMessage: DirtyMessage;
+
+		if (previousMessage) {
+			dirtyMessage = previousMessage;
+		} else {
+			// const;
+			const musicSetting = await this.prisma.musicSetting.findFirst({
+				where: {
+					guild: {
+						guildId: channel.guild.id,
+					},
+				},
+				select: {
+					historyChannelId: true,
+					historyMessageId: true,
+				},
+			});
+
+			if (!musicSetting) {
+				this.logger.error(`Found missing music settings for guild "${channel.guild.id}". This should never happen!`);
+				return;
+			}
+
+			if (!musicSetting.historyChannelId || !musicSetting.historyMessageId) {
+				return;
+			}
+
+			dirtyMessage = {
+				channelId: musicSetting.historyChannelId,
+				messageId: musicSetting.historyMessageId,
+			} as SavedHistoryMessage;
+		}
+
+		const message = await this.messageService.get(dirtyMessage);
+
+		await this.messageService.edit(message, { embeds: message.embeds, components: [] }).catch(() => {
+			// do nothing if edit fails
+		});
+
+		await this.prisma.musicSetting.updateMany({
+			data: {
+				historyChannelId: channel.id,
+				historyMessageId: newMessage.id,
+			},
+			where: {
+				guild: {
+					guildId: channel.guild.id,
+				},
+			},
+		});
+	}
 
 	createConditionFields(conditions: Condition[]) {
 		if (!conditions?.length) {
