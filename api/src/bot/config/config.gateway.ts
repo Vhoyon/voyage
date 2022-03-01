@@ -34,6 +34,16 @@ export class DiscordConfigGateway {
 		await Promise.all(guildCreations);
 	}
 
+	@On('ready')
+	async onReadySetActivity() {
+		const client = this.discordProvider.getClient();
+
+		client.user?.setActivity({
+			type: 'LISTENING',
+			name: `Moosic | Use / commands!`,
+		});
+	}
+
 	@On('guildCreate')
 	async onJoinGuild(guild: Guild) {
 		await this.prisma.guild.create({
