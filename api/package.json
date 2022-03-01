@@ -30,7 +30,8 @@
     "test:e2e": "jest --runInBand --config tests/.jest/jest.e2e-config.ts",
     "test:watch": "npm run test -- --watch",
     "test:cov": "npm run test -- --coverage",
-    "seed": "prisma db seed"
+    "seed": "prisma db seed",
+    "studio": "prisma studio"
   },
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
