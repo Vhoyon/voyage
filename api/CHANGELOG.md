@@ -1,5 +1,30 @@
 # Changelog
 
+### [0.9.1](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.9.0...voyage-discord-bot-v0.9.1) (2022-03-01)
+
+
+### Bug Fixes
+
+* delete previous history button even on app restart ([fdd3464](https://github.com/Vhoyon/voyage/commit/fdd3464a771fda58dd9ab9f61c41c6cfc487446c))
+* **History:** do not update message if fetched history has conditions ([74b31ad](https://github.com/Vhoyon/voyage/commit/74b31ad931c245d28d7a46075c6cc2b303bf7afb))
+* **History:** ignore null-requested songs ([abbb795](https://github.com/Vhoyon/voyage/commit/abbb795a55419e53162908b5de7c19563d2e7f99))
+
+
+### Reverts
+
+* update dependency class-transformer to v0.5.1 ([#53](https://github.com/Vhoyon/voyage/issues/53)) ([f5c2a1c](https://github.com/Vhoyon/voyage/commit/f5c2a1cb6108de59753cc48deeb08293f95fe2e4))
+
+
+### Dependencies
+
+* update dependency class-transformer to v0.5.1 ([#29](https://github.com/Vhoyon/voyage/issues/29)) ([d7283a2](https://github.com/Vhoyon/voyage/commit/d7283a2cef4b0db9cc181946aadf71c53b30a9fc))
+
+
+### Tweaks
+
+* add bot activity to surface slash commands ([dde4dba](https://github.com/Vhoyon/voyage/commit/dde4dbafb6c1092ad2e9441c54af5c7d0e028470))
+* **History:** show conditions shown above footer text when no history ([4018272](https://github.com/Vhoyon/voyage/commit/4018272498b8a86808270ed0a897e6204f89ec7e))
+
 ## [0.9.0](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.8.1...voyage-discord-bot-v0.9.0) (2022-02-18)
 
 
