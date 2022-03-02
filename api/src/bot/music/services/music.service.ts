@@ -142,6 +142,9 @@ export class MusicService {
 				guild: {
 					guildId: data.voiceChannel.guild.id,
 				},
+				NOT: {
+					requester: null,
+				},
 			},
 			orderBy: {
 				createdAt: 'desc',
