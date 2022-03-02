@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.9.2](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.9.1...voyage-discord-bot-v0.9.2) (2022-03-02)
+
+
+### Bug Fixes
+
+* **History:** do not play music from history where requester is null ([57cd187](https://github.com/Vhoyon/voyage/commit/57cd187d29dfed1de6cbc263c2c781a8ac3778cc))
+
 ### [0.9.1](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.9.0...voyage-discord-bot-v0.9.1) (2022-03-01)
 
 
