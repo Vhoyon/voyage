@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.9.3](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.9.2...voyage-discord-bot-v0.9.3) (2022-03-05)
+
+
+### Dependencies
+
+* update dependency ytdl-core to v4.11.0 ([907ea12](https://github.com/Vhoyon/voyage/commit/907ea12a37823ef226a51b3d62e49bb4afa7af96))
+
 ### [0.9.2](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.9.1...voyage-discord-bot-v0.9.2) (2022-03-02)
 
 
