@@ -78,7 +78,7 @@
     "@types/gulp": "4.0.9",
     "@types/gulp-rename": "2.0.1",
     "@types/gulp-replace": "0.0.31",
-    "@types/jest": "27.4.0",
+    "@types/jest": "27.4.1",
     "@types/supertest": "2.0.11",
     "@v-ed/tsconfig": "0.1.2",
     "del": "6.0.0",
