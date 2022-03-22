@@ -1,5 +1,5 @@
 import { PrismaService } from '$common/prisma/prisma.service';
-import { DiscordClientProvider, On, Once } from '@discord-nestjs/core';
+import { DiscordClientProvider, On } from '@discord-nestjs/core';
 import { Controller, Logger } from '@nestjs/common';
 import { Guild } from 'discord.js';
 
@@ -9,11 +9,15 @@ export class DiscordConfigGateway {
 
 	constructor(private readonly discordProvider: DiscordClientProvider, private readonly prisma: PrismaService) {}
 
-	@Once('ready')
+	@On('shardReady')
 	async onReady() {
 		const client = this.discordProvider.getClient();
 
-		this.logger.log(`Logged in as ${client.user?.tag}!`);
+		if (client.user) {
+			this.logger.log(`Logged in as ${client.user.tag}!`);
+		} else {
+			this.logger.error(`Bot user is not defined in the client!`);
+		}
 
 		const guildCreations = client.guilds.cache.map(async (guild) => {
 			const pGuild = await this.prisma.guild.findUnique({
@@ -34,7 +38,7 @@ export class DiscordConfigGateway {
 		await Promise.all(guildCreations);
 	}
 
-	@On('ready')
+	@On('shardReady')
 	async onReadySetActivity() {
 		const client = this.discordProvider.getClient();
 
