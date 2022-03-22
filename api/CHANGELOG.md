@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.9.4](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.9.3...voyage-discord-bot-v0.9.4) (2022-03-22)
+
+
+### Bug Fixes
+
+* use shardReady events to gracefully handle connection issues ([efa4c97](https://github.com/Vhoyon/voyage/commit/efa4c97e8a884b59f47ec5e1efab4d096a3b1f11))
+
 ### [0.9.3](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.9.2...voyage-discord-bot-v0.9.3) (2022-03-05)
 
 
