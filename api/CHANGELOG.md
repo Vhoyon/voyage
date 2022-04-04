@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.9.5](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.9.4...voyage-discord-bot-v0.9.5) (2022-04-04)
+
+
+### Bug Fixes
+
+* didStartTheme not representing if music was played ([a332fe5](https://github.com/Vhoyon/voyage/commit/a332fe5289349181cb53e2581da111ed01c20512))
+
 ### [0.9.4](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.9.3...voyage-discord-bot-v0.9.4) (2022-03-22)
 
 
