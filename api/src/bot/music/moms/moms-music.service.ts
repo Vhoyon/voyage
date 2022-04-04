@@ -132,6 +132,8 @@ export class MomsMusicService {
 
 		const doIndeedCreateLog = typeof doCreateLog == 'boolean' ? doCreateLog : doCreateLog(lastLogInTimeout);
 
+		const shouldPlayMusic = !lastLogInTimeout && (doPlayMusic?.() ?? true);
+
 		const newMomLog = doIndeedCreateLog
 			? await this.prisma.momsLog.create({
 					data: {
@@ -141,7 +143,7 @@ export class MomsMusicService {
 								guildId: voiceChannel.guild.id,
 							},
 						},
-						didStartTheme: !lastLogInTimeout,
+						didStartTheme: shouldPlayMusic,
 					},
 			  })
 			: null;
@@ -151,7 +153,7 @@ export class MomsMusicService {
 			newLog: newMomLog,
 		};
 
-		if (!lastLogInTimeout && (doPlayMusic?.() ?? true)) {
+		if (shouldPlayMusic) {
 			await this.player.play({ query, voiceChannel, ...playOptions });
 		}
 
