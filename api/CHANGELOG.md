@@ -1,5 +1,17 @@
 # Changelog
 
+### [0.9.6](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.9.5...voyage-discord-bot-v0.9.6) (2022-04-08)
+
+
+### Bug Fixes
+
+* use config helpers from template ([7b780ac](https://github.com/Vhoyon/voyage/commit/7b780ac93e5ec7e27d3765f7740e7c4016e2d1e9))
+
+
+### Dependencies
+
+* update discord-music-player fork and all of package-lock ([7b780ac](https://github.com/Vhoyon/voyage/commit/7b780ac93e5ec7e27d3765f7740e7c4016e2d1e9))
+
 ### [0.9.5](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.9.4...voyage-discord-bot-v0.9.5) (2022-04-04)
 
 
