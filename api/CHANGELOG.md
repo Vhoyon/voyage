@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.9.7](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.9.6...voyage-discord-bot-v0.9.7) (2022-04-08)
+
+
+### Reverts
+
+* fix: use config helpers from template ([1c836a1](https://github.com/Vhoyon/voyage/commit/1c836a18c9c8fc4d0bcb5996ce0167453f311ead))
+
 ### [0.9.6](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.9.5...voyage-discord-bot-v0.9.6) (2022-04-08)
 
 
