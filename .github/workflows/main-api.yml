@@ -5,9 +5,11 @@ on:
     paths:
       - 'api/**'
       - 'package.json'
+      - '.github/workflows/main-api.yml'
 
 env:
   NODE_VERSION: '16'
+  PNPM_VERSION: 6
 
 jobs:
   cache-modules:
@@ -18,87 +20,101 @@ jobs:
       should_skip: ${{ steps.skip_check.outputs.should_skip }}
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: ${{env.NODE_VERSION}}
+          node-version: ${{ env.NODE_VERSION }}
 
       - name: Check for dupe action
         id: skip_check
-        uses: fkirc/skip-duplicate-actions@v3.4.1
+        uses: fkirc/skip-duplicate-actions@v3
 
-      - name: Cache Node Modules
+      - name: Cache pnpm modules
         id: cache-modules
-        uses: actions/cache@v2
+        if: steps.skip_check.outputs.should_skip != 'true'
+        uses: actions/cache@v3
         with:
-          path: |
-            node_modules
-            */node_modules
-          key: ${{ env.NODE_VERSION }}-${{ runner.OS }}-build-${{ hashFiles('package-lock.json') }}
+          path: ~/.pnpm-store
+          key: install-${{ env.NODE_VERSION }}-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            install-${{ env.NODE_VERSION }}-${{ runner.os }}-
 
-      - name: Install
-        if: steps.cache-modules.outputs.cache-hit != 'true'
-        run: npm ci --no-optional
+      - name: Install packages
+        if: steps.skip_check.outputs.should_skip != 'true' && steps.cache-modules.outputs.cache-hit != 'true'
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          run_install: true
 
   lint:
     name: Lint
     runs-on: ubuntu-latest
     needs: [cache-modules]
 
-    if: ${{ needs.cache-modules.outputs.should_skip != 'true' }}
+    if: needs.cache-modules.outputs.should_skip != 'true' && contains(fromJson('["ved-bot", "renovate[bot]"]'), github.actor) == false
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: ${{env.NODE_VERSION}}
+          node-version: ${{ env.NODE_VERSION }}
 
-      - name: Retrieve Node Modules
-        id: cache-modules
-        uses: actions/cache@v2
+      - name: Retrieve pnpm modules
+        uses: actions/cache@v3
         with:
-          path: |
-            node_modules
-            */node_modules
-          key: ${{ env.NODE_VERSION }}-${{ runner.OS }}-build-${{ hashFiles('package-lock.json') }}
+          path: ~/.pnpm-store
+          key: install-${{ env.NODE_VERSION }}-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            install-${{ env.NODE_VERSION }}-${{ runner.os }}-
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          run_install: true
 
       - name: Lint Source
-        run: npm run lint:src --workspace api
+        run: pnpm run --filter api lint:src
 
       - name: Lint Tests
-        run: npm run lint:tests --workspace api
+        run: pnpm run --filter api lint:tests
 
   build:
     name: Build
     runs-on: ubuntu-latest
     needs: [cache-modules]
 
-    if: ${{ needs.cache-modules.outputs.should_skip != 'true' }}
+    if: needs.cache-modules.outputs.should_skip != 'true'
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: ${{env.NODE_VERSION}}
+          node-version: ${{ env.NODE_VERSION }}
 
-      - name: Retrieve Node Modules
-        id: cache-modules
-        uses: actions/cache@v2
+      - name: Retrieve pnpm modules
+        uses: actions/cache@v3
         with:
-          path: |
-            node_modules
-            */node_modules
-          key: ${{ env.NODE_VERSION }}-${{ runner.OS }}-build-${{ hashFiles('package-lock.json') }}
+          path: ~/.pnpm-store
+          key: install-${{ env.NODE_VERSION }}-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            install-${{ env.NODE_VERSION }}-${{ runner.os }}-
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          run_install: true
 
       - name: Build
-        run: npm run build --workspace api
+        run: pnpm run --filter api build
 
   test:
     name: Test and Coverage
     runs-on: ubuntu-latest
     needs: [cache-modules]
 
-    if: ${{ needs.cache-modules.outputs.should_skip != 'true' }}
+    if: needs.cache-modules.outputs.should_skip != 'true' && contains(fromJson('["ved-bot"]'), github.actor) == false
 
     services:
       postgres:
@@ -113,42 +129,36 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: ${{env.NODE_VERSION}}
+          node-version: ${{ env.NODE_VERSION }}
 
-      - name: Retrieve Node Modules
-        id: cache-modules
-        uses: actions/cache@v2
+      - name: Retrieve pnpm modules
+        uses: actions/cache@v3
         with:
-          path: |
-            node_modules
-            */node_modules
-          key: ${{ env.NODE_VERSION }}-${{ runner.OS }}-build-${{ hashFiles('package-lock.json') }}
+          path: ~/.pnpm-store
+          key: install-${{ env.NODE_VERSION }}-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            install-${{ env.NODE_VERSION }}-${{ runner.os }}-
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+          run_install: true
 
       - name: Init
-        run: npm run init --workspace api
+        run: pnpm run --filter api init
         env:
           DATABASE_URL: 'postgres://postgres:postgres@localhost:${{ job.services.postgres.ports[5432] }}/postgres'
 
       - name: Test Seed
-        run: npm run seed --workspace api
+        run: pnpm run --filter api seed
         env:
           DATABASE_URL: 'postgres://postgres:postgres@localhost:${{ job.services.postgres.ports[5432] }}/postgres'
 
       - name: Test and Coverage
-        if: github.event_name != 'pull_request'
-        run: npm run test:cov --workspace api
-        env:
-          TEST_DATABASE_URL: 'postgres://postgres:postgres@localhost:${{ job.services.postgres.ports[5432] }}/postgres'
-
-      - name: Test and Coverage (PR)
-        if: github.event_name == 'pull_request'
-        uses: anuraag016/Jest-Coverage-Diff@master
-        with:
-          runCommand: "npm run test --workspace api -- --coverage --collectCoverage=true --coverageReporters='json-summary' --coverageDirectory='../'"
-          # delta: 0.5 # Delta of % changed that would make this job fail
-          afterSwitchCommand: 'npm install'
+        run: pnpm run --filter api test:cov
         env:
           TEST_DATABASE_URL: 'postgres://postgres:postgres@localhost:${{ job.services.postgres.ports[5432] }}/postgres'

@@ -1,0 +1,63 @@
+name: CD - Client
+
+on: workflow_dispatch
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    env:
+      VERCEL_TOKEN: '${{ secrets.VERCEL_TOKEN }}'
+      VERCEL_ORG_ID: '${{ secrets.VERCEL_ORG_ID }}'
+      VERCEL_PROJECT_ID: '${{ secrets.VERCEL_PROJECT_ID }}'
+
+    steps:
+      - name: Check Vercel Token
+        if: env.VERCEL_TOKEN == ''
+        run: |
+          echo 'You are missing the VERCEL_TOKEN secret!'
+          exit 1
+
+      - name: Check Vercel Org ID
+        if: env.VERCEL_ORG_ID == ''
+        run: |
+          echo 'You are missing the VERCEL_ORG_ID secret!'
+          exit 1
+
+      - name: Check Vercel Project ID
+        if: env.VERCEL_PROJECT_ID == ''
+        run: |
+          echo 'You are missing the VERCEL_PROJECT_ID secret!'
+          exit 1
+
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Get git HEAD sha
+        id: commit-vars
+        run: |
+          echo ::set-output name=git_head_sha::"$(git rev-parse HEAD)"
+
+      - name: Deploy to Vercel
+        uses: amondnet/vercel-action@v20
+        id: vercel-action
+        with:
+          vercel-token: '${{ secrets.VERCEL_TOKEN }}'
+          vercel-org-id: '${{ secrets.VERCEL_ORG_ID }}'
+          vercel-project-id: '${{ secrets.VERCEL_PROJECT_ID }}'
+          vercel-args: '--prod'
+          github-comment: false
+
+      - name: Comment on deploy commit
+        uses: peter-evans/commit-comment@v2
+        with:
+          token: '${{ secrets.GH_BOT_TOKEN }}'
+          sha: '${{ steps.commit-vars.outputs.git_head_sha }}'
+          body: |
+            🤖 This commit is now deployed to Vercel!
+
+            ## ${{ steps.vercel-action.outputs.preview-name }}
+
+            ${{ steps.vercel-action.outputs.preview-url }}

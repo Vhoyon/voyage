@@ -8,21 +8,14 @@
 			"path": "../api",
 			"name": "API"
 		},
-		{
-			"path": "../client",
-			"name": "Web Client"
-		}
+		// {
+		// 	"path": "../client",
+		// 	"name": "Web Client"
+		// }
 	],
     "settings": {
 		"window.title": "${dirty}${activeEditorMedium}${separator}Voyage${separator}${appName}",
-		"git.pullTags": false,
-		"jest.disabledWorkspaceFolders": ["Root (Voyage)"],
-		"json.schemas": [
-			{
-				"fileMatch": ["renovate.json"],
-				"url": "https://docs.renovatebot.com/renovate-schema.json"
-			}
-		],
+		"jest.disabledWorkspaceFolders": ["Root (Voyage)", "Web Client"],
 		"[json]": {
 			"editor.defaultFormatter": "vscode.json-language-features",
 			"editor.codeActionsOnSave": {
@@ -59,12 +52,26 @@
 			"editor.defaultFormatter": "esbenp.prettier-vscode",
 			"editor.formatOnSave": true,
 		},
+		"[scss]": {
+			"editor.defaultFormatter": "esbenp.prettier-vscode",
+			"editor.formatOnSave": true,
+		},
 		"[graphql]": {
 			"editor.defaultFormatter": "esbenp.prettier-vscode",
 			"editor.formatOnSave": true,
 		},
 		"[prisma]": {
 			"editor.formatOnSave": true,
-		}
+		},
+		"git.pullTags": false,
+		"json.schemas": [
+			{
+				"fileMatch": ["renovate.json"],
+				"url": "https://docs.renovatebot.com/renovate-schema.json"
+			}
+		],
+		"windicss.enableAttrUtilityCompletion": false,
+		"windicss.enableAttrVariantCompletion": false,
+		"svelte.plugin.css.diagnostics.enable": false,
 	}
 }

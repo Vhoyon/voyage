@@ -1,10 +1,10 @@
 {
   "extends": "@v-ed/tsconfig",
   "compilerOptions": {
-    "target": "ESNext",
+    "target": "es2019",
     "module": "commonjs",
     "lib": [
-      "ESNext"
+      "es2019"
     ],
     
     "declaration": false,
@@ -23,6 +23,8 @@
     ],
     
     "outDir": "./dist",
+    
+    "useDefineForClassFields": true,
   },
   "include": [
     "src/**/*.ts",
