@@ -55,7 +55,7 @@
     "deepmerge": "4.2.2",
     "discord-music-player": "github:V-ed/discord-music-player",
     "discord.js": "13.3.1",
-    "dotenv": "15.0.0",
+    "dotenv": "16.0.0",
     "dotenv-expand": "6.0.1",
     "ffmpeg": "0.0.4",
     "ffmpeg-static": "4.4.1",
