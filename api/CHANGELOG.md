@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.9.8](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.9.7...voyage-discord-bot-v0.9.8) (2022-04-17)
+
+
+### Dependencies
+
+* update dependency discord.js to v13.6.0 ([#14](https://github.com/Vhoyon/voyage/issues/14)) ([bdc5a48](https://github.com/Vhoyon/voyage/commit/bdc5a4857e348953d6aef54ba252d1f3cbc03187))
+
 ### [0.9.7](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.9.6...voyage-discord-bot-v0.9.7) (2022-04-08)
 
 
