@@ -1,4 +1,4 @@
-import { Guild, PrismaClient } from '@prisma/client';
+import { Guild, PrismaClient } from '$prisma-client';
 import { Fixture, LinkMethod } from 'prisma-fixtures';
 
 export default class GuildFixture extends Fixture<Guild> {

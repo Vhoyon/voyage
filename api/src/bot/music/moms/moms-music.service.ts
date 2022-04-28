@@ -1,7 +1,7 @@
 import { PrismaService } from '$common/prisma/prisma.service';
 import { RequiredProperties } from '$common/utils/types';
+import { MomsLog } from '$prisma-client';
 import { Injectable, Logger } from '@nestjs/common';
-import { MomsLog } from '@prisma/client';
 import { StageChannel, User, VoiceChannel, VoiceState } from 'discord.js';
 import { PlayerService } from '../player/player.service';
 import { PlayMusicOptions } from '../player/player.types';
