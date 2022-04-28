@@ -1,10 +1,10 @@
+import { TransformedRealCommandExecutionContext } from '$/bot/@types/discord-nestjs';
 import { InteractionFromServer } from '$/bot/common/guards/interaction-from-server.guard';
 import { IsInVoiceChannel } from '$/bot/common/guards/is-in-voicechannel.guard';
 import { MessageService } from '$/bot/common/message.service';
 import { TransformPipe, ValidationPipe } from '@discord-nestjs/common';
 import { Command, DiscordTransformedCommand, Payload, UseGuards, UsePipes } from '@discord-nestjs/core';
 import { Logger } from '@nestjs/common';
-import { CommandInteraction } from 'discord.js';
 import { VolumeDto } from '../../dtos/volume.dto';
 import { MusicGuard } from '../../guards/music.guard';
 import { MusicService } from '../../services/music.service';
@@ -20,7 +20,7 @@ export class VolumeCommand implements DiscordTransformedCommand<VolumeDto> {
 
 	constructor(private readonly messageService: MessageService, private readonly musicService: MusicService) {}
 
-	async handler(@Payload() { volume }: VolumeDto, interaction: CommandInteraction) {
+	async handler(@Payload() { volume }: VolumeDto, { interaction }: TransformedRealCommandExecutionContext) {
 		const wasPlaying = await this.musicService.setVolume(interaction, volume);
 
 		if (wasPlaying) {

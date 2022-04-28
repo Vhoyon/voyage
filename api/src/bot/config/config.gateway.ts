@@ -1,25 +1,27 @@
 import { PrismaService } from '$common/prisma/prisma.service';
-import { DiscordClientProvider, On } from '@discord-nestjs/core';
+import { InjectDiscordClient, On } from '@discord-nestjs/core';
 import { Controller, Logger } from '@nestjs/common';
-import { Guild } from 'discord.js';
+import { Client, Guild } from 'discord.js';
 
 @Controller()
 export class DiscordConfigGateway {
 	private readonly logger = new Logger(DiscordConfigGateway.name);
 
-	constructor(private readonly discordProvider: DiscordClientProvider, private readonly prisma: PrismaService) {}
+	constructor(
+		@InjectDiscordClient()
+		private readonly client: Client,
+		private readonly prisma: PrismaService,
+	) {}
 
 	@On('shardReady')
 	async onReady() {
-		const client = this.discordProvider.getClient();
-
-		if (client.user) {
-			this.logger.log(`Logged in as ${client.user.tag}!`);
+		if (this.client.user) {
+			this.logger.log(`Logged in as ${this.client.user.tag}!`);
 		} else {
 			this.logger.error(`Bot user is not defined in the client!`);
 		}
 
-		const guildCreations = client.guilds.cache.map(async (guild) => {
+		const guildCreations = this.client.guilds.cache.map(async (guild) => {
 			const pGuild = await this.prisma.guild.findUnique({
 				where: {
 					guildId: guild.id,
@@ -40,9 +42,7 @@ export class DiscordConfigGateway {
 
 	@On('shardReady')
 	async onReadySetActivity() {
-		const client = this.discordProvider.getClient();
-
-		client.user?.setActivity({
+		this.client.user?.setActivity({
 			type: 'LISTENING',
 			name: `Moosic | Use / commands!`,
 		});

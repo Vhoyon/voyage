@@ -1,6 +1,6 @@
 import { PrismaModule } from '$common/prisma/prisma.module';
-import { forwardRef, Module } from '@nestjs/common';
-import { discordModule } from '../bot.module';
+import { DiscordModule } from '@discord-nestjs/core';
+import { Module } from '@nestjs/common';
 import { MessageService } from '../common/message.service';
 import { InteractionsGateway } from './interactions.gateway';
 import { MomsMusicModule } from './moms/moms-music.module';
@@ -11,10 +11,12 @@ import { ButtonService } from './services/button.service';
 import { HistoryService } from './services/history.service';
 import { MusicService } from './services/music.service';
 
+const musicProviders = [MessageService, MusicService, PlayerService, BlacklistService, ButtonService, HistoryService];
+
 @Module({
-	imports: [PrismaModule, forwardRef(() => discordModule), PlayerModule, MomsMusicModule],
+	imports: [PrismaModule, DiscordModule.forFeature(), PlayerModule, MomsMusicModule],
 	controllers: [InteractionsGateway],
-	providers: [MessageService, MusicService, PlayerService, BlacklistService, ButtonService, HistoryService],
-	exports: [MessageService, MusicService, PlayerService, BlacklistService, ButtonService, HistoryService],
+	providers: [...musicProviders],
+	exports: [...musicProviders],
 })
 export class MusicModule {}

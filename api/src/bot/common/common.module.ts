@@ -1,9 +1,9 @@
-import { forwardRef, Module } from '@nestjs/common';
-import { discordModule } from '../bot.module';
+import { DiscordModule } from '@discord-nestjs/core';
+import { Module } from '@nestjs/common';
 import { MessageService } from './message.service';
 
 @Module({
-	imports: [forwardRef(() => discordModule)],
+	imports: [DiscordModule.forFeature()],
 	providers: [MessageService],
 	exports: [MessageService],
 })

@@ -1,11 +1,13 @@
 import { EnvironmentConfig } from '$common/configs/env.validation';
 import { sleep } from '$common/utils/funcs';
-import { DiscordClientProvider } from '@discord-nestjs/core';
+import { InjectDiscordClient } from '@discord-nestjs/core';
 import { bold } from '@discordjs/builders';
 import { Injectable, Logger } from '@nestjs/common';
 import {
 	ButtonInteraction,
+	Client,
 	CommandInteraction,
+	ContextMenuInteraction,
 	DMChannel,
 	Interaction,
 	InteractionReplyOptions,
@@ -16,13 +18,13 @@ import {
 	MessageOptions,
 	PartialDMChannel,
 	Snowflake,
-	TextBasedChannels,
+	TextBasedChannel,
 } from 'discord.js';
 import { InformError, InformInternalError } from './error/inform-error';
 import { LogWarning } from './error/log-warning';
 
-export type CommandContext = Message | TextBasedChannels;
-export type InteractionContext = ButtonInteraction | CommandInteraction;
+export type CommandContext = Message | TextBasedChannel;
+export type InteractionContext = ButtonInteraction | CommandInteraction | ContextMenuInteraction;
 
 export type ChannelContext = CommandContext | InteractionContext;
 
@@ -52,11 +54,11 @@ export type DirtyMessage = SavedHistoryMessage | Awaited<ReturnType<MessageCompo
 export class MessageService {
 	private readonly logger = new Logger(MessageService.name);
 
-	#client;
-
-	constructor(private readonly env: EnvironmentConfig, readonly discordProvider: DiscordClientProvider) {
-		this.#client = discordProvider.getClient();
-	}
+	constructor(
+		private readonly env: EnvironmentConfig,
+		@InjectDiscordClient()
+		private readonly client: Client,
+	) {}
 
 	async get(message: DirtyMessage): Promise<Message> {
 		if (message instanceof Message) {
@@ -77,11 +79,11 @@ export class MessageService {
 			};
 		})();
 
-		let channel = this.#client.channels.cache.get(channelId);
+		let channel = this.client.channels.cache.get(channelId);
 
 		if (!channel) {
 			try {
-				const fetchedChannel = await this.#client.channels.fetch(channelId);
+				const fetchedChannel = await this.client.channels.fetch(channelId);
 
 				if (!fetchedChannel) {
 					throw `Cannot get API Message as its channel (id: ${channelId}) was not found!`;

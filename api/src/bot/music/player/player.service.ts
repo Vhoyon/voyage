@@ -3,10 +3,10 @@ import { ChannelContext, MessageService } from '$/bot/common/message.service';
 import { EnvironmentConfig } from '$common/configs/env.validation';
 import { PrismaService } from '$common/prisma/prisma.service';
 import { sleep } from '$common/utils/funcs';
-import { DiscordClientProvider } from '@discord-nestjs/core';
+import { InjectDiscordClient } from '@discord-nestjs/core';
 import { Injectable, Logger } from '@nestjs/common';
 import { Player, PlayerOptions, Playlist, Queue, RepeatMode, Song } from 'discord-music-player';
-import { Guild, Message, TextChannel } from 'discord.js';
+import { Client, Guild, Message, TextChannel } from 'discord.js';
 import { ButtonService } from '../services/button.service';
 import { HistoryService } from '../services/history.service';
 import {
@@ -40,14 +40,15 @@ export class PlayerService extends Player {
 	private readonly logger = new Logger(PlayerService.name);
 
 	constructor(
-		readonly discordProvider: DiscordClientProvider,
+		@InjectDiscordClient()
+		readonly discordClient: Client,
 		private readonly env: EnvironmentConfig,
 		private readonly prisma: PrismaService,
 		private readonly messageService: MessageService,
 		private readonly buttonService: ButtonService,
 		private readonly historyService: HistoryService,
 	) {
-		super(discordProvider.getClient(), {
+		super(discordClient, {
 			deafenOnJoin: true,
 			leaveOnEnd: true,
 			leaveOnEmpty: true,

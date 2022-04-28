@@ -2,7 +2,7 @@ import { MessageService } from '$/bot/common/message.service';
 import { PrismaService } from '$common/prisma/prisma.service';
 import { DiscordGuard } from '@discord-nestjs/core';
 import { Injectable } from '@nestjs/common';
-import { ClientEvents, Interaction } from 'discord.js';
+import { ClientEvents } from 'discord.js';
 
 /** The number of seconds to keep the blacklisted message and its command. */
 export const BLACKLISTED_MESSAGE_RETENTION = 3;
@@ -11,7 +11,7 @@ export const BLACKLISTED_MESSAGE_RETENTION = 3;
 export class MusicGuard implements DiscordGuard {
 	constructor(private readonly prisma: PrismaService, private readonly messageService: MessageService) {}
 
-	async canActive(event: keyof ClientEvents, [interaction]: [Interaction]): Promise<boolean> {
+	async canActive(event: keyof ClientEvents, [interaction]: ClientEvents['interactionCreate']): Promise<boolean> {
 		const handlingEvents: (keyof ClientEvents)[] = ['interaction', 'interactionCreate'];
 
 		if (!handlingEvents.includes(event)) {

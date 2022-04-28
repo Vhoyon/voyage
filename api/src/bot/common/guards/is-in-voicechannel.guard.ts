@@ -1,6 +1,6 @@
 import { DiscordGuard } from '@discord-nestjs/core';
 import { Injectable } from '@nestjs/common';
-import { ClientEvents, GuildMember, Interaction } from 'discord.js';
+import { ClientEvents, GuildMember } from 'discord.js';
 import { MessageService } from '../message.service';
 
 export const IsInVoiceChannel = (message = `You need to be in a voice channel to execute this action!`) => {
@@ -8,7 +8,7 @@ export const IsInVoiceChannel = (message = `You need to be in a voice channel to
 	class IsInVoiceChannelGuard implements DiscordGuard {
 		constructor(private readonly messageService: MessageService) {}
 
-		async canActive(event: keyof ClientEvents, [interaction]: [Interaction]): Promise<boolean> {
+		async canActive(event: keyof ClientEvents, [interaction]: ClientEvents['interactionCreate']): Promise<boolean> {
 			const handlingEvents: (keyof ClientEvents)[] = ['interaction', 'interactionCreate'];
 
 			if (!handlingEvents.includes(event)) {

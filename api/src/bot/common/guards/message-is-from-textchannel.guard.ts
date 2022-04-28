@@ -1,13 +1,13 @@
 import { DiscordGuard } from '@discord-nestjs/core';
 import { Injectable } from '@nestjs/common';
-import { ClientEvents, Message, TextChannel } from 'discord.js';
+import { ClientEvents, TextChannel } from 'discord.js';
 import { MessageService } from '../message.service';
 
 @Injectable()
 export class MessageIsFromTextChannelGuard implements DiscordGuard {
 	constructor(private readonly messageService: MessageService) {}
 
-	async canActive(event: keyof ClientEvents, [message]: [Message]): Promise<boolean> {
+	async canActive(event: keyof ClientEvents, [message]: ClientEvents['messageCreate']): Promise<boolean> {
 		const handlingEvents: (keyof ClientEvents)[] = ['message', 'messageCreate'];
 
 		if (!handlingEvents.includes(event)) {

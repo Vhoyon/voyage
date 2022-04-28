@@ -1,5 +1,6 @@
 import { ConfigModule } from '$common/configs/config.module';
 import { PrismaModule } from '$common/prisma/prisma.module';
+import { DiscordModule } from '@discord-nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { discordModule } from '../bot.module';
 import { MessageService } from '../common/message.service';
@@ -14,7 +15,7 @@ describe('PlayerGateway', () => {
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [ConfigModule, PrismaModule, discordModule, PlayerModule],
+			imports: [ConfigModule, PrismaModule, discordModule, DiscordModule.forFeature(), PlayerModule],
 			controllers: [InteractionsGateway],
 			providers: [MusicService, MessageService, ButtonService, HistoryService],
 		}).compile();

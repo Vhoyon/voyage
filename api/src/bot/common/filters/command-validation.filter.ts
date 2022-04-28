@@ -7,8 +7,8 @@ import { MessageService } from '../message.service';
 export class CommandValidationFilter implements DiscordExceptionFilter {
 	constructor(private readonly messageService: MessageService) {}
 
-	async catch(exceptionList: ValidationError[], metadata: DiscordArgumentMetadata<'interactionCreate'>) {
-		const [interaction] = metadata.context;
+	async catch(exceptionList: ValidationError[], metadata: DiscordArgumentMetadata<'interaction' | 'interactionCreate'>) {
+		const [interaction] = metadata.eventArgs;
 
 		if (!interaction.isCommand()) {
 			return;

@@ -1,9 +1,9 @@
 import { DiscordGuard } from '@discord-nestjs/core';
 import { Injectable } from '@nestjs/common';
-import { ClientEvents, DMChannel, GuildMember, Interaction, PartialDMChannel, PermissionResolvable, TextBasedChannels } from 'discord.js';
+import { ClientEvents, DMChannel, GuildMember, Interaction, PartialDMChannel, PermissionResolvable, TextBasedChannel } from 'discord.js';
 import { MessageService } from '../message.service';
 
-function channelIsPartialDM(channel: TextBasedChannels): channel is PartialDMChannel | DMChannel {
+function channelIsPartialDM(channel: TextBasedChannel): channel is PartialDMChannel | DMChannel {
 	return channel.type == 'DM';
 }
 

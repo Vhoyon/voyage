@@ -2,6 +2,7 @@ import { discordModule } from '$/bot/bot.module';
 import { MessageService } from '$/bot/common/message.service';
 import { ConfigModule } from '$common/configs/config.module';
 import { PrismaModule } from '$common/prisma/prisma.module';
+import { DiscordModule } from '@discord-nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ButtonService } from './button.service';
 import { HistoryService } from './history.service';
@@ -11,7 +12,7 @@ describe('ButtonService', () => {
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [PrismaModule, discordModule, ConfigModule],
+			imports: [ConfigModule, PrismaModule, discordModule, DiscordModule.forFeature()],
 			providers: [ButtonService, HistoryService, MessageService],
 		}).compile();
 

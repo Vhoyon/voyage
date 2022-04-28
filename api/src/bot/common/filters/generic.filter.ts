@@ -11,14 +11,14 @@ export class GenericErrorFilter implements DiscordExceptionFilter {
 
 	constructor(private readonly messageService: MessageService) {}
 
-	async catch(error: unknown, metadata: DiscordArgumentMetadata) {
+	async catch(error: unknown, metadata: DiscordArgumentMetadata<'interaction' | 'interactionCreate'>) {
 		if (error instanceof LogWarning) {
 			error.log(this.logger);
 
 			return;
 		}
 
-		const [interaction] = metadata.context;
+		const [interaction] = metadata.eventArgs;
 
 		if (!(interaction instanceof Interaction)) {
 			return;

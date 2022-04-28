@@ -1,3 +1,4 @@
+import { TransformedRealCommandExecutionContext } from '$/bot/@types/discord-nestjs';
 import { InteractionFromServer } from '$/bot/common/guards/interaction-from-server.guard';
 import { VoicePermissionChecker } from '$/bot/common/guards/permission.guard';
 import { MessageService } from '$/bot/common/message.service';
@@ -26,7 +27,7 @@ export class PlayCommand implements DiscordTransformedCommand<PlayDto> {
 
 	constructor(private readonly messageService: MessageService, private readonly player: PlayerService) {}
 
-	async handler(@Payload() { query, dynamicType }: PlayDto, interaction: CommandInteraction) {
+	async handler(@Payload() { query, dynamicType }: PlayDto, { interaction }: TransformedRealCommandExecutionContext) {
 		const member = interaction.member as GuildMember;
 		const voiceChannel = member.voice.channel!;
 		const textChannel = interaction.channel instanceof TextChannel ? interaction.channel : undefined;

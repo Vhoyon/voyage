@@ -1,9 +1,9 @@
+import { TransformedRealCommandExecutionContext } from '$/bot/@types/discord-nestjs';
 import { InteractionFromServer } from '$/bot/common/guards/interaction-from-server.guard';
 import { IsInVoiceChannel } from '$/bot/common/guards/is-in-voicechannel.guard';
 import { TransformPipe, ValidationPipe } from '@discord-nestjs/common';
 import { Command, DiscordTransformedCommand, Payload, UseGuards, UsePipes } from '@discord-nestjs/core';
 import { Logger } from '@nestjs/common';
-import { CommandInteraction } from 'discord.js';
 import { NowPlayingDto } from '../../dtos/now-playing.dto';
 import { MusicGuard } from '../../guards/music.guard';
 import { MusicService } from '../../services/music.service';
@@ -19,7 +19,7 @@ export class NowPlayingCommand implements DiscordTransformedCommand<NowPlayingDt
 
 	constructor(private readonly musicService: MusicService) {}
 
-	async handler(@Payload() { dynamicType }: NowPlayingDto, interaction: CommandInteraction) {
+	async handler(@Payload() { dynamicType }: NowPlayingDto, { interaction }: TransformedRealCommandExecutionContext) {
 		await this.musicService.nowPlaying(interaction, {
 			type: dynamicType,
 		});

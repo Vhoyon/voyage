@@ -42,8 +42,8 @@ importers:
 
   api:
     specifiers:
-      '@discord-nestjs/common': 2.0.18
-      '@discord-nestjs/core': 2.1.13
+      '@discord-nestjs/common': 3.0.7
+      '@discord-nestjs/core': 3.0.7
       '@discordjs/builders': 0.12.0
       '@discordjs/opus': 0.7.0
       '@discordjs/voice': 0.8.0
@@ -73,7 +73,7 @@ importers:
       deepmerge: 4.2.2
       del: 6.0.0
       discord-music-player: github:V-ed/discord-music-player
-      discord.js: 13.3.1
+      discord.js: 13.6.0
       dotenv: 16.0.0
       dotenv-expand: 8.0.3
       ffmpeg: 0.0.4
@@ -92,6 +92,7 @@ importers:
       jest: 27.5.1
       json5: 2.2.1
       nest-typed-config: 2.4.1
+      nestjs-dynamic-providers: 0.1.2
       prisma: 3.12.0
       prisma-fixtures: 0.0.1
       prisma-nestjs-graphql: 15.2.1
@@ -105,8 +106,8 @@ importers:
       typescript: 4.6.3
       ytdl-core: 4.11.0
     dependencies:
-      '@discord-nestjs/common': 2.0.18_04280d4113c10295056404dde3668850
-      '@discord-nestjs/core': 2.1.13_fd7ae241ceae438df4e26c8c0e49b65b
+      '@discord-nestjs/common': 3.0.7_66bf4d8caded98e23fc5c876c7cfafa2
+      '@discord-nestjs/core': 3.0.7_650a03e96f43d1bb974a6fd03a710d01
       '@discordjs/builders': 0.12.0
       '@discordjs/opus': 0.7.0
       '@discordjs/voice': 0.8.0_9765f935dad003c4428adcfeefec9f90
@@ -123,7 +124,7 @@ importers:
       class-validator: 0.13.2
       deepmerge: 4.2.2
       discord-music-player: github.com/V-ed/discord-music-player/758da562243ce79571d9c8dacd48514b627a5857_ytdl-core@4.11.0
-      discord.js: 13.3.1
+      discord.js: 13.6.0
       dotenv: 16.0.0
       dotenv-expand: 8.0.3
       ffmpeg: 0.0.4
@@ -133,6 +134,7 @@ importers:
       graphql-subscriptions: 2.0.0_graphql@16.3.0
       graphql-ws: 5.7.0_graphql@16.3.0
       nest-typed-config: 2.4.1_7670df531e7a1503cdbe395599f41db7
+      nestjs-dynamic-providers: 0.1.2_241cb6a4085d63233d36725823a84b39
       reflect-metadata: 0.1.13
       rxjs: 7.5.5
       ytdl-core: 4.11.0
@@ -960,42 +962,53 @@ packages:
       parse-cache-control: 1.0.1
     dev: false
 
-  /@discord-nestjs/common/2.0.18_04280d4113c10295056404dde3668850:
-    resolution: {integrity: sha512-//Se1ow2gtzxY/cp0WLoZhTK/Ne4YRyfIfzL0OyBZxQgK7DV6mTDX+b+SLq3VEO1WtSe/B129IUuMqtgaJLGOA==}
+  /@discord-nestjs/common/3.0.7_66bf4d8caded98e23fc5c876c7cfafa2:
+    resolution: {integrity: sha512-H+WLqDKUTzXS4JlRpO5gbLCANWtHNaO57IvK1bwff7XIosiekOvgCVNWeAczbv9Vto4mR9Fu1y0hOAh5qM/dKA==}
     peerDependencies:
       '@discord-nestjs/core': '*'
-      '@nestjs/common': ^8.1.1
-      '@nestjs/core': ^8.1.1
-      discord.js: ^13.2.0
+      '@nestjs/common': ^8.*
+      '@nestjs/core': ^8.*
+      discord.js: ^13.*
       reflect-metadata: ^0.1.13
-      rxjs: ^7.4.0
+      rxjs: ^7.*
     dependencies:
-      '@discord-nestjs/core': 2.1.13_fd7ae241ceae438df4e26c8c0e49b65b
+      '@discord-nestjs/core': 3.0.7_650a03e96f43d1bb974a6fd03a710d01
       '@nestjs/common': 8.4.4_a33b8c25f6562e8508e37318284cdc0d
       '@nestjs/core': 8.4.4_b63c269346792a9d57cfab86d23050d2
+      '@nestjs/mapped-types': 1.0.1_0dee9b184cced90b5fc445a681404118
       class-transformer: 0.5.1
       class-validator: 0.13.1
-      discord.js: 13.3.1
+      discord.js: 13.6.0
       reflect-metadata: 0.1.13
       rxjs: 7.5.5
     dev: false
 
-  /@discord-nestjs/core/2.1.13_fd7ae241ceae438df4e26c8c0e49b65b:
-    resolution: {integrity: sha512-KRJl1n+9eh5FgCUwYtxm3RnSdDr0rehwaGrIhLOCzqLJ1zSIZHZLJNwtv88EkboeQUmGKD8zBtWPaK4x+tm7zg==}
+  /@discord-nestjs/core/3.0.7_650a03e96f43d1bb974a6fd03a710d01:
+    resolution: {integrity: sha512-xE0/4Hzg/X+vtmOw159JZjdA/e9M4UBC8ZrhaovQTMCsme08Nq640+NDROENyP4FJuFXGPYHZqdnvwshxEbA5g==}
     peerDependencies:
-      '@nestjs/common': ^8.1.1
-      '@nestjs/core': ^8.1.1
-      discord.js: ^13.2.0
+      '@nestjs/common': ^8.*
+      '@nestjs/core': ^8.*
+      discord.js: ^13.*
       reflect-metadata: ^0.1.13
-      rxjs: ^7.4.0
+      rxjs: ^7.*
     dependencies:
       '@nestjs/common': 8.4.4_a33b8c25f6562e8508e37318284cdc0d
       '@nestjs/core': 8.4.4_b63c269346792a9d57cfab86d23050d2
-      class-transformer: 0.4.0
-      discord.js: 13.3.1
-      glob: 7.2.0
+      class-transformer: 0.5.1
+      discord.js: 13.6.0
       reflect-metadata: 0.1.13
       rxjs: 7.5.5
+    dev: false
+
+  /@discordjs/builders/0.11.0:
+    resolution: {integrity: sha512-ZTB8yJdJKrKlq44dpWkNUrAtEJEq0gqpb7ASdv4vmq6/mZal5kOv312hQ56I/vxwMre+VIkoHquNUAfnTbiYtg==}
+    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
+    dependencies:
+      '@sindresorhus/is': 4.6.0
+      discord-api-types: 0.26.1
+      ts-mixer: 6.0.1
+      tslib: 2.3.1
+      zod: 3.14.4
     dev: false
 
   /@discordjs/builders/0.12.0:
@@ -1009,29 +1022,9 @@ packages:
       zod: 3.14.4
     dev: false
 
-  /@discordjs/builders/0.8.2:
-    resolution: {integrity: sha512-/YRd11SrcluqXkKppq/FAVzLIPRVlIVmc6X8ZklspzMIHDtJ+A4W37D43SHvLdH//+NnK+SHW/WeOF4Ts54PeQ==}
+  /@discordjs/collection/0.4.0:
+    resolution: {integrity: sha512-zmjq+l/rV35kE6zRrwe8BHqV78JvIh2ybJeZavBi5NySjWXqN3hmmAKg7kYMMXSeiWtSsMoZ/+MQi0DiQWy2lw==}
     engines: {node: '>=16.0.0', npm: '>=7.0.0'}
-    dependencies:
-      '@sindresorhus/is': 4.6.0
-      discord-api-types: 0.24.0
-      ow: 0.27.0
-      ts-mixer: 6.0.1
-      tslib: 2.3.1
-    dev: false
-
-  /@discordjs/collection/0.3.2:
-    resolution: {integrity: sha512-dMjLl60b2DMqObbH1MQZKePgWhsNe49XkKBZ0W5Acl5uVV43SN414i2QfZwRI7dXAqIn8pEWD2+XXQFn9KWxqg==}
-    engines: {node: '>=16.0.0', npm: '>=7.0.0'}
-    dev: false
-
-  /@discordjs/form-data/3.0.1:
-    resolution: {integrity: sha512-ZfFsbgEXW71Rw/6EtBdrP5VxBJy4dthyC0tpQKGKmYFImlmmrykO14Za+BiIVduwjte0jXEBlhSKf0MWbFp9Eg==}
-    engines: {node: '>= 6'}
-    dependencies:
-      asynckit: 0.4.0
-      combined-stream: 1.0.8
-      mime-types: 2.1.35
     dev: false
 
   /@discordjs/node-pre-gyp/0.4.2:
@@ -2168,6 +2161,25 @@ packages:
       - class-transformer
       - class-validator
       - utf-8-validate
+    dev: false
+
+  /@nestjs/mapped-types/1.0.1_0dee9b184cced90b5fc445a681404118:
+    resolution: {integrity: sha512-NFvofzSinp00j5rzUd4tf+xi9od6383iY0JP7o0Bnu1fuItAUkWBgc4EKuIQ3D+c2QI3i9pG1kDWAeY27EMGtg==}
+    peerDependencies:
+      '@nestjs/common': ^7.0.8 || ^8.0.0
+      class-transformer: ^0.2.0 || ^0.3.0 || ^0.4.0 || ^0.5.0
+      class-validator: ^0.11.1 || ^0.12.0 || ^0.13.0
+      reflect-metadata: ^0.1.12
+    peerDependenciesMeta:
+      class-transformer:
+        optional: true
+      class-validator:
+        optional: true
+    dependencies:
+      '@nestjs/common': 8.4.4_a33b8c25f6562e8508e37318284cdc0d
+      class-transformer: 0.5.1
+      class-validator: 0.13.1
+      reflect-metadata: 0.1.13
     dev: false
 
   /@nestjs/mapped-types/1.0.1_d271f1a06d1183b7381eaf244632ffe3:
@@ -4863,12 +4875,6 @@ packages:
     deprecated: No longer supported. Install the latest release!
     dev: false
 
-  /discord-api-types/0.24.0:
-    resolution: {integrity: sha512-X0uA2a92cRjowUEXpLZIHWl4jiX1NsUpDhcEOpa1/hpO1vkaokgZ8kkPtPih9hHth5UVQ3mHBu/PpB4qjyfJ4A==}
-    engines: {node: '>=12'}
-    deprecated: No longer supported. Install the latest release!
-    dev: false
-
   /discord-api-types/0.26.1:
     resolution: {integrity: sha512-T5PdMQ+Y1MEECYMV5wmyi9VEYPagEDEi4S0amgsszpWY0VB9JJ/hEvM6BgLhbdnKky4gfmZEXtEEtojN8ZKJQQ==}
     engines: {node: '>=12'}
@@ -4885,17 +4891,17 @@ packages:
       - opusscript
     dev: false
 
-  /discord.js/13.3.1:
-    resolution: {integrity: sha512-zn4G8tL5+tMV00+0aSsVYNYcIfMSdT2g0nudKny+Ikd+XKv7m6bqI7n3Vji0GIRqXDr5ArPaw+iYFM2I1Iw3vg==}
+  /discord.js/13.6.0:
+    resolution: {integrity: sha512-tXNR8zgsEPxPBvGk3AQjJ9ljIIC6/LOPjzKwpwz8Y1Q2X66Vi3ZqFgRHYwnHKC0jC0F+l4LzxlhmOJsBZDNg9g==}
     engines: {node: '>=16.6.0', npm: '>=7.0.0'}
     dependencies:
-      '@discordjs/builders': 0.8.2
-      '@discordjs/collection': 0.3.2
-      '@discordjs/form-data': 3.0.1
+      '@discordjs/builders': 0.11.0
+      '@discordjs/collection': 0.4.0
       '@sapphire/async-queue': 1.3.1
       '@types/node-fetch': 2.6.1
       '@types/ws': 8.5.3
-      discord-api-types: 0.24.0
+      discord-api-types: 0.26.1
+      form-data: 4.0.0
       node-fetch: 2.6.7
       ws: 8.5.0
     transitivePeerDependencies:
@@ -4947,13 +4953,6 @@ packages:
       no-case: 3.0.4
       tslib: 2.3.1
     dev: true
-
-  /dot-prop/6.0.1:
-    resolution: {integrity: sha512-tE7ztYzXHIeyvc7N+hR3oi7FIbf/NIjVP9hmAt3yMXzrQ072/fpjGLx2GxNxGxUl5V73MEqYzioOMoVhGMJ5cA==}
-    engines: {node: '>=10'}
-    dependencies:
-      is-obj: 2.0.0
-    dev: false
 
   /dotenv-expand/5.1.0:
     resolution: {integrity: sha512-YXQl1DSa4/PQyRfgrv6aoNjhasp/p4qs9FjJ4q4cQk+8m4r6k4ZSiEyytKG8f8W9gi8WsQtIObNmKd+tMzNTmA==}
@@ -5856,7 +5855,6 @@ packages:
       asynckit: 0.4.0
       combined-stream: 1.0.8
       mime-types: 2.1.35
-    dev: true
 
   /formdata-node/4.3.2:
     resolution: {integrity: sha512-k7lYJyzDOSL6h917favP8j1L0/wNyylzU+x+1w4p5haGVHNlP58dbpdJhiCUsDbWsa9HwEtLp89obQgXl2e0qg==}
@@ -6954,11 +6952,6 @@ packages:
   /is-number/7.0.0:
     resolution: {integrity: sha512-41Cifkg6e8TylSpdtTpeLVMqvSBEVzTttHvERD741+pnZ8ANv0004MRL43QKPDlK9cGvNp6NZWZUBlbGXYxxng==}
     engines: {node: '>=0.12.0'}
-
-  /is-obj/2.0.0:
-    resolution: {integrity: sha512-drqDG3cbczxxEJRoOXcOjtdp1J/lyp1mNn0xaznRs8+muBhgQcrnbspox5X5fOw0HnMnbfDzvnEMEtqDEJEo8w==}
-    engines: {node: '>=8'}
-    dev: false
 
   /is-observable/1.1.0:
     resolution: {integrity: sha512-NqCa4Sa2d+u7BWc6CukaObG3Fh+CU9bvixbpcXYhy2VvYS7vVGIdAgnIS5Ks3A/cqk4rebLJ9s8zBstT2aKnIA==}
@@ -8068,10 +8061,6 @@ packages:
     resolution: {integrity: sha1-bC4XHbKiV82WgC/UOwGyDV9YcPY=}
     dev: true
 
-  /lodash.isequal/4.5.0:
-    resolution: {integrity: sha1-QVxEePK8wwEgwizhDtMib30+GOA=}
-    dev: false
-
   /lodash.isinteger/4.0.4:
     resolution: {integrity: sha1-YZwK89A/iwTDH1iChAt3sRzWg0M=}
     dev: true
@@ -8595,6 +8584,21 @@ packages:
       - supports-color
     dev: false
 
+  /nestjs-dynamic-providers/0.1.2_241cb6a4085d63233d36725823a84b39:
+    resolution: {integrity: sha512-Dag8Uyjpfl9H3jyug7EUz9vknyaHCK0grf2lX57DHtkqBHiJctpjNCWsBMtAQkVK0IuY3X2Jdcqlrnw8ODIP+A==}
+    peerDependencies:
+      '@nestjs/common': ^8.2.6
+      '@nestjs/core': ^8.2.6
+      reflect-metadata: ^0.1.13
+      rxjs: ^7.5.2
+    dependencies:
+      '@nestjs/common': 8.4.4_a33b8c25f6562e8508e37318284cdc0d
+      '@nestjs/core': 8.4.4_b63c269346792a9d57cfab86d23050d2
+      glob: 7.2.0
+      reflect-metadata: 0.1.13
+      rxjs: 7.5.5
+    dev: false
+
   /next-tick/1.1.0:
     resolution: {integrity: sha512-CXdUiJembsNjuToQvxayPZF9Vqht7hewsvy2sOWafLvi2awflj9mOC6bHIg50orX8IJvWKY9wYQ/zB2kogPslQ==}
     dev: true
@@ -8924,18 +8928,6 @@ packages:
   /outmatch/0.7.0:
     resolution: {integrity: sha512-w1ybiTBffGiwxOO7JJBVVOsIiWwzcfSl/D80amWAU2UDe1o9/SySOUzAwDuN3+jGKQRs0UCDTS8rndFiroJgVQ==}
     dev: true
-
-  /ow/0.27.0:
-    resolution: {integrity: sha512-SGnrGUbhn4VaUGdU0EJLMwZWSupPmF46hnTRII7aCLCrqixTAC5eKo8kI4/XXf1eaaI8YEVT+3FeGNJI9himAQ==}
-    engines: {node: '>=12'}
-    dependencies:
-      '@sindresorhus/is': 4.6.0
-      callsites: 3.1.0
-      dot-prop: 6.0.1
-      lodash.isequal: 4.5.0
-      type-fest: 1.4.0
-      vali-date: 1.0.0
-    dev: false
 
   /p-cancelable/1.1.0:
     resolution: {integrity: sha512-s73XxOZ4zpt1edZYZzvhqFa6uvQc1vwUa0K0BdtIZgQMAJj9IbebH+JkgKZc9h+B05PKHLOTl4ajG1BmNrVZlw==}
@@ -11150,11 +11142,6 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /type-fest/1.4.0:
-    resolution: {integrity: sha512-yGSza74xk0UG8k+pLh5oeoYirvIiWo5t0/o3zHHAO2tRDiZcxWP7fywNlXhqb6/r6sWvwi+RsyQMWhVLe4BVuA==}
-    engines: {node: '>=10'}
-    dev: false
-
   /type-is/1.6.18:
     resolution: {integrity: sha512-TkRKr9sUTxEH8MdfuCSP7VizJyzRNMjj2J2do2Jr3Kym598JVdEksuzPQCnlFPW4ky9Q+iA+ma9BGm06XQBy8g==}
     engines: {node: '>= 0.6'}
@@ -11359,11 +11346,6 @@ packages:
     dependencies:
       homedir-polyfill: 1.0.3
     dev: true
-
-  /vali-date/1.0.0:
-    resolution: {integrity: sha1-G5BKWWCfsyjvB4E4Qgk09rhnCaY=}
-    engines: {node: '>=0.10.0'}
-    dev: false
 
   /valid-url/1.0.9:
     resolution: {integrity: sha1-HBRHm0DxOXp1eC8RXkCGRHQzogA=}

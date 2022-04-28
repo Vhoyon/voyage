@@ -1,10 +1,10 @@
+import { TransformedRealCommandExecutionContext } from '$/bot/@types/discord-nestjs';
 import { InteractionFromServer } from '$/bot/common/guards/interaction-from-server.guard';
 import { IsInVoiceChannel } from '$/bot/common/guards/is-in-voicechannel.guard';
 import { MessageService } from '$/bot/common/message.service';
 import { TransformPipe, ValidationPipe } from '@discord-nestjs/common';
 import { Command, DiscordTransformedCommand, Payload, UseGuards, UsePipes } from '@discord-nestjs/core';
 import { Logger } from '@nestjs/common';
-import { CommandInteraction } from 'discord.js';
 import { SeekDto } from '../../dtos/seek.dto';
 import { MusicGuard } from '../../guards/music.guard';
 import { MusicService } from '../../services/music.service';
@@ -20,7 +20,7 @@ export class SeekCommand implements DiscordTransformedCommand<SeekDto> {
 
 	constructor(private readonly messageService: MessageService, private readonly musicService: MusicService) {}
 
-	async handler(@Payload() { timestamp }: SeekDto, interaction: CommandInteraction) {
+	async handler(@Payload() { timestamp }: SeekDto, { interaction }: TransformedRealCommandExecutionContext) {
 		const reply = await this.musicService.seek(interaction, timestamp);
 
 		await this.messageService.send(interaction, reply);

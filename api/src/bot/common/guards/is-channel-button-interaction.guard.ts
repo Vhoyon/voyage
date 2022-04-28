@@ -1,10 +1,10 @@
 import { DiscordGuard } from '@discord-nestjs/core';
 import { Injectable } from '@nestjs/common';
-import { ClientEvents, Interaction, TextChannel } from 'discord.js';
+import { ClientEvents, TextChannel } from 'discord.js';
 
 @Injectable()
 export class IsChannelButtonInteractionGuard implements DiscordGuard {
-	async canActive(event: keyof ClientEvents, [interaction]: [Interaction]): Promise<boolean> {
+	async canActive(event: keyof ClientEvents, [interaction]: ClientEvents['interactionCreate']): Promise<boolean> {
 		const handlingEvents: (keyof ClientEvents)[] = ['interaction', 'interactionCreate'];
 
 		if (!handlingEvents.includes(event)) {
