@@ -1,17 +1,25 @@
+import { Environment, EnvironmentConfig } from '$common/configs/env.validation';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { GraphQLModule as NestGraphQLModule } from '@nestjs/graphql';
 import depthLimit from 'graphql-depth-limit';
-import { env } from './configs/config.module';
-import { Environment } from './configs/env.validation';
+import { ConfigModule } from './configs/config.module';
 
-const isProd = env.NODE_ENV == Environment.Production;
+export const GraphQLModule = NestGraphQLModule.forRootAsync<ApolloDriverConfig>({
+	driver: ApolloDriver,
+	imports: [ConfigModule],
+	useFactory: (env: EnvironmentConfig) => {
+		const isProd = env.NODE_ENV == Environment.Production;
 
-export const GraphQLModule = NestGraphQLModule.forRoot({
-	autoSchemaFile: true,
-	installSubscriptionHandlers: true,
-	subscriptions: {
-		'graphql-ws': true,
+		return {
+			autoSchemaFile: true,
+			installSubscriptionHandlers: true,
+			subscriptions: {
+				'graphql-ws': true,
+			},
+			debug: !isProd,
+			playground: !isProd,
+			validationRules: [depthLimit(env.GRAPHQL_DEPTH_LIMIT)],
+		};
 	},
-	debug: !isProd,
-	playground: !isProd,
-	validationRules: [depthLimit(env.GRAPHQL_DEPTH_LIMIT)],
+	inject: [EnvironmentConfig],
 });
