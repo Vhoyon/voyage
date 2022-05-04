@@ -1,4 +1,5 @@
-import { ConfigModule, env } from '$common/configs/config.module';
+import { env } from '$common/configs';
+import { ConfigModule } from '$common/configs/config.module';
 import { EnvironmentConfig } from '$common/configs/env.validation';
 import { PrismaModule } from '$common/prisma/prisma.module';
 import { COMMAND_DECORATOR, DiscordModule, registerFilterGlobally } from '@discord-nestjs/core';
