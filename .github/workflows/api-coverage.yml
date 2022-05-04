@@ -7,6 +7,10 @@ on:
     paths:
       - 'api/**'
 
+env:
+  NODE_VERSION: '16'
+  PNPM_VERSION: 7
+
 jobs:
   coverage:
     name: Coverage
@@ -23,7 +27,7 @@ jobs:
       - name: Retrieve pnpm modules
         uses: actions/cache@v3
         with:
-          path: ~/.pnpm-store
+          path: ~/.local/share/pnpm/store
           key: install-${{ env.NODE_VERSION }}-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             install-${{ env.NODE_VERSION }}-${{ runner.os }}-
