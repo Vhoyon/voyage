@@ -24,6 +24,7 @@ const baseConfig = defineBaseJestConfig({
 	moduleNameMapper: pathsToModuleNameMapper(tsConfig.compilerOptions.paths, { prefix: '<rootDir>/' }),
 	testTimeout: 30000,
 	// detectOpenHandles: true,
+	passWithNoTests: true,
 });
 
 export function defineJestConfig<T extends Config.InitialOptions>(config: T): T & typeof baseConfig {
