@@ -1,5 +1,6 @@
 import { PrismaModule } from '$common/prisma/prisma.module';
 import { Test, TestingModule } from '@nestjs/testing';
+import { afterAll, beforeEach, describe, expect, it } from 'vitest';
 import { discordModule } from '../bot.module';
 import { DiscordConfigGateway } from './config.gateway';
 

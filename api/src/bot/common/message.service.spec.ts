@@ -1,6 +1,7 @@
 import { ConfigModule } from '$common/configs/config.module';
 import { DiscordModule } from '@discord-nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { discordModule } from '../bot.module';
 import { MessageService } from './message.service';
 

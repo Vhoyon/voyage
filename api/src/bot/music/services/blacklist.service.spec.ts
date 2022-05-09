@@ -1,5 +1,6 @@
 import { PrismaModule } from '$common/prisma/prisma.module';
 import { Test, TestingModule } from '@nestjs/testing';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { BlacklistService } from './blacklist.service';
 
 describe('BlacklistService', () => {
