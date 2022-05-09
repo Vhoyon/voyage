@@ -9,7 +9,7 @@ import { Player, PlayerOptions, Playlist, Queue, RepeatMode, Song } from 'discor
 import { Client, Guild, Message, TextChannel } from 'discord.js';
 import { ButtonService } from '../services/button.service';
 import { HistoryService } from '../services/history.service';
-import {
+import type {
 	DynamicPlayerData,
 	DynamicPlayerOptions,
 	MusicContext,

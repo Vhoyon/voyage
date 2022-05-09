@@ -3,7 +3,7 @@ import { ConfigModule } from '$common/configs/config.module';
 import { EnvironmentConfig } from '$common/configs/env.validation';
 import { PrismaModule } from '$common/prisma/prisma.module';
 import { COMMAND_DECORATOR, DiscordModule, registerFilterGlobally } from '@discord-nestjs/core';
-import { RegisterCommandOptions } from '@discord-nestjs/core/dist/definitions/interfaces/register-command-options';
+import type { RegisterCommandOptions } from '@discord-nestjs/core/dist/definitions/interfaces/register-command-options';
 import { Module } from '@nestjs/common';
 import { InjectDynamicProviders, IsObject } from 'nestjs-dynamic-providers';
 import { CommonModule } from './common/common.module';

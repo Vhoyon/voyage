@@ -1,4 +1,4 @@
-import { TransformedRealCommandExecutionContext } from '$/bot/@types/discord-nestjs';
+import type { TransformedRealCommandExecutionContext } from '$/bot/@types/discord-nestjs';
 import { InteractionFromServer } from '$/bot/common/guards/interaction-from-server.guard';
 import { VoicePermissionChecker } from '$/bot/common/guards/permission.guard';
 import { MessageService } from '$/bot/common/message.service';
@@ -7,7 +7,7 @@ import { TransformPipe, ValidationPipe } from '@discord-nestjs/common';
 import { Command, DiscordTransformedCommand, Payload, UseGuards, UsePipes } from '@discord-nestjs/core';
 import { bold, inlineCode } from '@discordjs/builders';
 import { Logger } from '@nestjs/common';
-import { Playlist, Song } from 'discord-music-player';
+import type { Playlist, Song } from 'discord-music-player';
 import { CommandInteraction, GuildMember, TextChannel } from 'discord.js';
 import { PlayDto } from '../../dtos/play.dto';
 import { MAXIMUM as VOLUME_MAXIMUM } from '../../dtos/volume.dto';

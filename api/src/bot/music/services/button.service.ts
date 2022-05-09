@@ -1,4 +1,4 @@
-import { SendableOptions } from '$/bot/common/message.service';
+import type { SendableOptions } from '$/bot/common/message.service';
 import { hyperlink, inlineCode } from '@discordjs/builders';
 import { Injectable } from '@nestjs/common';
 import { RepeatMode, Song } from 'discord-music-player';
@@ -6,7 +6,7 @@ import { EmbedFieldData, MessageActionRow, MessageButton } from 'discord.js';
 import { MusicInteractionConstant, PartialInteractionButtonOptions } from '../constants/music.constant';
 import { DEFAULT_COUNT as DEFAULT_HISTORY_COUNT } from '../dtos/history.dto';
 import { MAXIMUM as VOLUME_MAXIMUM } from '../dtos/volume.dto';
-import { PlayerButtonsOptions, VQueue } from '../player/player.types';
+import type { PlayerButtonsOptions, VQueue } from '../player/player.types';
 import { HistoryService, HistoryWidgetOptions } from './history.service';
 
 @Injectable()

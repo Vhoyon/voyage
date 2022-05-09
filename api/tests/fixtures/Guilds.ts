@@ -1,4 +1,4 @@
-import { Guild, PrismaClient } from '$prisma-client';
+import type { Guild, PrismaClient } from '$prisma-client';
 import { faker as f } from '@faker-js/faker';
 import { Fixture, LinkMethod, upsertRange } from 'prisma-fixtures';
 

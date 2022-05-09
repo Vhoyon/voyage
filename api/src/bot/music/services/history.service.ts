@@ -1,8 +1,8 @@
 import { DirtyMessage, MessageService, SavedHistoryMessage, SendableOptions } from '$/bot/common/message.service';
 import { PrismaService } from '$common/prisma/prisma.service';
 import { Injectable, Logger } from '@nestjs/common';
-import { Song } from 'discord-music-player';
-import { EmbedFieldData, Message, Snowflake, TextChannel, User } from 'discord.js';
+import type { Song } from 'discord-music-player';
+import type { EmbedFieldData, Message, Snowflake, TextChannel, User } from 'discord.js';
 
 export type Condition = {
 	name: string;

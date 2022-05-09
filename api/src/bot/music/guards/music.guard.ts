@@ -1,8 +1,8 @@
 import { MessageService } from '$/bot/common/message.service';
 import { PrismaService } from '$common/prisma/prisma.service';
-import { DiscordGuard } from '@discord-nestjs/core';
+import type { DiscordGuard } from '@discord-nestjs/core';
 import { Injectable } from '@nestjs/common';
-import { ClientEvents } from 'discord.js';
+import type { ClientEvents } from 'discord.js';
 
 /** The number of seconds to keep the blacklisted message and its command. */
 export const BLACKLISTED_MESSAGE_RETENTION = 3;

@@ -1,4 +1,4 @@
-import { InteractionButtonOptions } from 'discord.js';
+import type { InteractionButtonOptions } from 'discord.js';
 
 export type PartialInteractionButtonOptions = Partial<InteractionButtonOptions> & Pick<InteractionButtonOptions, 'customId'>;
 

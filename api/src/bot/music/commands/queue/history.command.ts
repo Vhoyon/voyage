@@ -1,10 +1,10 @@
-import { TransformedRealCommandExecutionContext } from '$/bot/@types/discord-nestjs';
+import type { TransformedRealCommandExecutionContext } from '$/bot/@types/discord-nestjs';
 import { InteractionFromServer } from '$/bot/common/guards/interaction-from-server.guard';
 import { MessageService } from '$/bot/common/message.service';
 import { TransformPipe, ValidationPipe } from '@discord-nestjs/common';
 import { Command, DiscordClientProvider, DiscordTransformedCommand, Payload, UseGuards, UsePipes } from '@discord-nestjs/core';
 import { Logger } from '@nestjs/common';
-import { TextChannel } from 'discord.js';
+import type { TextChannel } from 'discord.js';
 import { HistoryDto } from '../../dtos/history.dto';
 import { MusicGuard } from '../../guards/music.guard';
 import { HistoryService } from '../../services/history.service';

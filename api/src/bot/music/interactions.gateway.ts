@@ -1,7 +1,7 @@
 import { On, UseGuards } from '@discord-nestjs/core';
 import { bold, inlineCode } from '@discordjs/builders';
 import { Controller, Logger } from '@nestjs/common';
-import { Song } from 'discord-music-player';
+import type { Song } from 'discord-music-player';
 import { ButtonInteraction, GuildMember } from 'discord.js';
 import { InformError } from '../common/error/inform-error';
 import { ButtonInteractionWithId } from '../common/guards/interaction-custom-id.guard';

@@ -1,5 +1,5 @@
 import { bold } from '@discordjs/builders';
-import { EmbedType, SendableOptions } from '../message.service';
+import type { EmbedType, SendableOptions } from '../message.service';
 
 export interface InformErrorOptions {
 	stack?: string;

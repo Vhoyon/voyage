@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import type { Logger } from '@nestjs/common';
 
 export interface LogWarningOptions {
 	error?: unknown;

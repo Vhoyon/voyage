@@ -65,7 +65,7 @@ importers:
       '@types/gulp-replace': 0.0.31
       '@types/jest': 27.4.1
       '@types/supertest': 2.0.12
-      '@v-ed/tsconfig': 0.1.2
+      '@v-ed/tsconfig': 0.2.0
       apollo-server-core: 3.6.7
       apollo-server-express: 3.6.7
       class-transformer: 0.4.0
@@ -149,7 +149,7 @@ importers:
       '@types/gulp-replace': 0.0.31
       '@types/jest': 27.4.1
       '@types/supertest': 2.0.12
-      '@v-ed/tsconfig': 0.1.2
+      '@v-ed/tsconfig': 0.2.0
       del: 6.0.0
       graphql-config: 4.3.0_p3vaqft5uoeyiavxkjyaljm52u
       graphql-tag: 2.12.6_graphql@16.3.0
@@ -3063,8 +3063,8 @@ packages:
       stylelint-config-standard: 25.0.0_stylelint@14.6.1
     dev: true
 
-  /@v-ed/tsconfig/0.1.2:
-    resolution: {integrity: sha512-gaMDdYElJXLOMfyEGXo4zL7RJyAVHgAoSAS49NS8LeJtPc0gYOPE/KCY+89yrh9CYxe0TE9bVus11IFYwyyZXw==}
+  /@v-ed/tsconfig/0.2.0:
+    resolution: {integrity: sha512-SkfkjDM8sWD3QOtQ8EcGI/gBtnQfoptjyWZZGpnM1oXSjRABgTodN2lxuOrXhWUnyVpNG05w+yw3uOc1yvwhwA==}
     engines: {node: '>=14'}
     dev: true
 
