@@ -1,10 +1,10 @@
 import { PrismaService } from '$common/prisma/prisma.service';
-import { RequiredProperties } from '$common/utils/types';
-import { MomsLog } from '$prisma-client';
+import type { RequiredProperties } from '$common/utils/types';
+import type { MomsLog } from '$prisma-client';
 import { Injectable, Logger } from '@nestjs/common';
-import { StageChannel, User, VoiceChannel, VoiceState } from 'discord.js';
+import type { StageChannel, User, VoiceChannel, VoiceState } from 'discord.js';
 import { PlayerService } from '../player/player.service';
-import { PlayMusicOptions } from '../player/player.types';
+import type { PlayMusicOptions } from '../player/player.types';
 
 export enum JoinType {
 	/**

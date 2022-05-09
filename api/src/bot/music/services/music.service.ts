@@ -9,7 +9,15 @@ import { Guild, Message, TextChannel, User } from 'discord.js';
 import { DEFAULT_COUNT as DEFAULT_HISTORY_COUNT } from '../dtos/history.dto';
 import { DEFAULT_COUNT as DEFAULT_QUEUE_COUNT } from '../dtos/queue.dto';
 import { PlayerService } from '../player/player.service';
-import { DynamicPlayerOptions, MusicContext, PlayMusicOptions, PlayMusicQuery, QueueData, SongData, VQueue } from '../player/player.types';
+import type {
+	DynamicPlayerOptions,
+	MusicContext,
+	PlayMusicOptions,
+	PlayMusicQuery,
+	QueueData,
+	SongData,
+	VQueue,
+} from '../player/player.types';
 import { ButtonService } from './button.service';
 
 @Injectable()
@@ -115,7 +123,7 @@ export class MusicService {
 
 		const properIndex = Math.min(queue.data.history.length, index);
 
-		const pastSong = queue.data.history[properIndex];
+		const pastSong = queue.data.history[properIndex]!;
 
 		if (updateQueue) {
 			queue.songs = [pastSong, ...queue.songs];

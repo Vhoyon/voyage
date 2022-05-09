@@ -1,7 +1,7 @@
 import { InformError, InformErrorInfo, InformInternalError } from '$/bot/common/error/inform-error';
 import { PrismaService } from '$common/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
-import { CommandInteraction } from 'discord.js';
+import type { CommandInteraction } from 'discord.js';
 
 @Injectable()
 export class BlacklistService {

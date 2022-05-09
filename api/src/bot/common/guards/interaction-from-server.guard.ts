@@ -1,6 +1,6 @@
-import { DiscordGuard } from '@discord-nestjs/core';
+import type { DiscordGuard } from '@discord-nestjs/core';
 import { Injectable } from '@nestjs/common';
-import { ClientEvents } from 'discord.js';
+import type { ClientEvents } from 'discord.js';
 import { MessageService } from '../message.service';
 
 @Injectable()

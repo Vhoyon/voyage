@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { Promiseable } from './types';
+import type { Promiseable } from './types';
 
 export { setTimeout as sleep } from 'timers/promises';
 

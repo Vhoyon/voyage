@@ -1,4 +1,4 @@
-import { TransformedRealCommandExecutionContext } from '$/bot/@types/discord-nestjs';
+import type { TransformedRealCommandExecutionContext } from '$/bot/@types/discord-nestjs';
 import { InteractionFromServer } from '$/bot/common/guards/interaction-from-server.guard';
 import { IsInVoiceChannel } from '$/bot/common/guards/is-in-voicechannel.guard';
 import { TransformPipe, ValidationPipe } from '@discord-nestjs/common';
