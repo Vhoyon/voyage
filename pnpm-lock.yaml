@@ -80,7 +80,7 @@ importers:
       ffmpeg: 0.0.4
       ffmpeg-static: 4.4.1
       graphql: 16.3.0
-      graphql-config: 4.3.0
+      graphql-config: 4.3.1
       graphql-depth-limit: 1.1.0
       graphql-subscriptions: 2.0.0
       graphql-tag: 2.12.6
@@ -152,7 +152,7 @@ importers:
       '@v-ed/tsconfig': 0.2.0
       c8: 7.11.3
       del: 6.0.0
-      graphql-config: 4.3.0_p3vaqft5uoeyiavxkjyaljm52u
+      graphql-config: 4.3.1_p3vaqft5uoeyiavxkjyaljm52u
       graphql-tag: 2.12.6_graphql@16.3.0
       gulp: 4.0.2
       gulp-prompt: 1.2.0
@@ -4155,7 +4155,7 @@ packages:
     dev: true
 
   /concat-map/0.0.1:
-    resolution: {integrity: sha1-2Klr13/Wjfd5OnMDajug1UBdR3s=}
+    resolution: {integrity: sha512-/Srv4dswyQNBfohGpz9o6Yb3Gz3SrUDqBH5rTuhGR7ahtlbYKnVxw2bCFMRljaA7EXHaXZ8wsHdodFvbkhKmqg==}
 
   /concat-stream/1.6.2:
     resolution: {integrity: sha512-27HBghJxjiZtIk3Ycvn/4kbJk/1uZuJFfuPEns6LaEvpvG1f0hTea8lilrouyo9mVc2GWdcEZ8OLoGmSADlrCw==}
@@ -6047,8 +6047,8 @@ packages:
       - utf-8-validate
     dev: true
 
-  /graphql-config/4.3.0_p3vaqft5uoeyiavxkjyaljm52u:
-    resolution: {integrity: sha512-Uiu3X7+s5c056WyrvdZVz2vG1fhAipMlYmtiCU/4Z2mX79OXDr1SqIon2MprC/pExIWJfAQZCcjYDY76fPBUQg==}
+  /graphql-config/4.3.1_p3vaqft5uoeyiavxkjyaljm52u:
+    resolution: {integrity: sha512-czBWzJSGaLJfOHBLuUTZVRTjfgohPfvlaeN1B5nXBVptFARpiFuS7iI4FnRhCGwm6qt1h2j1g05nkg0OIGA6bg==}
     engines: {node: '>= 10.0.0'}
     peerDependencies:
       graphql: ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
