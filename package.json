@@ -20,7 +20,7 @@
     "ignoreFiles": ["./**/node_modules/**/*", "./**/dist/**/*", "./**/public/theme/**/*"]
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "2.6.2",
+    "@graphql-codegen/cli": "2.6.4",
     "@graphql-codegen/typed-document-node": "2.2.13",
     "@graphql-codegen/typescript": "2.5.1",
     "@graphql-codegen/typescript-operations": "2.4.2",
