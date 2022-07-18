@@ -24,7 +24,7 @@
     "@graphql-codegen/typed-document-node": "2.2.13",
     "@graphql-codegen/typescript": "2.5.1",
     "@graphql-codegen/typescript-operations": "2.4.2",
-    "@types/node": "16.11.41",
+    "@types/node": "16.11.45",
     "@v-ed/eslint-config": "0.1.1",
     "@v-ed/prettier-config": "0.1.1",
     "@v-ed/stylelint-config": "0.2.3",
