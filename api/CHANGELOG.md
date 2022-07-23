@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.9.8](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.9.7...voyage-discord-bot-v0.9.8) (2022-07-23)
+
+
+### Dependencies
+
+* update dependency @discordjs/opus to v0.8.0 [security] ([96a9b7a](https://github.com/Vhoyon/voyage/commit/96a9b7a573b370f26c280ec8758ceb89454237fc))
+* update discord-nestjs to v3 ([e62b32b](https://github.com/Vhoyon/voyage/commit/e62b32b7f0332c447525d246408f2abc56e560e4))
+
 ### [0.9.7](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.9.6...voyage-discord-bot-v0.9.7) (2022-04-08)
 
 
