@@ -52,7 +52,7 @@ importers:
       '@nestjs/cli': 8.2.8
       '@nestjs/common': 8.4.7
       '@nestjs/core': 8.4.7
-      '@nestjs/graphql': 10.0.8
+      '@nestjs/graphql': 10.0.21
       '@nestjs/platform-express': 8.4.7
       '@nestjs/schematics': 8.0.11
       '@nestjs/testing': 8.4.7
@@ -110,10 +110,10 @@ importers:
       '@discordjs/builders': 0.12.0
       '@discordjs/opus': 0.8.0
       '@discordjs/voice': 0.8.0_kj4b63tl655kaqafvjfrgtykda
-      '@nestjs/apollo': 10.0.8_buvu7frmuw3crwgxvpt6dpmfim
+      '@nestjs/apollo': 10.0.8_wprocwohd6wfld5uq527abgj54
       '@nestjs/common': 8.4.7_um5yyjpwkyxikchdommcqtg4bu
       '@nestjs/core': 8.4.7_fkqgj3xrohk2pflugljc4sz7ea
-      '@nestjs/graphql': 10.0.8_if5b2wvyquvucfc34dtrfhmlii
+      '@nestjs/graphql': 10.0.21_if5b2wvyquvucfc34dtrfhmlii
       '@nestjs/platform-express': 8.4.7_7tsmhnugyerf5okgqzer2mfqme
       '@paljs/plugins': 4.0.18_graphql@16.3.0
       '@prisma/client': 3.12.0_prisma@3.12.0
@@ -161,7 +161,7 @@ importers:
       gulp-typescript: 6.0.0-alpha.1_typescript@4.6.3
       prisma: 3.12.0
       prisma-fixtures: 0.1.11
-      prisma-nestjs-graphql: 15.2.1_buvu7frmuw3crwgxvpt6dpmfim
+      prisma-nestjs-graphql: 15.2.1_wprocwohd6wfld5uq527abgj54
       supertest: 6.2.3
       ts-node: 10.7.0_7azjee6ilav67fycc3x7pirv4e
       typescript: 4.6.3
@@ -1470,15 +1470,6 @@ packages:
       tslib: 2.3.1
     dev: true
 
-  /@graphql-tools/merge/8.2.3_graphql@16.3.0:
-    resolution: {integrity: sha512-XCSmL6/Xg8259OTWNp69B57CPWiVL69kB7pposFrufG/zaAlI9BS68dgzrxmmSqZV5ZHU4r/6Tbf6fwnEJGiSw==}
-    peerDependencies:
-      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
-    dependencies:
-      '@graphql-tools/utils': 8.6.8_graphql@16.3.0
-      graphql: 16.3.0
-      tslib: 2.3.1
-
   /@graphql-tools/merge/8.2.9_graphql@16.3.0:
     resolution: {integrity: sha512-mHRrqMc1NTL6MALBQK1DmAzSxJIKoaCaW7ZCk5bRGzVj/MNQz3OsqlDb/+t9/ONT0V+WI/uxBFsrLMwa4p6L7A==}
     peerDependencies:
@@ -1487,6 +1478,15 @@ packages:
       '@graphql-tools/utils': 8.6.8_graphql@16.3.0
       graphql: 16.3.0
       tslib: 2.3.1
+
+  /@graphql-tools/merge/8.3.0_graphql@16.3.0:
+    resolution: {integrity: sha512-xRa7RAQok/0DD2YnjuqikMrr7dUAxTpdGtZ7BkvUUGhYs3B3p7reCAfvOVr1DJAqVToP7hdlMk+S5+Ylk+AaqA==}
+    peerDependencies:
+      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
+    dependencies:
+      '@graphql-tools/utils': 8.8.0_graphql@16.3.0
+      graphql: 16.3.0
+      tslib: 2.4.0
 
   /@graphql-tools/mock/8.6.7_graphql@16.3.0:
     resolution: {integrity: sha512-KQ/L0kddMgEQG0mATI4vWdeL7d7SJg8Y+SaJUWClLPmTcepZ0xJA9zTXBheklnj3XOCwgAV0Fhzx1pSzYGGpfw==}
@@ -1556,17 +1556,6 @@ packages:
       - supports-color
     dev: true
 
-  /@graphql-tools/schema/8.3.2_graphql@16.3.0:
-    resolution: {integrity: sha512-77feSmIuHdoxMXRbRyxE8rEziKesd/AcqKV6fmxe7Zt+PgIQITxNDew2XJJg7qFTMNM43W77Ia6njUSBxNOkwg==}
-    peerDependencies:
-      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
-    dependencies:
-      '@graphql-tools/merge': 8.2.9_graphql@16.3.0
-      '@graphql-tools/utils': 8.6.8_graphql@16.3.0
-      graphql: 16.3.0
-      tslib: 2.3.1
-      value-or-promise: 1.0.11
-
   /@graphql-tools/schema/8.3.9_graphql@16.3.0:
     resolution: {integrity: sha512-9YFCzn0sYAGTWhZrVYY/neK5cie3s0dNm7Qq38tkhOh2ME5BtHW/8ZIq+UrLGKsBYwa+Qjb/UojGWUm2yG/z6Q==}
     peerDependencies:
@@ -1576,6 +1565,17 @@ packages:
       '@graphql-tools/utils': 8.6.8_graphql@16.3.0
       graphql: 16.3.0
       tslib: 2.3.1
+      value-or-promise: 1.0.11
+
+  /@graphql-tools/schema/8.5.0_graphql@16.3.0:
+    resolution: {integrity: sha512-VeFtKjM3SA9/hCJJfr95aEdC3G0xIKM9z0Qdz4i+eC1g2fdZYnfWFt2ucW4IME+2TDd0enHlKzaV0qk2SLVUww==}
+    peerDependencies:
+      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
+    dependencies:
+      '@graphql-tools/merge': 8.3.0_graphql@16.3.0
+      '@graphql-tools/utils': 8.8.0_graphql@16.3.0
+      graphql: 16.3.0
+      tslib: 2.4.0
       value-or-promise: 1.0.11
 
   /@graphql-tools/url-loader/7.9.13_graphql@16.3.0:
@@ -1594,12 +1594,12 @@ packages:
       extract-files: 11.0.0
       graphql: 16.3.0
       graphql-ws: 5.7.0_graphql@16.3.0
-      isomorphic-ws: 4.0.1_ws@8.5.0
+      isomorphic-ws: 4.0.1_ws@8.8.1
       meros: 1.2.0
       sync-fetch: 0.3.1
       tslib: 2.4.0
       value-or-promise: 1.0.11
-      ws: 8.5.0
+      ws: 8.8.1
     transitivePeerDependencies:
       - '@types/node'
       - bufferutil
@@ -1623,12 +1623,12 @@ packages:
       extract-files: 11.0.0
       graphql: 16.3.0
       graphql-ws: 5.7.0_graphql@16.3.0
-      isomorphic-ws: 4.0.1_ws@8.5.0
+      isomorphic-ws: 4.0.1_ws@8.8.1
       meros: 1.2.0_@types+node@16.11.45
       sync-fetch: 0.3.1
       tslib: 2.4.0
       value-or-promise: 1.0.11
-      ws: 8.5.0
+      ws: 8.8.1
     transitivePeerDependencies:
       - '@types/node'
       - bufferutil
@@ -1645,14 +1645,6 @@ packages:
       tslib: 2.4.0
     dev: true
 
-  /@graphql-tools/utils/8.6.2_graphql@16.3.0:
-    resolution: {integrity: sha512-x1DG0cJgpJtImUlNE780B/dfp8pxvVxOD6UeykFH5rHes26S4kGokbgU8F1IgrJ1vAPm/OVBHtd2kicTsPfwdA==}
-    peerDependencies:
-      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0
-    dependencies:
-      graphql: 16.3.0
-      tslib: 2.3.1
-
   /@graphql-tools/utils/8.6.8_graphql@16.3.0:
     resolution: {integrity: sha512-EdUUeKi/wp/UvuknyINpQ/uXDqTM3qxPPPDIq5RpfW0zQOeCvbZcx8xHoMox0TYKvKtg3zoB7aprUtoW+iZLxw==}
     peerDependencies:
@@ -1660,6 +1652,14 @@ packages:
     dependencies:
       graphql: 16.3.0
       tslib: 2.3.1
+
+  /@graphql-tools/utils/8.8.0_graphql@16.3.0:
+    resolution: {integrity: sha512-KJrtx05uSM/cPYFdTnGAS1doL5bftJLAiFCDMZ8Vkifztz3BFn3gpFiy/o4wDtM8s39G46mxmt2Km/RmeltfGw==}
+    peerDependencies:
+      graphql: ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
+    dependencies:
+      graphql: 16.3.0
+      tslib: 2.4.0
 
   /@graphql-tools/wrap/8.4.15_graphql@16.3.0:
     resolution: {integrity: sha512-O3a3IP2yDWqR+B+WtAodiLx166ylGWLuM86upQfZGyJgjhIGqVAEqKIZbE/FyvHUpSiuVpcKwDgwtfCV/s1qNQ==}
@@ -1691,8 +1691,8 @@ packages:
       '@envelop/disable-introspection': 3.3.1_qpg32e7u6gohh23iw2xph7t5ze
       '@envelop/parser-cache': 4.3.1_qpg32e7u6gohh23iw2xph7t5ze
       '@envelop/validation-cache': 4.3.1_qpg32e7u6gohh23iw2xph7t5ze
-      '@graphql-tools/schema': 8.3.9_graphql@16.3.0
-      '@graphql-tools/utils': 8.6.13_graphql@16.3.0
+      '@graphql-tools/schema': 8.5.0_graphql@16.3.0
+      '@graphql-tools/utils': 8.8.0_graphql@16.3.0
       '@graphql-typed-document-node/core': 3.1.1_graphql@16.3.0
       '@graphql-yoga/subscription': 2.0.0
       cross-undici-fetch: 0.2.5
@@ -1709,7 +1709,7 @@ packages:
       graphql: ^15.2.0 || ^16.0.0
     dependencies:
       '@envelop/core': 2.3.1_graphql@16.3.0
-      '@graphql-tools/utils': 8.6.13_graphql@16.3.0
+      '@graphql-tools/utils': 8.8.0_graphql@16.3.0
       '@graphql-yoga/common': 2.3.0_graphql@16.3.0
       '@graphql-yoga/subscription': 2.0.0
       cross-undici-fetch: 0.2.5
@@ -1776,7 +1776,7 @@ packages:
       graphql: 16.3.0
     dev: true
 
-  /@nestjs/apollo/10.0.8_buvu7frmuw3crwgxvpt6dpmfim:
+  /@nestjs/apollo/10.0.8_wprocwohd6wfld5uq527abgj54:
     resolution: {integrity: sha512-AlJn+UJpyXju1YUWEw4u+K24fulh66MZDHXH4Lk5ak5Nb3FFXUsODepcflMbcjkaIFLezt4DC3FlrZQ+wjFIBA==}
     peerDependencies:
       '@apollo/gateway': ^0.44.1 || ^0.46.0 || ^0.48.0
@@ -1798,7 +1798,7 @@ packages:
     dependencies:
       '@nestjs/common': 8.4.7_um5yyjpwkyxikchdommcqtg4bu
       '@nestjs/core': 8.4.7_fkqgj3xrohk2pflugljc4sz7ea
-      '@nestjs/graphql': 10.0.8_if5b2wvyquvucfc34dtrfhmlii
+      '@nestjs/graphql': 10.0.21_if5b2wvyquvucfc34dtrfhmlii
       apollo-server-core: 3.6.7_graphql@16.3.0
       apollo-server-express: 3.6.7_graphql@16.3.0
       iterall: 1.3.0
@@ -1916,27 +1916,27 @@ packages:
     transitivePeerDependencies:
       - encoding
 
-  /@nestjs/graphql/10.0.8_if5b2wvyquvucfc34dtrfhmlii:
-    resolution: {integrity: sha512-MM/hERFwfYg9OEbkfctVPzvsQJNlqsdnxuaLyR6XTggGTWi/RVpc6b63kHdhAOmgChAwMNhGjA3pTVM17MRJ6g==}
+  /@nestjs/graphql/10.0.21_if5b2wvyquvucfc34dtrfhmlii:
+    resolution: {integrity: sha512-wrc3KFT5Tj+HieAR8IOgvtaQRMHpjInuBaykq76Drn4do6qoGZ509DDw7LQ8U3E2VWXe8F4ItnyxskBphoqEgA==}
     peerDependencies:
-      '@apollo/subgraph': ^0.1.5 || ^0.3.0
-      '@nestjs/common': ^8.2.3
-      '@nestjs/core': ^8.2.3
+      '@apollo/subgraph': ^0.1.5 || ^0.3.0 || ^0.4.0 || ^2.0.0
+      '@nestjs/common': ^8.2.3 || ^9.0.0
+      '@nestjs/core': ^8.2.3 || ^9.0.0
       graphql: ^15.8.0 || ^16.0.0
       reflect-metadata: ^0.1.13
-      ts-morph: ^13.0.2
+      ts-morph: ^13.0.2 || ^14.0.0 || ^15.0.0
     peerDependenciesMeta:
       '@apollo/subgraph':
         optional: true
       ts-morph:
         optional: true
     dependencies:
-      '@graphql-tools/merge': 8.2.3_graphql@16.3.0
-      '@graphql-tools/schema': 8.3.2_graphql@16.3.0
-      '@graphql-tools/utils': 8.6.2_graphql@16.3.0
+      '@graphql-tools/merge': 8.3.0_graphql@16.3.0
+      '@graphql-tools/schema': 8.5.0_graphql@16.3.0
+      '@graphql-tools/utils': 8.8.0_graphql@16.3.0
       '@nestjs/common': 8.4.7_um5yyjpwkyxikchdommcqtg4bu
       '@nestjs/core': 8.4.7_fkqgj3xrohk2pflugljc4sz7ea
-      '@nestjs/mapped-types': 1.0.1_khkblo3wjofc6l2gzdnbcppjlm
+      '@nestjs/mapped-types': 1.1.0_khkblo3wjofc6l2gzdnbcppjlm
       chokidar: 3.5.3
       fast-glob: 3.2.11
       graphql: 16.3.0
@@ -1946,32 +1946,14 @@ packages:
       normalize-path: 3.0.0
       reflect-metadata: 0.1.13
       subscriptions-transport-ws: 0.11.0_graphql@16.3.0
-      tslib: 2.3.1
+      tslib: 2.4.0
       uuid: 8.3.2
-      ws: 8.5.0
+      ws: 8.8.1
     transitivePeerDependencies:
       - bufferutil
       - class-transformer
       - class-validator
       - utf-8-validate
-
-  /@nestjs/mapped-types/1.0.1_khkblo3wjofc6l2gzdnbcppjlm:
-    resolution: {integrity: sha512-NFvofzSinp00j5rzUd4tf+xi9od6383iY0JP7o0Bnu1fuItAUkWBgc4EKuIQ3D+c2QI3i9pG1kDWAeY27EMGtg==}
-    peerDependencies:
-      '@nestjs/common': ^7.0.8 || ^8.0.0
-      class-transformer: ^0.2.0 || ^0.3.0 || ^0.4.0 || ^0.5.0
-      class-validator: ^0.11.1 || ^0.12.0 || ^0.13.0
-      reflect-metadata: ^0.1.12
-    peerDependenciesMeta:
-      class-transformer:
-        optional: true
-      class-validator:
-        optional: true
-    dependencies:
-      '@nestjs/common': 8.4.7_um5yyjpwkyxikchdommcqtg4bu
-      class-transformer: 0.4.0
-      class-validator: 0.13.2
-      reflect-metadata: 0.1.13
 
   /@nestjs/mapped-types/1.0.1_zaznoamb2kb53prlc5lgv3tm7q:
     resolution: {integrity: sha512-NFvofzSinp00j5rzUd4tf+xi9od6383iY0JP7o0Bnu1fuItAUkWBgc4EKuIQ3D+c2QI3i9pG1kDWAeY27EMGtg==}
@@ -1991,6 +1973,24 @@ packages:
       class-validator: 0.13.1
       reflect-metadata: 0.1.13
     dev: false
+
+  /@nestjs/mapped-types/1.1.0_khkblo3wjofc6l2gzdnbcppjlm:
+    resolution: {integrity: sha512-+2kSly4P1QI+9eGt+/uGyPdEG1hVz7nbpqPHWZVYgoqz8eOHljpXPag+UCVRw9zo2XCu4sgNUIGe8Uk0+OvUQg==}
+    peerDependencies:
+      '@nestjs/common': ^7.0.8 || ^8.0.0 || ^9.0.0
+      class-transformer: ^0.2.0 || ^0.3.0 || ^0.4.0 || ^0.5.0
+      class-validator: ^0.11.1 || ^0.12.0 || ^0.13.0
+      reflect-metadata: ^0.1.12
+    peerDependenciesMeta:
+      class-transformer:
+        optional: true
+      class-validator:
+        optional: true
+    dependencies:
+      '@nestjs/common': 8.4.7_um5yyjpwkyxikchdommcqtg4bu
+      class-transformer: 0.4.0
+      class-validator: 0.13.2
+      reflect-metadata: 0.1.13
 
   /@nestjs/platform-express/8.4.7_7tsmhnugyerf5okgqzer2mfqme:
     resolution: {integrity: sha512-lPE5Ltg2NbQGRQIwXWY+4cNrXhJdycbxFDQ8mNxSIuv+LbrJBIdEB/NONk+LLn9N/8d2+I2LsIETGQrPvsejBg==}
@@ -3567,7 +3567,7 @@ packages:
     dev: true
 
   /backo2/1.0.2:
-    resolution: {integrity: sha1-MasayLEpNjRj41s+u2n038+6eUc=}
+    resolution: {integrity: sha512-zj6Z6M7Eq+PBZ7PQxl5NT665MvJdAkzp0f60nAJ+sLaSCBPMwVak5ZegFbgVCzFcCJTKFoMizvM5Ld7+JrRJHA==}
 
   /balanced-match/1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
@@ -5510,7 +5510,7 @@ packages:
     dev: true
 
   /fill-range/4.0.0:
-    resolution: {integrity: sha1-1USBHUKPmOsGpj3EAtJAPDKMOPc=}
+    resolution: {integrity: sha512-VcpLTWqWDiTerugjj8e3+esbg+skS3M9e54UuR3iCeIDMXCLTsAH8hTSzDQU/X6/6t3eYkOKoZSef2PlU6U1XQ==}
     engines: {node: '>=0.10.0'}
     dependencies:
       extend-shallow: 2.0.1
@@ -6621,7 +6621,7 @@ packages:
     dev: true
 
   /is-binary-path/1.0.1:
-    resolution: {integrity: sha1-dfFmQrSA8YenEcgUFh/TpKdlWJg=}
+    resolution: {integrity: sha512-9fRVlXc0uCxEDj1nQzaWONSpbTfx0FmJfzHF7pwlI8DkWGoHBBea4Pg5Ky0ojwwxQmnSifgbKkI06Qv0Ljgj+Q==}
     engines: {node: '>=0.10.0'}
     dependencies:
       binary-extensions: 1.13.1
@@ -6769,7 +6769,7 @@ packages:
     dev: true
 
   /is-number/3.0.0:
-    resolution: {integrity: sha1-JP1iAaR4LPUFYcgQJ2r8fRLXEZU=}
+    resolution: {integrity: sha512-4cboCqIpliH+mAvFNegjZQ4kgKc3ZUhQVr3HvWbSh5q3WH2v82ct+T2Y1hdU5Gdtorx/cLifQjqCbL7bpznLTg==}
     engines: {node: '>=0.10.0'}
     dependencies:
       kind-of: 3.2.2
@@ -6947,12 +6947,12 @@ packages:
       - encoding
     dev: true
 
-  /isomorphic-ws/4.0.1_ws@8.5.0:
+  /isomorphic-ws/4.0.1_ws@8.8.1:
     resolution: {integrity: sha512-BhBvN2MBpWTaSHdWRb/bwdZJ1WaehQ2L1KngkCkfLUGF0mAWAT1sQUQacEmQ0jXkFw/czDXPNQSL5u2/Krsz1w==}
     peerDependencies:
       ws: '*'
     dependencies:
-      ws: 8.5.0
+      ws: 8.8.1
     dev: true
 
   /istanbul-lib-coverage/3.2.0:
@@ -8612,11 +8612,11 @@ packages:
       dependency-graph: 0.11.0
     dev: true
 
-  /prisma-nestjs-graphql/15.2.1_buvu7frmuw3crwgxvpt6dpmfim:
+  /prisma-nestjs-graphql/15.2.1_wprocwohd6wfld5uq527abgj54:
     resolution: {integrity: sha512-UdkoQrLI1VtfxYc6MkAou4APqz7ZTc1E5qjRZynXxVb4JBMI9cIbxP9phZevIbFZ/qUQ8CR+uaP40usLNRNjBA==}
     hasBin: true
     dependencies:
-      '@nestjs/apollo': 10.0.8_buvu7frmuw3crwgxvpt6dpmfim
+      '@nestjs/apollo': 10.0.8_wprocwohd6wfld5uq527abgj54
       '@prisma/generator-helper': 3.12.0
       await-event-emitter: 2.0.2
       filenamify: 4.3.0
@@ -10010,7 +10010,7 @@ packages:
     dev: true
 
   /to-regex-range/2.1.1:
-    resolution: {integrity: sha1-fIDBe53+vlmeJzZ+DU3VWQFB2zg=}
+    resolution: {integrity: sha512-ZZWNfCjUokXXDGXFpZehJIkZqq91BcULFq/Pi7M5i4JnxXdhMKAK682z8bCW3o8Hj1wuuzoKcW3DfVzaP6VuNg==}
     engines: {node: '>=0.10.0'}
     dependencies:
       is-number: 3.0.0
@@ -10773,6 +10773,19 @@ packages:
 
   /ws/8.5.0:
     resolution: {integrity: sha512-BWX0SWVgLPzYwF8lTzEy1egjhS4S4OEAHfsO8o65WOVsrnSRGaSiUaa9e0ggGlkMTtBlmOpEXiie9RUcBO86qg==}
+    engines: {node: '>=10.0.0'}
+    peerDependencies:
+      bufferutil: ^4.0.1
+      utf-8-validate: ^5.0.2
+    peerDependenciesMeta:
+      bufferutil:
+        optional: true
+      utf-8-validate:
+        optional: true
+    dev: false
+
+  /ws/8.8.1:
+    resolution: {integrity: sha512-bGy2JzvzkPowEJV++hF07hAD6niYSr0JzBNo/J29WsB57A2r7Wlc1UFcTR9IzrPvuNVO4B8LGqF8qcpsVOhJCA==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
