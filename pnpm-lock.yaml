@@ -75,7 +75,7 @@ importers:
       del: 6.0.0
       discord-music-player: github:V-ed/discord-music-player
       discord.js: 13.6.0
-      dotenv: 16.0.0
+      dotenv: 16.0.1
       dotenv-expand: 8.0.3
       ffmpeg: 0.0.4
       ffmpeg-static: 4.4.1
@@ -124,7 +124,7 @@ importers:
       deepmerge: 4.2.2
       discord-music-player: github.com/V-ed/discord-music-player/758da562243ce79571d9c8dacd48514b627a5857_ytdl-core@4.11.0
       discord.js: 13.6.0
-      dotenv: 16.0.0
+      dotenv: 16.0.1
       dotenv-expand: 8.0.3
       ffmpeg: 0.0.4
       ffmpeg-static: 4.4.1
@@ -4653,6 +4653,12 @@ packages:
   /dotenv/16.0.0:
     resolution: {integrity: sha512-qD9WU0MPM4SWLPJy/r2Be+2WgQj8plChsyrCNQzW/0WjvcJQiKQJ9mH3ZgB3fxbUUxgc/11ZJ0Fi5KiimWGz2Q==}
     engines: {node: '>=12'}
+    dev: true
+
+  /dotenv/16.0.1:
+    resolution: {integrity: sha512-1K6hR6wtk2FviQ4kEiSjFiH5rpzEVi8WW0x96aztHVMhEspNpc4DVOUTEHtEva5VThQ8IaBX1Pe4gSzpVVUsKQ==}
+    engines: {node: '>=12'}
+    dev: false
 
   /dset/3.1.1:
     resolution: {integrity: sha512-hYf+jZNNqJBD2GiMYb+5mqOIX4R4RRHXU3qWMWYN+rqcR2/YpRL2bUHr8C8fU+5DNvqYjJ8YvMGSLuVPWU1cNg==}
