@@ -13,11 +13,19 @@
   },
   "prettier": "@v-ed/prettier-config",
   "eslintConfig": {
-    "extends": ["@v-ed/eslint-config"]
+    "extends": [
+      "@v-ed/eslint-config"
+    ]
   },
   "stylelint": {
-    "extends": ["@v-ed/stylelint-config"],
-    "ignoreFiles": ["./**/node_modules/**/*", "./**/dist/**/*", "./**/public/theme/**/*"]
+    "extends": [
+      "@v-ed/stylelint-config"
+    ],
+    "ignoreFiles": [
+      "./**/node_modules/**/*",
+      "./**/dist/**/*",
+      "./**/public/theme/**/*"
+    ]
   },
   "devDependencies": {
     "@graphql-codegen/cli": "2.6.4",
@@ -32,6 +40,7 @@
     "eslint-config-prettier": "8.5.0",
     "eslint-plugin-prettier": "4.0.0",
     "graphql": "^16.0.0",
+    "graphql-config": "4.3.3",
     "npm-run-all": "4.1.5",
     "prettier": "2.6.2",
     "stylelint": "14.6.1",
