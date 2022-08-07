@@ -9,16 +9,15 @@ datasource db {
 generator client {
   provider = "prisma-client-js"
   output   = "_generated/.prisma/client"
-  // previewFeatures = []
 }
 
 generator nestgraphql {
   provider = "node prisma/generators/prisma-nestjs-graphql.js"
   output   = "../src/_generated/prisma-nestjs-graphql"
-  reExport = Directories
+  reExport = "Directories"
 
   fields_Validator_from  = "class-validator"
-  fields_Validator_input = true
+  fields_Validator_input = "true"
 }
 
 model Guild {
@@ -38,7 +37,7 @@ model Guild {
 model BlacklistedChannel {
   id        Int    @id @default(autoincrement())
   channelId String @unique
-  guild     Guild  @relation(fields: [guildId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  guild     Guild  @relation(fields: [guildId], references: [id], onDelete: Cascade)
 
   guildId Int
 
@@ -51,7 +50,7 @@ model BlacklistedChannel {
 model MusicBlacklistedChannel {
   id        Int    @id @default(autoincrement())
   channelId String @unique
-  guild     Guild  @relation(fields: [guildId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  guild     Guild  @relation(fields: [guildId], references: [id], onDelete: Cascade)
 
   guildId Int
 
@@ -64,7 +63,7 @@ model MusicBlacklistedChannel {
 model MusicSetting {
   id               Int     @id @default(autoincrement())
   volume           Int     @default(50)
-  guild            Guild   @relation(fields: [guildId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  guild            Guild   @relation(fields: [guildId], references: [id], onDelete: Cascade)
   historyChannelId String?
   historyMessageId String?
 
@@ -80,7 +79,7 @@ model MomsLog {
   id            Int     @id @default(autoincrement())
   userIdDiscord String
   didStartTheme Boolean
-  guild         Guild   @relation(fields: [guildId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  guild         Guild   @relation(fields: [guildId], references: [id], onDelete: Cascade)
 
   guildId Int
 
@@ -95,7 +94,7 @@ model MusicLog {
   author    String
   url       String
   requester String?
-  guild     Guild   @relation(fields: [guildId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  guild     Guild   @relation(fields: [guildId], references: [id], onDelete: Cascade)
 
   guildId Int
 
