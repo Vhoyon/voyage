@@ -68,7 +68,7 @@ importers:
       '@types/gulp-rename': 2.0.1
       '@types/supertest': 2.0.12
       '@v-ed/tsconfig': 0.2.0
-      apollo-server-core: 3.10.0
+      apollo-server-core: 3.10.1
       apollo-server-express: 3.10.0
       c8: 7.12.0
       class-transformer: 0.4.0
@@ -111,7 +111,7 @@ importers:
       '@discordjs/builders': 0.12.0
       '@discordjs/opus': 0.8.0
       '@discordjs/voice': 0.8.0_kj4b63tl655kaqafvjfrgtykda
-      '@nestjs/apollo': 10.0.19_5s52io556loxdhbdx6h7nx4uoq
+      '@nestjs/apollo': 10.0.19_kp6wnrf5n3hyjd6vlpwuwxnhza
       '@nestjs/common': 9.0.8_gdya5xlnz6pxq4lfne2thg4tiy
       '@nestjs/core': 9.0.8_ynoyn6d36ot4yn5mj6f7nnecsq
       '@nestjs/graphql': 10.0.21_lyalpolxdettmw2p3flkjbahtu
@@ -119,7 +119,7 @@ importers:
       '@paljs/plugins': 4.1.0_graphql@16.3.0
       '@prisma/client': 4.1.1_prisma@4.1.1
       '@prisma/internals': 4.1.1
-      apollo-server-core: 3.10.0_graphql@16.3.0
+      apollo-server-core: 3.10.1_graphql@16.3.0
       apollo-server-express: 3.10.0_graphql@16.3.0
       class-transformer: 0.4.0
       class-validator: 0.13.2
@@ -1790,7 +1790,7 @@ packages:
       graphql: 16.3.0
     dev: true
 
-  /@nestjs/apollo/10.0.19_5s52io556loxdhbdx6h7nx4uoq:
+  /@nestjs/apollo/10.0.19_kp6wnrf5n3hyjd6vlpwuwxnhza:
     resolution: {integrity: sha512-uj10uZOQYBeUMYnKma0gpBSFDubZnXp4mqIRMJFNTF/0lEywFUEmdIc4IiRFSN3C4SY4EDIbUyDAMDRE3Ablew==}
     peerDependencies:
       '@apollo/gateway': ^0.44.1 || ^0.46.0 || ^0.48.0 || ^0.49.0 || ^0.50.0 || ^2.0.0
@@ -1814,7 +1814,7 @@ packages:
       '@nestjs/common': 9.0.8_gdya5xlnz6pxq4lfne2thg4tiy
       '@nestjs/core': 9.0.8_ynoyn6d36ot4yn5mj6f7nnecsq
       '@nestjs/graphql': 10.0.21_lyalpolxdettmw2p3flkjbahtu
-      apollo-server-core: 3.10.0_graphql@16.3.0
+      apollo-server-core: 3.10.1_graphql@16.3.0
       apollo-server-express: 3.10.0_graphql@16.3.0
       graphql: 16.3.0
       iterall: 1.3.0
@@ -3393,8 +3393,8 @@ packages:
       '@apollo/protobufjs': 1.2.4
     dev: false
 
-  /apollo-server-core/3.10.0_graphql@16.3.0:
-    resolution: {integrity: sha512-ln5drIk3oW/ycYhcYL9TvM7vRf7OZwJrgHWlnjnMakozBQIBSumdMi4pN001DhU9mVBWTfnmBv3CdcxJdGXIvA==}
+  /apollo-server-core/3.10.1_graphql@16.3.0:
+    resolution: {integrity: sha512-UFFziv6h15QbKRZOA6wLyr1Sle9kns3JuQ5DEB7OYe5AIoOJNjZkWXX/tmLFUrSmlnDDryi6Sf5pDzpYmUC/UA==}
     engines: {node: '>=12.0'}
     peerDependencies:
       graphql: ^15.3.0 || ^16.0.0
@@ -3457,7 +3457,7 @@ packages:
       '@types/express': 4.17.13
       '@types/express-serve-static-core': 4.17.29
       accepts: 1.3.8
-      apollo-server-core: 3.10.0_graphql@16.3.0
+      apollo-server-core: 3.10.1_graphql@16.3.0
       apollo-server-types: 3.6.2_graphql@16.3.0
       body-parser: 1.20.0
       cors: 2.8.5
@@ -4640,7 +4640,7 @@ packages:
     dev: true
 
   /cssfilter/0.0.10:
-    resolution: {integrity: sha1-xtJnJjKi5cg+AT5oZKQs6N79IK4=}
+    resolution: {integrity: sha512-FAaLDaplstoRsDR8XGYH51znUN0UY7nMc6Z9/fvE8EXGwvJE9hu7W2vHwx1+bd6gCYnln9nLbzxFTrcO9YQDZw==}
     dev: false
 
   /d/1.0.1:
