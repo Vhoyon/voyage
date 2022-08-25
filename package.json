@@ -13,11 +13,19 @@
   ],
   "prettier": "@v-ed/prettier-config",
   "eslintConfig": {
-    "extends": ["@v-ed/eslint-config"]
+    "extends": [
+      "@v-ed/eslint-config"
+    ]
   },
   "stylelint": {
-    "extends": ["@v-ed/stylelint-config"],
-    "ignoreFiles": ["./**/node_modules/**/*", "./**/dist/**/*", "./**/public/theme/**/*"]
+    "extends": [
+      "@v-ed/stylelint-config"
+    ],
+    "ignoreFiles": [
+      "./**/node_modules/**/*",
+      "./**/dist/**/*",
+      "./**/public/theme/**/*"
+    ]
   },
   "devDependencies": {
     "@types/node": "16.11.26",
@@ -27,6 +35,7 @@
     "eslint": "8.8.0",
     "npm-run-all": "4.1.5",
     "stylelint": "14.5.0",
-    "tslib": "2.3.1"
+    "tslib": "2.3.1",
+    "ytdl-core": "4.10.0"
   }
 }
