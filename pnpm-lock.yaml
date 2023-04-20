@@ -84,13 +84,13 @@ importers:
         version: 10.0.19(@nestjs/common@9.0.8)(@nestjs/core@9.0.8)(@nestjs/graphql@10.0.21)(apollo-server-core@3.11.0)(apollo-server-express@3.10.0)(graphql@16.3.0)
       '@nestjs/common':
         specifier: 9.0.8
-        version: 9.0.8(class-transformer@0.4.0)(class-validator@0.13.2)(reflect-metadata@0.1.13)(rxjs@7.5.4)
+        version: 9.0.8(class-transformer@0.4.0)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.5.4)
       '@nestjs/core':
         specifier: 9.0.8
         version: 9.0.8(@nestjs/common@9.0.8)(@nestjs/platform-express@9.0.8)(reflect-metadata@0.1.13)(rxjs@7.5.4)
       '@nestjs/graphql':
         specifier: 10.0.21
-        version: 10.0.21(@nestjs/common@9.0.8)(@nestjs/core@9.0.8)(class-transformer@0.4.0)(class-validator@0.13.2)(graphql@16.3.0)(reflect-metadata@0.1.13)
+        version: 10.0.21(@nestjs/common@9.0.8)(@nestjs/core@9.0.8)(class-transformer@0.4.0)(class-validator@0.14.0)(graphql@16.3.0)(reflect-metadata@0.1.13)
       '@nestjs/platform-express':
         specifier: 9.0.8
         version: 9.0.8(@nestjs/common@9.0.8)(@nestjs/core@9.0.8)
@@ -113,14 +113,14 @@ importers:
         specifier: 0.4.0
         version: 0.4.0
       class-validator:
-        specifier: 0.13.2
-        version: 0.13.2
+        specifier: 0.14.0
+        version: 0.14.0
       deepmerge:
         specifier: 4.2.2
         version: 4.2.2
       discord-music-player:
         specifier: github:V-ed/discord-music-player
-        version: github.com/V-ed/discord-music-player/98fa3e6a2f76e81031252838200e1452ac4f4310(ytdl-core@4.11.4)
+        version: github.com/V-ed/discord-music-player/8ca0ae623496d2e27cacd006f79a974c3956cdb4(ytdl-core@4.11.4)
       discord.js:
         specifier: 13.6.0
         version: 13.6.0
@@ -1073,7 +1073,7 @@ packages:
       rxjs: ^7.*
     dependencies:
       '@discord-nestjs/core': 3.0.7(@nestjs/common@9.0.8)(@nestjs/core@9.0.8)(discord.js@13.6.0)(reflect-metadata@0.1.13)(rxjs@7.5.4)
-      '@nestjs/common': 9.0.8(class-transformer@0.4.0)(class-validator@0.13.2)(reflect-metadata@0.1.13)(rxjs@7.5.4)
+      '@nestjs/common': 9.0.8(class-transformer@0.4.0)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.5.4)
       '@nestjs/core': 9.0.8(@nestjs/common@9.0.8)(@nestjs/platform-express@9.0.8)(reflect-metadata@0.1.13)(rxjs@7.5.4)
       '@nestjs/mapped-types': 1.0.1(@nestjs/common@9.0.8)(class-transformer@0.5.1)(class-validator@0.13.1)(reflect-metadata@0.1.13)
       class-transformer: 0.5.1
@@ -1092,7 +1092,7 @@ packages:
       reflect-metadata: ^0.1.13
       rxjs: ^7.*
     dependencies:
-      '@nestjs/common': 9.0.8(class-transformer@0.4.0)(class-validator@0.13.2)(reflect-metadata@0.1.13)(rxjs@7.5.4)
+      '@nestjs/common': 9.0.8(class-transformer@0.4.0)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.5.4)
       '@nestjs/core': 9.0.8(@nestjs/common@9.0.8)(@nestjs/platform-express@9.0.8)(reflect-metadata@0.1.13)(rxjs@7.5.4)
       class-transformer: 0.5.1
       discord.js: 13.6.0
@@ -2210,9 +2210,9 @@ packages:
       apollo-server-fastify:
         optional: true
     dependencies:
-      '@nestjs/common': 9.0.8(class-transformer@0.4.0)(class-validator@0.13.2)(reflect-metadata@0.1.13)(rxjs@7.5.4)
+      '@nestjs/common': 9.0.8(class-transformer@0.4.0)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.5.4)
       '@nestjs/core': 9.0.8(@nestjs/common@9.0.8)(@nestjs/platform-express@9.0.8)(reflect-metadata@0.1.13)(rxjs@7.5.4)
-      '@nestjs/graphql': 10.0.21(@nestjs/common@9.0.8)(@nestjs/core@9.0.8)(class-transformer@0.4.0)(class-validator@0.13.2)(graphql@16.3.0)(reflect-metadata@0.1.13)
+      '@nestjs/graphql': 10.0.21(@nestjs/common@9.0.8)(@nestjs/core@9.0.8)(class-transformer@0.4.0)(class-validator@0.14.0)(graphql@16.3.0)(reflect-metadata@0.1.13)
       apollo-server-core: 3.11.0(graphql@16.3.0)
       apollo-server-express: 3.10.0(express@4.18.2)(graphql@16.3.0)
       graphql: 16.3.0
@@ -2229,7 +2229,7 @@ packages:
       reflect-metadata: ^0.1.12
       rxjs: ^6.0.0 || ^7.0.0
     dependencies:
-      '@nestjs/common': 9.0.8(class-transformer@0.4.0)(class-validator@0.13.2)(reflect-metadata@0.1.13)(rxjs@7.5.4)
+      '@nestjs/common': 9.0.8(class-transformer@0.4.0)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.5.4)
       axios: 1.2.1(debug@4.3.3)
       reflect-metadata: 0.1.13
       rxjs: 7.5.4
@@ -2273,7 +2273,7 @@ packages:
       - webpack-cli
     dev: true
 
-  /@nestjs/common@9.0.8(class-transformer@0.4.0)(class-validator@0.13.2)(reflect-metadata@0.1.13)(rxjs@7.5.4):
+  /@nestjs/common@9.0.8(class-transformer@0.4.0)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.5.4):
     resolution: {integrity: sha512-x6+qGRnTEZmg0jzqPUW8uPCK6qPjc7JGmeHszZOso1YCCKNiqaCM4NY6ndbl2Of3kWSpq3qE4thCmuZ/4DwBQA==}
     peerDependencies:
       cache-manager: '*'
@@ -2290,7 +2290,7 @@ packages:
         optional: true
     dependencies:
       class-transformer: 0.4.0
-      class-validator: 0.13.2
+      class-validator: 0.14.0
       iterare: 1.2.1
       reflect-metadata: 0.1.13
       rxjs: 7.5.4
@@ -2315,7 +2315,7 @@ packages:
       '@nestjs/websockets':
         optional: true
     dependencies:
-      '@nestjs/common': 9.0.8(class-transformer@0.4.0)(class-validator@0.13.2)(reflect-metadata@0.1.13)(rxjs@7.5.4)
+      '@nestjs/common': 9.0.8(class-transformer@0.4.0)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.5.4)
       '@nestjs/platform-express': 9.0.8(@nestjs/common@9.0.8)(@nestjs/core@9.0.8)
       '@nuxtjs/opencollective': 0.3.2
       fast-safe-stringify: 2.1.1
@@ -2329,7 +2329,7 @@ packages:
     transitivePeerDependencies:
       - encoding
 
-  /@nestjs/graphql@10.0.21(@nestjs/common@9.0.8)(@nestjs/core@9.0.8)(class-transformer@0.4.0)(class-validator@0.13.2)(graphql@16.3.0)(reflect-metadata@0.1.13):
+  /@nestjs/graphql@10.0.21(@nestjs/common@9.0.8)(@nestjs/core@9.0.8)(class-transformer@0.4.0)(class-validator@0.14.0)(graphql@16.3.0)(reflect-metadata@0.1.13):
     resolution: {integrity: sha512-wrc3KFT5Tj+HieAR8IOgvtaQRMHpjInuBaykq76Drn4do6qoGZ509DDw7LQ8U3E2VWXe8F4ItnyxskBphoqEgA==}
     peerDependencies:
       '@apollo/subgraph': ^0.1.5 || ^0.3.0 || ^0.4.0 || ^2.0.0
@@ -2347,9 +2347,9 @@ packages:
       '@graphql-tools/merge': 8.3.0(graphql@16.3.0)
       '@graphql-tools/schema': 8.5.0(graphql@16.3.0)
       '@graphql-tools/utils': 8.8.0(graphql@16.3.0)
-      '@nestjs/common': 9.0.8(class-transformer@0.4.0)(class-validator@0.13.2)(reflect-metadata@0.1.13)(rxjs@7.5.4)
+      '@nestjs/common': 9.0.8(class-transformer@0.4.0)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.5.4)
       '@nestjs/core': 9.0.8(@nestjs/common@9.0.8)(@nestjs/platform-express@9.0.8)(reflect-metadata@0.1.13)(rxjs@7.5.4)
-      '@nestjs/mapped-types': 1.1.0(@nestjs/common@9.0.8)(class-transformer@0.4.0)(class-validator@0.13.2)(reflect-metadata@0.1.13)
+      '@nestjs/mapped-types': 1.1.0(@nestjs/common@9.0.8)(class-transformer@0.4.0)(class-validator@0.14.0)(reflect-metadata@0.1.13)
       chokidar: 3.5.3
       fast-glob: 3.2.11
       graphql: 16.3.0
@@ -2382,13 +2382,13 @@ packages:
       class-validator:
         optional: true
     dependencies:
-      '@nestjs/common': 9.0.8(class-transformer@0.4.0)(class-validator@0.13.2)(reflect-metadata@0.1.13)(rxjs@7.5.4)
+      '@nestjs/common': 9.0.8(class-transformer@0.4.0)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.5.4)
       class-transformer: 0.5.1
       class-validator: 0.13.1
       reflect-metadata: 0.1.13
     dev: false
 
-  /@nestjs/mapped-types@1.1.0(@nestjs/common@9.0.8)(class-transformer@0.4.0)(class-validator@0.13.2)(reflect-metadata@0.1.13):
+  /@nestjs/mapped-types@1.1.0(@nestjs/common@9.0.8)(class-transformer@0.4.0)(class-validator@0.14.0)(reflect-metadata@0.1.13):
     resolution: {integrity: sha512-+2kSly4P1QI+9eGt+/uGyPdEG1hVz7nbpqPHWZVYgoqz8eOHljpXPag+UCVRw9zo2XCu4sgNUIGe8Uk0+OvUQg==}
     peerDependencies:
       '@nestjs/common': ^7.0.8 || ^8.0.0 || ^9.0.0
@@ -2401,9 +2401,9 @@ packages:
       class-validator:
         optional: true
     dependencies:
-      '@nestjs/common': 9.0.8(class-transformer@0.4.0)(class-validator@0.13.2)(reflect-metadata@0.1.13)(rxjs@7.5.4)
+      '@nestjs/common': 9.0.8(class-transformer@0.4.0)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.5.4)
       class-transformer: 0.4.0
-      class-validator: 0.13.2
+      class-validator: 0.14.0
       reflect-metadata: 0.1.13
     dev: false
 
@@ -2413,7 +2413,7 @@ packages:
       '@nestjs/common': ^9.0.0
       '@nestjs/core': ^9.0.0
     dependencies:
-      '@nestjs/common': 9.0.8(class-transformer@0.4.0)(class-validator@0.13.2)(reflect-metadata@0.1.13)(rxjs@7.5.4)
+      '@nestjs/common': 9.0.8(class-transformer@0.4.0)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.5.4)
       '@nestjs/core': 9.0.8(@nestjs/common@9.0.8)(@nestjs/platform-express@9.0.8)(reflect-metadata@0.1.13)(rxjs@7.5.4)
       body-parser: 1.20.0
       cors: 2.8.5
@@ -2451,7 +2451,7 @@ packages:
       '@nestjs/platform-express':
         optional: true
     dependencies:
-      '@nestjs/common': 9.0.8(class-transformer@0.4.0)(class-validator@0.13.2)(reflect-metadata@0.1.13)(rxjs@7.5.4)
+      '@nestjs/common': 9.0.8(class-transformer@0.4.0)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.5.4)
       '@nestjs/core': 9.0.8(@nestjs/common@9.0.8)(@nestjs/platform-express@9.0.8)(reflect-metadata@0.1.13)(rxjs@7.5.4)
       '@nestjs/platform-express': 9.0.8(@nestjs/common@9.0.8)(@nestjs/core@9.0.8)
       tslib: 2.4.0
@@ -3212,7 +3212,6 @@ packages:
 
   /@types/validator@13.7.15:
     resolution: {integrity: sha512-yeinDVQunb03AEP8luErFcyf/7Lf7AzKCD0NXfgVoGCCQDNpZET8Jgq74oBgqKld3hafLbfzt/3inUdQvaFeXQ==}
-    dev: false
 
   /@types/vinyl-fs@3.0.1:
     resolution: {integrity: sha512-me2Gcxw23pZp62oqPoiTDDMz/txEmtEZzXM/D/VTr+xUX4LiNA+nQPs38SSPu5KHnsaEER4HEtzWU5qJRXigfA==}
@@ -4186,6 +4185,10 @@ packages:
     dev: false
     optional: true
 
+  /b4a@1.6.3:
+    resolution: {integrity: sha512-aX6/FqpWQve8VN9kyTExy7GlmwNShvxcCWWD5QVR3ZbRlyBGtCrG5Autu95xxSPH4CRs+5PSV4d7PRnWpmqFlA==}
+    dev: false
+
   /babel-plugin-dynamic-import-node@2.3.3:
     resolution: {integrity: sha512-jZVI+s9Zg3IqA/kdi0i6UDCybUI3aSBLnglhYbSSjKlV7yF1F/5LWv8MakQmvYpnbJDS6fcBL2KzHSxNCMtWSQ==}
     dependencies:
@@ -4792,6 +4795,14 @@ packages:
   /class-validator@0.13.2:
     resolution: {integrity: sha512-yBUcQy07FPlGzUjoLuUfIOXzgynnQPPruyK1Ge2B74k9ROwnle1E+NxLWnUv5OLU8hA/qL5leAE9XnXq3byaBw==}
     dependencies:
+      libphonenumber-js: 1.10.28
+      validator: 13.9.0
+    dev: false
+
+  /class-validator@0.14.0:
+    resolution: {integrity: sha512-ct3ltplN8I9fOwUd8GrP8UQixwff129BkEtuWDKL5W45cQuLd19xqmTLu5ge78YDm/fdje6FMt0hGOhl0lii3A==}
+    dependencies:
+      '@types/validator': 13.7.15
       libphonenumber-js: 1.10.28
       validator: 13.9.0
 
@@ -6699,6 +6710,18 @@ packages:
       wide-align: 1.1.5
     dev: false
 
+  /generate-function@2.3.1:
+    resolution: {integrity: sha512-eeB5GfMNeevm/GRYq20ShmsaGcmI81kIX2K9XQx5miC8KdHaC6Jm0qQ8ZNeGOi7wYB8OsdxKs+Y2oVuTFuVwKQ==}
+    dependencies:
+      is-property: 1.0.2
+    dev: false
+
+  /generate-object-property@1.2.0:
+    resolution: {integrity: sha512-TuOwZWgJ2VAMEGJvAyPWvpqxSANF0LDpmyHauMjFYzaACvn+QTT/AZomvPCzVBV7yDN3OmwHQ5OvHaeLKre3JQ==}
+    dependencies:
+      is-property: 1.0.2
+    dev: false
+
   /gensync@1.0.0-beta.2:
     resolution: {integrity: sha512-3hN7NaskYvMDLQY55gnW3NQ+mesEAepTqlg+VEbj7zzqEMBVNhzcGYYeqFo/TlYz6eQiFcp1HcsCZO+nGgS8zg==}
     engines: {node: '>=6.9.0'}
@@ -7788,6 +7811,10 @@ packages:
   /is-promise@4.0.0:
     resolution: {integrity: sha512-hvpoI6korhJMnej285dSg6nu1+e6uxs7zG3BYAm5byqDsgJNWwxzM6z6iZiAgQR4TJ30JmBTOwqZUw3WlyH3AQ==}
     dev: true
+
+  /is-property@1.0.2:
+    resolution: {integrity: sha512-Ks/IoX00TtClbGQr4TWXemAnktAQvYB7HzcCxDGqEZU6oCmb2INHuOoKxbtR+HFkmYWBKv/dOZtGRiAjDhj92g==}
+    dev: false
 
   /is-regex@1.1.4:
     resolution: {integrity: sha512-kvRdxDsxZjhzUX07ZnLydzS1TU/TJlTUHHY4YLL87e37oUA49DfkLqgy+VjFocowy29cKvcSiu+kIv728jTTVg==}
@@ -8879,7 +8906,7 @@ packages:
       reflect-metadata: ^0.1.12
       rxjs: '>= 6.0.0 < 8'
     dependencies:
-      '@nestjs/common': 9.0.8(class-transformer@0.4.0)(class-validator@0.13.2)(reflect-metadata@0.1.13)(rxjs@7.5.4)
+      '@nestjs/common': 9.0.8(class-transformer@0.4.0)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.5.4)
       chalk: 4.1.2
       class-transformer: 0.4.0
       class-validator: 0.13.2
@@ -8909,7 +8936,7 @@ packages:
       reflect-metadata: ^0.1.13
       rxjs: ^7.5.2
     dependencies:
-      '@nestjs/common': 9.0.8(class-transformer@0.4.0)(class-validator@0.13.2)(reflect-metadata@0.1.13)(rxjs@7.5.4)
+      '@nestjs/common': 9.0.8(class-transformer@0.4.0)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.5.4)
       '@nestjs/core': 9.0.8(@nestjs/common@9.0.8)(@nestjs/platform-express@9.0.8)(reflect-metadata@0.1.13)(rxjs@7.5.4)
       glob: 7.2.0
       reflect-metadata: 0.1.13
@@ -9794,6 +9821,30 @@ packages:
       sisteransi: 1.0.5
     dev: false
 
+  /protocol-buffers-encodings@1.2.0:
+    resolution: {integrity: sha512-daeNPuKh1NlLD1uDfbLpD+xyUTc07nEtfHwmBZmt/vH0B7VOM+JOCOpDcx9ZRpqHjAiIkGqyTDi+wfGSl17R9w==}
+    dependencies:
+      b4a: 1.6.3
+      signed-varint: 2.0.1
+      varint: 5.0.0
+    dev: false
+
+  /protocol-buffers-schema@3.6.0:
+    resolution: {integrity: sha512-TdDRD+/QNdrCGCE7v8340QyuXd4kIWIgapsE2+n/SaGiSSbomYl4TjHlvIoCWRpE7wFt02EpB35VVA2ImcBVqw==}
+    dev: false
+
+  /protocol-buffers@5.0.0:
+    resolution: {integrity: sha512-ceZAqqc5tKmsy4VXjQpCUbw9CJWHY+wIJitciBB9wyFXmcma8124Ck6LYwKncZgUzTkyCa+IyDrphI8s8DIWbA==}
+    hasBin: true
+    dependencies:
+      generate-function: 2.3.1
+      generate-object-property: 1.2.0
+      protocol-buffers-encodings: 1.2.0
+      protocol-buffers-schema: 3.6.0
+      signed-varint: 2.0.1
+      varint: 6.0.0
+    dev: false
+
   /proxy-addr@2.0.7:
     resolution: {integrity: sha512-llQsMLSUDUPT44jdrU/O37qlnifitDP+ZwrmmZcoSKyLKvtZxpyV0n2/bD/N4tBAAZ/gJEdZU7KMraoK1+XYAg==}
     engines: {node: '>= 0.10'}
@@ -10482,6 +10533,12 @@ packages:
 
   /signal-exit@3.0.7:
     resolution: {integrity: sha512-wnD2ZE+l+SPC/uoS0vXeE9L1+0wuaMqKlfz9AMUo38JsyLSBWSFcHR1Rri62LZc12vLr1gb3jl7iwQhgwpAbGQ==}
+
+  /signed-varint@2.0.1:
+    resolution: {integrity: sha512-abgDPg1106vuZZOvw7cFwdCABddfJRz5akcCcchzTbhyhYnsG31y4AlZEgp315T7W3nQq5P4xeOm186ZiPVFzw==}
+    dependencies:
+      varint: 5.0.2
+    dev: false
 
   /signedsource@1.0.0:
     resolution: {integrity: sha512-6+eerH9fEnNmi/hyM1DXcRK3pWdoMQtlkQ+ns0ntzunjKqp5i3sKCc80ym8Fib3iaYhdJUOPdhlJWj1tvge2Ww==}
@@ -11801,6 +11858,18 @@ packages:
     resolution: {integrity: sha512-Z6Uz+TYwEqE7ZN50gwn+1LCVo9ZVrpxRPOhOLnncYkY1ZzOYtrX8Fwf/rFktZ8R5mJms6EZf5TqNOMeZmnPq9Q==}
     engines: {node: '>=12'}
 
+  /varint@5.0.0:
+    resolution: {integrity: sha512-gC13b/bWrqQoKY2EmROCZ+AR0jitc6DnDGaQ6Ls9QpKmuSgJB1eQ7H3KETtQm7qSdMWMKCmsshyCmUwMLh3OAA==}
+    dev: false
+
+  /varint@5.0.2:
+    resolution: {integrity: sha512-lKxKYG6H03yCZUpAGOPOsMcGxd1RHCu1iKvEHYDPmTyq2HueGhD73ssNBqqQWfvYs04G9iUFRvmAVLW20Jw6ow==}
+    dev: false
+
+  /varint@6.0.0:
+    resolution: {integrity: sha512-cXEIW6cfr15lFv563k4GuVuW/fiwjknytD37jIOLSdSWuOI6WnO/oKwmP2FQTU2l01LP8/M5TSAJpzUaGe3uWg==}
+    dev: false
+
   /vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
@@ -12378,8 +12447,13 @@ packages:
     engines: {node: '>=12.20'}
     dev: true
 
-  /youtubei@0.0.1-rc.36:
-    resolution: {integrity: sha512-ea3/92geNbDPoFHQYxhIUT9OP1TdaJro9vh7908GT+aH/Qsk6Z9FfYo2zr4WiL2ubXK1pFfIzYgLFnk3jKcj5A==}
+  /youtubei@1.1.2:
+    resolution: {integrity: sha512-aYwJvMBswenT2MNg9vl/Mvvl3jRx3INmQHEaill2QJSqZU+0ikmP8fWbvfLBvcJNcKCGbzMPndlQqsI/2JyXJw==}
+    dependencies:
+      node-fetch: 2.6.7
+      protocol-buffers: 5.0.0
+    transitivePeerDependencies:
+      - encoding
     dev: false
 
   /ytdl-core@4.11.4:
@@ -12411,9 +12485,9 @@ packages:
     resolution: {integrity: sha512-m46AKbrzKVzOzs/DZgVnG5H55N1sv1M8qZU3A8RIKbs3mrACDNeIOeilDymVb2HdmP8uwshOCF4uJ8uM9rCqJw==}
     dev: false
 
-  github.com/V-ed/discord-music-player/98fa3e6a2f76e81031252838200e1452ac4f4310(ytdl-core@4.11.4):
-    resolution: {tarball: https://codeload.github.com/V-ed/discord-music-player/tar.gz/98fa3e6a2f76e81031252838200e1452ac4f4310}
-    id: github.com/V-ed/discord-music-player/98fa3e6a2f76e81031252838200e1452ac4f4310
+  github.com/V-ed/discord-music-player/8ca0ae623496d2e27cacd006f79a974c3956cdb4(ytdl-core@4.11.4):
+    resolution: {tarball: https://codeload.github.com/V-ed/discord-music-player/tar.gz/8ca0ae623496d2e27cacd006f79a974c3956cdb4}
+    id: github.com/V-ed/discord-music-player/8ca0ae623496d2e27cacd006f79a974c3956cdb4
     name: discord-music-player
     version: 9.1.1
     prepare: true
@@ -12433,7 +12507,7 @@ packages:
       isomorphic-unfetch: 3.1.0
       libsodium-wrappers: 0.7.11
       spotify-url-info: 3.2.3
-      youtubei: 0.0.1-rc.36
+      youtubei: 1.1.2
       ytdl-core: 4.11.4
       ytsr: 3.8.2
     transitivePeerDependencies:

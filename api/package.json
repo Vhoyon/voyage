@@ -52,7 +52,7 @@
     "apollo-server-core": "3.11.0",
     "apollo-server-express": "3.10.0",
     "class-transformer": "0.4.0",
-    "class-validator": "0.13.2",
+    "class-validator": "0.14.0",
     "deepmerge": "4.2.2",
     "discord-music-player": "github:V-ed/discord-music-player",
     "discord.js": "13.6.0",
