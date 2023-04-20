@@ -15,7 +15,6 @@
 	],
     "settings": {
 		"window.title": "${dirty}${activeEditorMedium}${separator}Voyage${separator}${appName}",
-		"jest.disabledWorkspaceFolders": ["Root (Voyage)", "Web Client"],
 		"[json]": {
 			"editor.defaultFormatter": "vscode.json-language-features",
 			"editor.codeActionsOnSave": {

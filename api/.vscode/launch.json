@@ -13,7 +13,7 @@
 				"<node_internals>/**",
 				"${workspaceFolder}/node_modules/**/*.js"
 			],
-			"runtimeExecutable": "npm",
+			"runtimeExecutable": "pnpm",
 			"runtimeArgs": [
 				"run",
 				"start:debug",
@@ -39,7 +39,7 @@
 				"<node_internals>/**",
 				"${workspaceFolder}/node_modules/**/*.js"
 			],
-			"runtimeExecutable": "npm",
+			"runtimeExecutable": "pnpm",
 			"runtimeArgs": [
 				"run",
 				"start:debug:no-watch",

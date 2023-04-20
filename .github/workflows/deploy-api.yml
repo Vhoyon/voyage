@@ -2,6 +2,10 @@ name: CD - API
 
 on: workflow_dispatch
 
+env:
+  DEPLOY_BRANCH_NAME: 'api-deploy'
+  PNPM_VERSION: 8
+
 jobs:
   deploy:
     name: Deploy
@@ -12,17 +16,43 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get git HEAD sha
-        id: commit-vars
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Generate API Lockfile
         run: |
-          echo ::set-output name=git_head_sha::"$(git rev-parse HEAD)"
+          pnpm config set shared-workspace-lockfile false
+          pnpm --filter api install --lockfile-only --frozen-lockfile
+
+      - name: Push API to Deploy Branch
+        uses: s0/git-publish-subdir-action@v2.6.0
+        env:
+          REPO: self
+          BRANCH: ${{ env.DEPLOY_BRANCH_NAME }}
+          FOLDER: api
+          GITHUB_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
+
+      - name: Get SHA of Deployed Commit
+        id: deployed-commit-sha
+        run: |
+          echo "sha=$(git rev-parse origin/${{ env.DEPLOY_BRANCH_NAME }})" >> $GITHUB_OUTPUT
 
       - name: Push to dokku
         uses: dokku/github-action@master
         with:
           branch: 'master'
-          git_remote_url: 'ssh://dokku@${{ secrets.DOKKU_SSH_HOST }}/${{ secrets.DOKKU_APPNAME }}'
+          ci_branch_name: ${{ env.DEPLOY_BRANCH_NAME }}
+          ci_commit: ${{ steps.deployed-commit-sha.outputs.sha }}
+          git_push_flags: '--force'
+          git_remote_url: 'ssh://dokku@${{ vars.DOKKU_SSH_HOST }}/${{ vars.DOKKU_APPNAME }}'
           ssh_private_key: ${{ secrets.DOKKU_SSH_KEY }}
+
+      - name: Get SHA of HEAD commit for Logging
+        id: commit-vars
+        run: |
+          echo "git_head_sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
 
       - name: Comment on deploy commit
         uses: peter-evans/commit-comment@v2
@@ -32,4 +62,4 @@ jobs:
           body: |
             🤖 This commit was deployed to the Dokku server!
 
-            App : ${{ secrets.DOKKU_APPNAME }}
+            App : ${{ vars.DOKKU_APPNAME }}
