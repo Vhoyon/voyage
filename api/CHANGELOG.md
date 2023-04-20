@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.9.9](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.9.8...voyage-discord-bot-v0.9.9) (2023-04-20)
+
+
+### Dependencies
+
+* update dependency apollo-server-core to v3.11.0 [security] ([#69](https://github.com/Vhoyon/voyage/issues/69)) ([fec2c55](https://github.com/Vhoyon/voyage/commit/fec2c55470c1491bae0371dd67e1ad2606252b5c))
+* update dependency class-validator to v0.14.0 [security] ([#78](https://github.com/Vhoyon/voyage/issues/78)) ([cda4ae4](https://github.com/Vhoyon/voyage/commit/cda4ae467bcc1efb000bf4af0390b7af7114ea09))
+
 ## [0.9.8](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.9.7...voyage-discord-bot-v0.9.8) (2023-04-20)
 
 
