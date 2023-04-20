@@ -5,7 +5,7 @@ import { PrismaService } from '$common/prisma/prisma.service';
 import { sleep } from '$common/utils/funcs';
 import { InjectDiscordClient } from '@discord-nestjs/core';
 import { Injectable, Logger } from '@nestjs/common';
-import { Player, PlayerOptions, Playlist, Queue, RepeatMode, Song } from 'discord-music-player';
+import { Player, Playlist, Queue, RepeatMode, Song } from 'discord-music-player';
 import { Client, Guild, Message, TextChannel } from 'discord.js';
 import { ButtonService } from '../services/button.service';
 import { HistoryService } from '../services/history.service';
@@ -36,7 +36,7 @@ export enum PlayType {
 }
 
 @Injectable()
-export class PlayerService extends Player {
+export class PlayerService extends Player<QueueData> {
 	private readonly logger = new Logger(PlayerService.name);
 
 	constructor(
@@ -103,9 +103,9 @@ export class PlayerService extends Player {
 	}
 
 	/** @inheritdoc */
-	override createQueue(guildId: string, options: PlayerOptions & { data: QueueData }): VQueue {
-		return super.createQueue(guildId, options) as VQueue;
-	}
+	// override createQueue(guildId: string, options?: PlayerOptions & { data?: QueueData }) {
+	// 	return super.createQueue(guildId, options);
+	// }
 
 	async convertPlayerToHistory(queue: Queue) {
 		const vQueue = queue as VQueue;
@@ -185,7 +185,7 @@ export class PlayerService extends Player {
 				data: {
 					textChannel,
 				},
-			});
+			}) as VQueue;
 		}
 
 		return { queue: finalQueue, musicSettings: guildMusicSettings, isNewQueue: !queue };
