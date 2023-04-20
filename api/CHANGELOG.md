@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.9.8](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.9.7...voyage-discord-bot-v0.9.8) (2023-04-20)
+
+
+### Bug Fixes
+
+* update branch based on fullstacked repo ([2a143be](https://github.com/Vhoyon/voyage/commit/2a143be3be3e7a39dd5733c1f55ab3108a686d41))
+* update DMP to prevent playback stopping at 30 seconds ([3b7e745](https://github.com/Vhoyon/voyage/commit/3b7e745fadff3dea07981309d49d2d95900fc21e))
+
+
+### Dependencies
+
+* update dependency @discordjs/opus to v0.8.0 [security] ([96a9b7a](https://github.com/Vhoyon/voyage/commit/96a9b7a573b370f26c280ec8758ceb89454237fc))
+* update dependency apollo-server-core to v3.10.1 [security] ([512ebad](https://github.com/Vhoyon/voyage/commit/512ebad99bbd8bdca32655337c1e7a20281c30a8))
+* update discord-nestjs to v3 ([e62b32b](https://github.com/Vhoyon/voyage/commit/e62b32b7f0332c447525d246408f2abc56e560e4))
+
 ### [0.9.7](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.9.6...voyage-discord-bot-v0.9.7) (2022-04-08)
 
 

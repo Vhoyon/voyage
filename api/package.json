@@ -1,6 +1,6 @@
 {
   "name": "voyage-discord-bot",
-  "version": "0.9.7",
+  "version": "0.9.8",
   "description": "Discord Bot made with NestJS and discord-nestjs",
   "private": true,
   "engines": {
