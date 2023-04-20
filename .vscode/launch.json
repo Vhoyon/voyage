@@ -1,0 +1,76 @@
+{
+	// Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Run App - Debugging",
+			"type": "node",
+			"request": "launch",
+			"restart": true,
+			"skipFiles": [
+				"<node_internals>/**",
+				"${workspaceFolder}/node_modules/**/*.js"
+			],
+			"runtimeExecutable": "pnpm",
+			"runtimeArgs": [
+				"run",
+				"start:debug",
+			],
+			"console": "internalConsole",
+			"resolveSourceMapLocations": [
+				"${workspaceFolder}/**",
+				"!**/node_modules/**"
+			],
+			"outputCapture": "std",
+			"presentation": {
+				"hidden": false,
+				"group": "App",
+				"order": 1,
+			}
+		},
+		{
+			"name": "Run App - Debugging No Watch",
+			"type": "node",
+			"request": "launch",
+			"restart": true,
+			"skipFiles": [
+				"<node_internals>/**",
+				"${workspaceFolder}/node_modules/**/*.js"
+			],
+			"runtimeExecutable": "pnpm",
+			"runtimeArgs": [
+				"run",
+				"start:debug:no-watch",
+			],
+			"console": "internalConsole",
+			"resolveSourceMapLocations": [
+				"${workspaceFolder}/**",
+				"!**/node_modules/**"
+			],
+			"outputCapture": "std",
+			"presentation": {
+				"hidden": false,
+				"group": "App",
+				"order": 2,
+			}
+		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "Debug Current Test File",
+			"autoAttachChildProcesses": true,
+			"skipFiles": ["<node_internals>/**", "**/node_modules/**"],
+			"runtimeExecutable": "pnpm",
+			"runtimeArgs": ["exec", "vitest", "run", "${relativeFile}", "--config", "tests/.vitest/vitest.all-config.ts"],
+			"smartStep": true,
+			"console": "internalConsole",
+			"presentation": {
+				"hidden": false,
+				"group": "tests",
+				"order": 1,
+			}
+		}
+	]
+}

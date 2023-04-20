@@ -1,0 +1,40 @@
+{
+  "extends": "@v-ed/tsconfig",
+  "compilerOptions": {
+    "moduleResolution": "node",
+    "target": "es2019",
+    "module": "commonjs",
+    "lib": [
+      "es2019"
+    ],
+    
+    "declaration": false,
+    
+    "baseUrl": "./",
+    "paths": {
+      "$prisma-client": ["./prisma/_generated/.prisma/client/index"],
+      "$prisma-graphql/*": ["./src/_generated/prisma-nestjs-graphql/*"],
+      "$common/*": ["./src/@common/*"],
+      "$/*": ["./src/*"],
+    },
+    
+    "typeRoots": [
+      "@types",
+      "./node_modules/@types",
+      "../node_modules/@types"
+    ],
+    
+    "outDir": "./dist",
+    
+    "useDefineForClassFields": true,
+  },
+  "include": [
+    "src/**/*.ts",
+    "gulpfile.ts",
+  ],
+  "exclude": [
+    "node_modules",
+    "src/**/*.spec.ts",
+    "src/**/*.d.ts",
+  ]
+}

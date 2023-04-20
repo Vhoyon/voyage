@@ -1,0 +1,105 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "_generated/.prisma/client"
+}
+
+generator nestgraphql {
+  provider = "node prisma/generators/prisma-nestjs-graphql.js"
+  output   = "../src/_generated/prisma-nestjs-graphql"
+  reExport = "Directories"
+
+  fields_Validator_from  = "class-validator"
+  fields_Validator_input = "true"
+}
+
+model Guild {
+  id      Int    @id @default(autoincrement())
+  guildId String @unique
+
+  blacklistedChannels      BlacklistedChannel[]
+  musicBlacklistedChannels MusicBlacklistedChannel[]
+  momsLogs                 MomsLog[]
+
+  musicSettings MusicSetting?
+  MusicLog      MusicLog[]
+
+  @@map("guilds")
+}
+
+model BlacklistedChannel {
+  id        Int    @id @default(autoincrement())
+  channelId String @unique
+  guild     Guild  @relation(fields: [guildId], references: [id], onDelete: Cascade)
+
+  guildId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("blacklisted_channels")
+}
+
+model MusicBlacklistedChannel {
+  id        Int    @id @default(autoincrement())
+  channelId String @unique
+  guild     Guild  @relation(fields: [guildId], references: [id], onDelete: Cascade)
+
+  guildId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("music_blacklisted_channels")
+}
+
+model MusicSetting {
+  id               Int     @id @default(autoincrement())
+  volume           Int     @default(50)
+  guild            Guild   @relation(fields: [guildId], references: [id], onDelete: Cascade)
+  historyChannelId String?
+  historyMessageId String?
+
+  guildId Int @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("music_settings")
+}
+
+model MomsLog {
+  id            Int     @id @default(autoincrement())
+  userIdDiscord String
+  didStartTheme Boolean
+  guild         Guild   @relation(fields: [guildId], references: [id], onDelete: Cascade)
+
+  guildId Int
+
+  createdAt DateTime @default(now())
+
+  @@map("moms_logs")
+}
+
+model MusicLog {
+  id        Int     @id @default(autoincrement())
+  name      String
+  author    String
+  url       String
+  requester String?
+  guild     Guild   @relation(fields: [guildId], references: [id], onDelete: Cascade)
+
+  guildId Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("music_logs")
+}
