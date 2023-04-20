@@ -29,8 +29,8 @@ importers:
         specifier: 0.2.3
         version: 0.2.3(stylelint@14.6.1)
       '@v-ed/tsconfig':
-        specifier: 0.2.0
-        version: 0.2.0
+        specifier: 0.3.0
+        version: 0.3.0(typescript@4.9.5)
       eslint:
         specifier: 8.38.0
         version: 8.38.0
@@ -198,8 +198,8 @@ importers:
         specifier: 2.0.12
         version: 2.0.12
       '@v-ed/tsconfig':
-        specifier: 0.2.0
-        version: 0.2.0
+        specifier: 0.3.0
+        version: 0.3.0(typescript@4.9.5)
       c8:
         specifier: 7.13.0
         version: 7.13.0
@@ -3435,9 +3435,13 @@ packages:
       stylelint-config-standard: 25.0.0(stylelint@14.6.1)
     dev: true
 
-  /@v-ed/tsconfig@0.2.0:
-    resolution: {integrity: sha512-SkfkjDM8sWD3QOtQ8EcGI/gBtnQfoptjyWZZGpnM1oXSjRABgTodN2lxuOrXhWUnyVpNG05w+yw3uOc1yvwhwA==}
+  /@v-ed/tsconfig@0.3.0(typescript@4.9.5):
+    resolution: {integrity: sha512-dA/dTM0CqYQyvAoRVzmgBhQeO1QfCcUjmQqcU5Oza0a30ICmfAZuMj9+MCgcevnXFKLT5+Ag21Ny1UY3G4Cr8A==}
     engines: {node: '>=14'}
+    peerDependencies:
+      typescript: ^5
+    dependencies:
+      typescript: 4.9.5
     dev: true
 
   /@vitest/expect@0.30.1:
