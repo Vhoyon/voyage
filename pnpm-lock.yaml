@@ -129,8 +129,8 @@ importers:
         specifier: 13.6.0
         version: 13.6.0
       dotenv:
-        specifier: 16.0.1
-        version: 16.0.1
+        specifier: 16.0.3
+        version: 16.0.3
       dotenv-expand:
         specifier: 8.0.3
         version: 8.0.3
@@ -1873,7 +1873,7 @@ packages:
       '@types/jsonwebtoken': 8.5.8
       chalk: 4.1.2
       debug: 4.3.4
-      dotenv: 16.0.0
+      dotenv: 16.0.3
       graphql: 16.3.0
       graphql-request: 4.2.0(graphql@16.3.0)
       http-proxy-agent: 5.0.0
@@ -5608,15 +5608,14 @@ packages:
     dev: false
     optional: true
 
-  /dotenv@16.0.0:
-    resolution: {integrity: sha512-qD9WU0MPM4SWLPJy/r2Be+2WgQj8plChsyrCNQzW/0WjvcJQiKQJ9mH3ZgB3fxbUUxgc/11ZJ0Fi5KiimWGz2Q==}
-    engines: {node: '>=12'}
-    dev: true
-
   /dotenv@16.0.1:
     resolution: {integrity: sha512-1K6hR6wtk2FviQ4kEiSjFiH5rpzEVi8WW0x96aztHVMhEspNpc4DVOUTEHtEva5VThQ8IaBX1Pe4gSzpVVUsKQ==}
     engines: {node: '>=12'}
     dev: false
+
+  /dotenv@16.0.3:
+    resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}
+    engines: {node: '>=12'}
 
   /dset@3.1.1:
     resolution: {integrity: sha512-hYf+jZNNqJBD2GiMYb+5mqOIX4R4RRHXU3qWMWYN+rqcR2/YpRL2bUHr8C8fU+5DNvqYjJ8YvMGSLuVPWU1cNg==}
