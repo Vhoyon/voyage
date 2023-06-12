@@ -68,7 +68,7 @@
     "nestjs-dynamic-providers": "0.1.9",
     "reflect-metadata": "0.1.13",
     "rxjs": "7.8.1",
-    "tslib": "2.5.2",
+    "tslib": "2.5.3",
     "ytdl-core": "4.11.4"
   },
   "devDependencies": {
