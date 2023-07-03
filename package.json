@@ -39,7 +39,7 @@
     "@types/node": "16.11.45",
     "@v-ed/eslint-config": "0.1.6",
     "@v-ed/prettier-config": "0.1.2",
-    "@v-ed/stylelint-config": "0.2.3",
+    "@v-ed/stylelint-config": "0.2.4",
     "@v-ed/tsconfig": "0.3.0",
     "eslint": "8.43.0",
     "eslint-config-prettier": "8.8.0",
