@@ -239,8 +239,8 @@ importers:
         specifier: 0.1.14
         version: 0.1.14(prisma@4.1.1)
       prisma-nestjs-graphql:
-        specifier: 17.0.2
-        version: 17.0.2
+        specifier: 17.1.0
+        version: 17.1.0
       supertest:
         specifier: 6.2.4
         version: 6.2.4
@@ -9904,8 +9904,8 @@ packages:
       - prisma
     dev: true
 
-  /prisma-nestjs-graphql@17.0.2:
-    resolution: {integrity: sha512-AGRo1KwXdsCaMGBzqAMEIYQtW9iQuROyw8cXMjI8LT+GS2IjOLVSSi4odgcNRUZFdpSlgwuh7OJgBtmQ5fS9Gw==}
+  /prisma-nestjs-graphql@17.1.0:
+    resolution: {integrity: sha512-TrkOjb4wAPZ7OBej0EyB2ZsinjYTwWR5sD8RMk27xSm7i7K8exjLOTkVZaLYrncV6lzcq82Rocdlie3RpgQVZQ==}
     hasBin: true
     dependencies:
       '@prisma/generator-helper': 4.13.0
