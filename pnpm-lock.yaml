@@ -31,8 +31,8 @@ importers:
         specifier: 0.1.6
         version: 0.1.6(eslint@8.43.0)(typescript@5.0.4)
       '@v-ed/prettier-config':
-        specifier: 0.2.1
-        version: 0.2.1(prettier@2.8.8)(svelte@4.0.2)
+        specifier: 0.3.0
+        version: 0.3.0(prettier@2.8.8)(svelte@4.0.2)
       '@v-ed/stylelint-config':
         specifier: 0.2.4
         version: 0.2.4(stylelint@14.6.1)
@@ -3458,11 +3458,11 @@ packages:
       - supports-color
     dev: true
 
-  /@v-ed/prettier-config@0.2.1(prettier@2.8.8)(svelte@4.0.2):
-    resolution: {integrity: sha512-yQe6bMTxLmmWlMpJt+iXVNLCplva7PeH4dYAtaGP50Z6xx7xE6txIOCItOnJZBen5EHnSLWFN0M+h8twzufHZA==}
+  /@v-ed/prettier-config@0.3.0(prettier@2.8.8)(svelte@4.0.2):
+    resolution: {integrity: sha512-VfsLHX8yGs++1uDlb74wEl3U7tzmV5BVxEaI2IE880219bcWC8tgYcyXrqaL+zkITpgB6nHHmapypvYe5JiXUA==}
     engines: {node: '>=14'}
     peerDependencies:
-      prettier: ^2
+      prettier: ^3
     dependencies:
       prettier: 2.8.8
     optionalDependencies:
