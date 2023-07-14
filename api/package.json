@@ -69,7 +69,7 @@
     "reflect-metadata": "0.1.13",
     "rxjs": "7.8.1",
     "tslib": "2.5.3",
-    "ytdl-core": "4.11.4"
+    "ytdl-core": "4.11.5"
   },
   "devDependencies": {
     "@faker-js/faker": "7.6.0",

@@ -128,7 +128,7 @@ importers:
         version: 4.2.2
       discord-music-player:
         specifier: github:V-ed/discord-music-player
-        version: github.com/V-ed/discord-music-player/8ca0ae623496d2e27cacd006f79a974c3956cdb4(ytdl-core@4.11.4)
+        version: github.com/V-ed/discord-music-player/8ca0ae623496d2e27cacd006f79a974c3956cdb4(ytdl-core@4.11.5)
       discord.js:
         specifier: 13.6.0
         version: 13.6.0
@@ -172,8 +172,8 @@ importers:
         specifier: 2.5.3
         version: 2.5.3
       ytdl-core:
-        specifier: 4.11.4
-        version: 4.11.4
+        specifier: 4.11.5
+        version: 4.11.5
     devDependencies:
       '@faker-js/faker':
         specifier: 7.6.0
@@ -12644,8 +12644,8 @@ packages:
       - encoding
     dev: false
 
-  /ytdl-core@4.11.4:
-    resolution: {integrity: sha512-tsVvqt++B5LSTMnCKQb4H/PFBewKj7gGPJ6KIM5gOFGMKNZj4qglGAl4QGFG8cNPP6wY54P80FDID5eN2di0GQ==}
+  /ytdl-core@4.11.5:
+    resolution: {integrity: sha512-27LwsW4n4nyNviRCO1hmr8Wr5J1wLLMawHCQvH8Fk0hiRqrxuIu028WzbJetiYH28K8XDbeinYW4/wcHQD1EXA==}
     engines: {node: '>=12'}
     dependencies:
       m3u8stream: 0.8.6
@@ -12673,7 +12673,7 @@ packages:
     resolution: {integrity: sha512-m46AKbrzKVzOzs/DZgVnG5H55N1sv1M8qZU3A8RIKbs3mrACDNeIOeilDymVb2HdmP8uwshOCF4uJ8uM9rCqJw==}
     dev: false
 
-  github.com/V-ed/discord-music-player/8ca0ae623496d2e27cacd006f79a974c3956cdb4(ytdl-core@4.11.4):
+  github.com/V-ed/discord-music-player/8ca0ae623496d2e27cacd006f79a974c3956cdb4(ytdl-core@4.11.5):
     resolution: {tarball: https://codeload.github.com/V-ed/discord-music-player/tar.gz/8ca0ae623496d2e27cacd006f79a974c3956cdb4}
     id: github.com/V-ed/discord-music-player/8ca0ae623496d2e27cacd006f79a974c3956cdb4
     name: discord-music-player
@@ -12696,7 +12696,7 @@ packages:
       libsodium-wrappers: 0.7.11
       spotify-url-info: 3.2.3
       youtubei: 1.1.2
-      ytdl-core: 4.11.4
+      ytdl-core: 4.11.5
       ytsr: 3.8.2
     transitivePeerDependencies:
       - bufferutil
