@@ -88,8 +88,8 @@ importers:
         specifier: 0.16.0
         version: 0.16.0(@discordjs/opus@0.9.0)(ffmpeg-static@4.4.1)
       '@nestjs/apollo':
-        specifier: 10.0.19
-        version: 10.0.19(@nestjs/common@9.0.8)(@nestjs/core@9.0.8)(@nestjs/graphql@10.0.21)(apollo-server-core@3.12.0)(apollo-server-express@3.12.0)(graphql@16.3.0)
+        specifier: 10.2.1
+        version: 10.2.1(@nestjs/common@9.0.8)(@nestjs/core@9.0.8)(@nestjs/graphql@10.0.21)(apollo-server-core@3.12.0)(apollo-server-express@3.12.0)(graphql@16.3.0)
       '@nestjs/common':
         specifier: 9.0.8
         version: 9.0.8(class-transformer@0.4.0)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.1)
@@ -2565,10 +2565,11 @@ packages:
       graphql: 16.3.0
     dev: true
 
-  /@nestjs/apollo@10.0.19(@nestjs/common@9.0.8)(@nestjs/core@9.0.8)(@nestjs/graphql@10.0.21)(apollo-server-core@3.12.0)(apollo-server-express@3.12.0)(graphql@16.3.0):
-    resolution: {integrity: sha512-uj10uZOQYBeUMYnKma0gpBSFDubZnXp4mqIRMJFNTF/0lEywFUEmdIc4IiRFSN3C4SY4EDIbUyDAMDRE3Ablew==}
+  /@nestjs/apollo@10.2.1(@nestjs/common@9.0.8)(@nestjs/core@9.0.8)(@nestjs/graphql@10.0.21)(apollo-server-core@3.12.0)(apollo-server-express@3.12.0)(graphql@16.3.0):
+    resolution: {integrity: sha512-xAui+/ZQ5THeO09YgAyP+AZyPvJplH8F3azwV8sMJjbbEaQev6gyzbZsCCbcVcCiHIL0t20JmNPmLIY9BIdRrg==}
     peerDependencies:
       '@apollo/gateway': ^0.44.1 || ^0.46.0 || ^0.48.0 || ^0.49.0 || ^0.50.0 || ^2.0.0
+      '@apollo/subgraph': ^2.0.0
       '@nestjs/common': ^8.2.3 || ^9.0.0
       '@nestjs/core': ^8.2.3 || ^9.0.0
       '@nestjs/graphql': ^10.0.0
@@ -2578,6 +2579,8 @@ packages:
       graphql: ^15.8.0 || ^16.0.0
     peerDependenciesMeta:
       '@apollo/gateway':
+        optional: true
+      '@apollo/subgraph':
         optional: true
       apollo-server-core:
         optional: true
@@ -2594,7 +2597,7 @@ packages:
       graphql: 16.3.0
       iterall: 1.3.0
       lodash.omit: 4.5.0
-      tslib: 2.4.0
+      tslib: 2.5.0
     dev: false
 
   /@nestjs/axios@0.1.1(@nestjs/common@9.0.8)(debug@4.3.3)(reflect-metadata@0.1.13)(rxjs@7.8.1):
@@ -8664,7 +8667,7 @@ packages:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
 
   /lodash.omit@4.5.0:
-    resolution: {integrity: sha1-brGa5aHuHdnfC5aeZs4Lf6MLXmA=}
+    resolution: {integrity: sha512-XeqSp49hNGmlkj2EJlfrQFIzQ6lXdNro9sddtQzcJY8QaoC2GO0DT7xaIokHeyM+mIT0mPMlPvkYzg2xCuHdZg==}
     dev: false
 
   /lodash.set@4.3.2:
@@ -11838,6 +11841,10 @@ packages:
   /tslib@2.4.1:
     resolution: {integrity: sha512-tGyy4dAjRIEwI7BzsB0lynWgOpfqjUdq91XXAlIWD2OwKBH7oCl/GZG/HT4BOHrTlPMOASlMQ7veyTqpmRcrNA==}
     dev: true
+
+  /tslib@2.5.0:
+    resolution: {integrity: sha512-336iVw3rtn2BUK7ORdIAHTyxHGRIHVReokCR3XjbckJMK7ms8FysBfhLR8IXnAgy7T0PTPNBWKiH514FOW/WSg==}
+    dev: false
 
   /tslib@2.6.1:
     resolution: {integrity: sha512-t0hLfiEKfMUoqhG+U1oid7Pva4bbDPHYfJNiB7BiIjRkj1pyC++4N3huJfqY6aRH6VTB0rvtzQwjM4K6qpfOig==}
