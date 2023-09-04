@@ -124,8 +124,8 @@ importers:
         specifier: 0.14.0
         version: 0.14.0
       deepmerge:
-        specifier: 4.2.2
-        version: 4.2.2
+        specifier: 4.3.1
+        version: 4.3.1
       discord-music-player:
         specifier: github:V-ed/discord-music-player
         version: github.com/V-ed/discord-music-player/8ca0ae623496d2e27cacd006f79a974c3956cdb4(ytdl-core@4.11.5)
@@ -5914,8 +5914,8 @@ packages:
     resolution: {integrity: sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==}
     dev: true
 
-  /deepmerge@4.2.2:
-    resolution: {integrity: sha512-FJ3UgI4gIl+PHZm53knsuSFpE+nESMr7M4v9QcgB7S63Kj/6WqMiFQJpBBYz1Pt+66bZpP3Q7Lye0Oo9MPKEdg==}
+  /deepmerge@4.3.1:
+    resolution: {integrity: sha512-3sUqbMEc77XqpdNO7FRyRog+eW3ph+GYCbj+rK+uYyRMuwsVy0rMiVtPn+QJlKFvWP/1PYpapqYn0Me2knFn+A==}
     engines: {node: '>=0.10.0'}
 
   /default-compare@1.0.0:
@@ -7144,7 +7144,7 @@ packages:
       chalk: 4.1.2
       chokidar: 3.5.3
       cosmiconfig: 7.1.0
-      deepmerge: 4.2.2
+      deepmerge: 4.3.1
       fs-extra: 10.1.0
       memfs: 3.5.0
       minimatch: 3.1.2
