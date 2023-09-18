@@ -160,8 +160,8 @@ importers:
         specifier: 2.8.0
         version: 2.8.0(@nestjs/common@9.0.8)(reflect-metadata@0.1.13)(rxjs@7.8.1)
       nestjs-dynamic-providers:
-        specifier: 0.1.10
-        version: 0.1.10(@nestjs/common@9.0.8)(@nestjs/core@9.0.8)(reflect-metadata@0.1.13)(rxjs@7.8.1)
+        specifier: 0.3.0
+        version: 0.3.0(@nestjs/common@9.0.8)(@nestjs/core@9.0.8)(reflect-metadata@0.1.13)(rxjs@7.8.1)
       reflect-metadata:
         specifier: 0.1.13
         version: 0.1.13
@@ -7384,8 +7384,8 @@ packages:
       - supports-color
     dev: true
 
-  /glob@10.3.1:
-    resolution: {integrity: sha512-9BKYcEeIs7QwlCYs+Y3GBvqAMISufUS0i2ELd11zpZjxI5V9iyRj0HgzB5/cLf2NY4vcYBTYzJ7GIui7j/4DOw==}
+  /glob@10.3.3:
+    resolution: {integrity: sha512-92vPiMb/iqpmEgsOoIDvTjc50wf9CCCvMzsi6W0JLPeUKE8TWP1a73PgqSrqy7iAZxaSD1YdzU7QZR5LF51MJw==}
     engines: {node: '>=16 || 14 >=14.17'}
     hasBin: true
     dependencies:
@@ -7413,7 +7413,7 @@ packages:
       fs.realpath: 1.0.0
       minimatch: 8.0.4
       minipass: 4.2.8
-      path-scurry: 1.7.0
+      path-scurry: 1.10.1
     dev: true
 
   /global-dirs@3.0.0:
@@ -9362,8 +9362,8 @@ packages:
       - supports-color
     dev: false
 
-  /nestjs-dynamic-providers@0.1.10(@nestjs/common@9.0.8)(@nestjs/core@9.0.8)(reflect-metadata@0.1.13)(rxjs@7.8.1):
-    resolution: {integrity: sha512-rjEeo99SF/HsCzJn/xPW7v8jgiKdLhpM057mtaCbrheZw8K8dfGKvs/Oo4YXC5lLJKHIp2z46erFxFZqc5fGnw==}
+  /nestjs-dynamic-providers@0.3.0(@nestjs/common@9.0.8)(@nestjs/core@9.0.8)(reflect-metadata@0.1.13)(rxjs@7.8.1):
+    resolution: {integrity: sha512-iBvmsWDTNdm6jvMVXsHD07ULJp6XdgVzzjw7KQmObIq+HWumwP/2TCT1lvBxt9UXM7PYwT2N57e/r+AfWwv1lg==}
     peerDependencies:
       '@nestjs/common': 9.* || 10.*
       '@nestjs/core': 9.* || 10.*
@@ -9372,7 +9372,7 @@ packages:
     dependencies:
       '@nestjs/common': 9.0.8(class-transformer@0.4.0)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.1)
       '@nestjs/core': 9.0.8(@nestjs/common@9.0.8)(@nestjs/platform-express@9.0.8)(reflect-metadata@0.1.13)(rxjs@7.8.1)
-      glob: 10.3.1
+      glob: 10.3.3
       reflect-metadata: 0.1.13
       rxjs: 7.8.1
     dev: false
@@ -9918,15 +9918,6 @@ packages:
     dependencies:
       lru-cache: 9.1.1
       minipass: 5.0.0
-    dev: false
-
-  /path-scurry@1.7.0:
-    resolution: {integrity: sha512-UkZUeDjczjYRE495+9thsgcVgsaCPkaw80slmfVFgllxY+IO8ubTsOpFVjDPROBqJdHfVPUFRHPBV/WciOVfWg==}
-    engines: {node: '>=16 || 14 >=14.17'}
-    dependencies:
-      lru-cache: 9.1.1
-      minipass: 5.0.0
-    dev: true
 
   /path-to-regexp@0.1.7:
     resolution: {integrity: sha1-32BBeABfUi8V60SQ5yR6G/qmf4w=}

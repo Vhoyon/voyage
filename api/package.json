@@ -65,7 +65,7 @@
     "graphql-subscriptions": "2.0.0",
     "graphql-ws": "5.14.0",
     "nest-typed-config": "2.8.0",
-    "nestjs-dynamic-providers": "0.1.10",
+    "nestjs-dynamic-providers": "0.3.0",
     "reflect-metadata": "0.1.13",
     "rxjs": "7.8.1",
     "tslib": "2.6.2",
