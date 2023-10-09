@@ -154,8 +154,8 @@ importers:
         specifier: 2.0.0
         version: 2.0.0(graphql@16.3.0)
       graphql-ws:
-        specifier: 5.14.0
-        version: 5.14.0(graphql@16.3.0)
+        specifier: 5.14.1
+        version: 5.14.1(graphql@16.3.0)
       nest-typed-config:
         specifier: 2.8.0
         version: 2.8.0(@nestjs/common@9.0.8)(reflect-metadata@0.1.13)(rxjs@7.8.1)
@@ -2462,7 +2462,7 @@ packages:
       dset: 3.1.1
       extract-files: 11.0.0
       graphql: 16.3.0
-      graphql-ws: 5.14.0(graphql@16.3.0)
+      graphql-ws: 5.14.1(graphql@16.3.0)
       isomorphic-ws: 4.0.1(ws@8.13.0)
       meros: 1.2.0(@types/node@16.11.45)
       sync-fetch: 0.3.1
@@ -7615,8 +7615,8 @@ packages:
       graphql: 16.3.0
     dev: true
 
-  /graphql-ws@5.14.0(graphql@16.3.0):
-    resolution: {integrity: sha512-itrUTQZP/TgswR4GSSYuwWUzrE/w5GhbwM2GX3ic2U7aw33jgEsayfIlvaj7/GcIvZgNMzsPTrE5hqPuFUiE5g==}
+  /graphql-ws@5.14.1(graphql@16.3.0):
+    resolution: {integrity: sha512-aqkls1espsygP1PfkAuuLIV96IbztQ6EaADse97pw8wRIMT3+AL/OYfS8V2iCRkc0gzckitoDRGCQEdnySggiA==}
     engines: {node: '>=10'}
     peerDependencies:
       graphql: '>=0.11 <=16'
