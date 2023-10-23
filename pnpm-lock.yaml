@@ -194,8 +194,8 @@ importers:
         specifier: 4.17.20
         version: 4.17.20
       '@types/graphql-depth-limit':
-        specifier: 1.1.4
-        version: 1.1.4
+        specifier: 1.1.5
+        version: 1.1.5
       '@types/gulp':
         specifier: 4.0.15
         version: 4.0.15
@@ -3622,8 +3622,8 @@ packages:
       '@types/node': 16.11.45
     dev: true
 
-  /@types/graphql-depth-limit@1.1.4:
-    resolution: {integrity: sha512-F799qc9dmOeWHuZNsNipzTjMr3DbVHuVV1dwfyUJlOUuxHWXlH/d2BN++t9OQ1RKHNCp4RGcaHjBLCiaL+yyfA==}
+  /@types/graphql-depth-limit@1.1.5:
+    resolution: {integrity: sha512-nhXDaJ+4gCtse2VhsJX4cCcoPtXRYhy0RcBFlW74TOihxaNZR1g86FRvffdhAyQiIqJt+lsretqlyn+XEdqgig==}
     dependencies:
       graphql: 14.7.0
     dev: true
