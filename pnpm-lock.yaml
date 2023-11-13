@@ -200,8 +200,8 @@ importers:
         specifier: 4.0.17
         version: 4.0.17
       '@types/gulp-rename':
-        specifier: 2.0.4
-        version: 2.0.4
+        specifier: 2.0.5
+        version: 2.0.5
       '@types/supertest':
         specifier: 2.0.15
         version: 2.0.15
@@ -3564,8 +3564,8 @@ packages:
       graphql: 14.7.0
     dev: true
 
-  /@types/gulp-rename@2.0.4:
-    resolution: {integrity: sha512-dhhbD+PlIGmxpYiSsLsTgMsyfqmwemlM6gnM2hXzDh68knKocRDBq/CNRhbGlAZkUH/7zCbEvadxQXQJtanMPw==}
+  /@types/gulp-rename@2.0.5:
+    resolution: {integrity: sha512-rD03kpi7CXZ5pTza4AtWqM3Btbte9y5yAPmqWGgHLNSMPbDCJVUGjQ2Ul6P48X7Sw9JDZlPtW6cXHntTmKeywA==}
     dependencies:
       '@types/node': 16.11.45
       '@types/vinyl': 2.0.7
