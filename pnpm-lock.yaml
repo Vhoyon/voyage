@@ -73,8 +73,8 @@ importers:
   api:
     dependencies:
       '@apollo/server':
-        specifier: 4.9.3
-        version: 4.9.3(graphql@16.3.0)
+        specifier: 4.9.5
+        version: 4.9.5(graphql@16.3.0)
       '@discord-nestjs/common':
         specifier: 3.4.2
         version: 3.4.2(@discord-nestjs/core@3.6.0)(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(discord.js@13.6.0)(reflect-metadata@0.1.13)(rxjs@7.8.1)
@@ -92,7 +92,7 @@ importers:
         version: 0.16.0(@discordjs/opus@0.9.0)(ffmpeg-static@4.4.1)
       '@nestjs/apollo':
         specifier: 10.2.1
-        version: 10.2.1(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(@nestjs/graphql@10.2.1)(apollo-server-express@3.12.1)(graphql@16.3.0)
+        version: 10.2.1(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(@nestjs/graphql@10.2.1)(apollo-server-express@3.13.0)(graphql@16.3.0)
       '@nestjs/common':
         specifier: 9.4.3
         version: 9.4.3(class-transformer@0.4.0)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.1)
@@ -115,8 +115,8 @@ importers:
         specifier: 4.16.2
         version: 4.16.2
       apollo-server-express:
-        specifier: 3.12.1
-        version: 3.12.1(express@4.18.2)(graphql@16.3.0)
+        specifier: 3.13.0
+        version: 3.13.0(express@4.18.2)(graphql@16.3.0)
       class-transformer:
         specifier: 0.4.0
         version: 0.4.0
@@ -414,8 +414,8 @@ packages:
       graphql: 16.3.0
     dev: false
 
-  /@apollo/server@4.9.3(graphql@16.3.0):
-    resolution: {integrity: sha512-U56Sx/UmzR3Es344hQ/Ptf2EJrH+kV4ZPoLmgGjWoiwf2wYQ/pRSvkSXgjOvoyE34wSa8Gh7f92ljfLfY+6q1w==}
+  /@apollo/server@4.9.5(graphql@16.3.0):
+    resolution: {integrity: sha512-eDBfArYbZaTm1AGa82M1aL7lOscVhnZsH85+OWmHMIR98qntzEjNpWpQPYDTru63Qxs4kHcY29NUx/kMGZfGEA==}
     engines: {node: '>=14.16.0'}
     peerDependencies:
       graphql: ^16.6.0
@@ -444,7 +444,7 @@ packages:
       lru-cache: 7.18.3
       negotiator: 0.6.3
       node-abort-controller: 3.1.1
-      node-fetch: 2.6.9
+      node-fetch: 2.6.11
       uuid: 9.0.0
       whatwg-mimetype: 3.0.0
     transitivePeerDependencies:
@@ -675,7 +675,7 @@ packages:
     resolution: {integrity: sha512-xhlTqH0m31mnsG0tIP4ETgfSB6gXDaYYsUWTrlUV93fFQPI9dd8hE0Ot6MHLCtqgB32hwJAC3YZMWlXZw7AleA==}
     engines: {node: '>=14'}
     dependencies:
-      node-fetch: 2.6.9
+      node-fetch: 2.6.11
     transitivePeerDependencies:
       - encoding
     dev: true
@@ -1421,7 +1421,7 @@ packages:
       detect-libc: 2.0.1
       https-proxy-agent: 5.0.1
       make-dir: 3.1.0
-      node-fetch: 2.6.9
+      node-fetch: 2.6.11
       nopt: 5.0.0
       npmlog: 5.0.1
       rimraf: 3.0.2
@@ -2664,7 +2664,7 @@ packages:
       graphql: 16.3.0
     dev: true
 
-  /@nestjs/apollo@10.2.1(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(@nestjs/graphql@10.2.1)(apollo-server-express@3.12.1)(graphql@16.3.0):
+  /@nestjs/apollo@10.2.1(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(@nestjs/graphql@10.2.1)(apollo-server-express@3.13.0)(graphql@16.3.0):
     resolution: {integrity: sha512-xAui+/ZQ5THeO09YgAyP+AZyPvJplH8F3azwV8sMJjbbEaQev6gyzbZsCCbcVcCiHIL0t20JmNPmLIY9BIdRrg==}
     peerDependencies:
       '@apollo/gateway': ^0.44.1 || ^0.46.0 || ^0.48.0 || ^0.49.0 || ^0.50.0 || ^2.0.0
@@ -2691,7 +2691,7 @@ packages:
       '@nestjs/common': 9.4.3(class-transformer@0.4.0)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.1)
       '@nestjs/core': 9.4.3(@nestjs/common@9.4.3)(@nestjs/platform-express@9.4.3)(reflect-metadata@0.1.13)(rxjs@7.8.1)
       '@nestjs/graphql': 10.2.1(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(class-transformer@0.4.0)(class-validator@0.14.0)(graphql@16.3.0)(reflect-metadata@0.1.13)
-      apollo-server-express: 3.12.1(express@4.18.2)(graphql@16.3.0)
+      apollo-server-express: 3.13.0(express@4.18.2)(graphql@16.3.0)
       graphql: 16.3.0
       iterall: 1.3.0
       lodash.omit: 4.5.0
@@ -4352,8 +4352,8 @@ packages:
       '@apollo/protobufjs': 1.2.6
     dev: false
 
-  /apollo-server-core@3.12.1(graphql@16.3.0):
-    resolution: {integrity: sha512-9SF5WAkkV0FZQ2HVUWI9Jada1U0jg7e8NCN9EklbtvaCeUlOLyXyM+KCWuZ7+dqHxjshbtcwylPHutt3uzoNkw==}
+  /apollo-server-core@3.13.0(graphql@16.3.0):
+    resolution: {integrity: sha512-v/g6DR6KuHn9DYSdtQijz8dLOkP78I5JSVJzPkARhDbhpH74QNwrQ2PP2URAPPEDJ2EeZNQDX8PvbYkAKqg+kg==}
     engines: {node: '>=12.0'}
     peerDependencies:
       graphql: ^15.3.0 || ^16.0.0
@@ -4391,7 +4391,7 @@ packages:
     engines: {node: '>=12.0'}
     deprecated: The `apollo-server-env` package is part of Apollo Server v2 and v3, which are now deprecated (end-of-life October 22nd 2023 and October 22nd 2024, respectively). This package's functionality is now found in the `@apollo/utils.fetcher` package. See https://www.apollographql.com/docs/apollo-server/previous-versions/ for more details.
     dependencies:
-      node-fetch: 2.6.9
+      node-fetch: 2.6.11
     transitivePeerDependencies:
       - encoding
     dev: false
@@ -4406,8 +4406,8 @@ packages:
       graphql: 16.3.0
     dev: false
 
-  /apollo-server-express@3.12.1(express@4.18.2)(graphql@16.3.0):
-    resolution: {integrity: sha512-5A9efrhEXqDx08BnORWf0zPYCABENqur47VZZW8osQpSSnMINqzJiV5RMrzz8wIznecRRhEcz+BqLdiexqZdgg==}
+  /apollo-server-express@3.13.0(express@4.18.2)(graphql@16.3.0):
+    resolution: {integrity: sha512-iSxICNbDUyebOuM8EKb3xOrpIwOQgKxGbR2diSr4HP3IW8T3njKFOoMce50vr+moOCe1ev8BnLcw9SNbuUtf7g==}
     engines: {node: '>=12.0'}
     peerDependencies:
       express: ^4.17.1
@@ -4419,7 +4419,7 @@ packages:
       '@types/express': 4.17.14
       '@types/express-serve-static-core': 4.17.31
       accepts: 1.3.8
-      apollo-server-core: 3.12.1(graphql@16.3.0)
+      apollo-server-core: 3.13.0(graphql@16.3.0)
       apollo-server-types: 3.8.0(graphql@16.3.0)
       body-parser: 1.20.2
       cors: 2.8.5
@@ -5690,7 +5690,7 @@ packages:
       abort-controller: 3.0.0
       form-data-encoder: 1.7.2
       formdata-node: 4.3.2
-      node-fetch: 2.6.9
+      node-fetch: 2.6.11
       undici: 5.7.0
       web-streams-polyfill: 3.2.1
     transitivePeerDependencies:
@@ -8402,7 +8402,7 @@ packages:
   /isomorphic-unfetch@3.1.0:
     resolution: {integrity: sha512-geDJjpoZ8N0kWexiwkX8F9NkTsXhetLPVbZFQ+JTW239QNOwvB0gniuR1Wc6f0AMTn7/mFGyXvHTifrCp/GH8Q==}
     dependencies:
-      node-fetch: 2.6.9
+      node-fetch: 2.6.11
       unfetch: 4.2.0
     transitivePeerDependencies:
       - encoding
@@ -9405,7 +9405,6 @@ packages:
         optional: true
     dependencies:
       whatwg-url: 5.0.0
-    dev: false
 
   /node-fetch@2.6.7:
     resolution: {integrity: sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==}
@@ -11564,7 +11563,7 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       buffer: 5.7.1
-      node-fetch: 2.6.9
+      node-fetch: 2.6.11
     transitivePeerDependencies:
       - encoding
     dev: true
