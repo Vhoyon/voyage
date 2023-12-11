@@ -97,7 +97,7 @@
     "supertest": "6.3.3",
     "ts-node": "10.9.2",
     "typescript": "4.9.5",
-    "unplugin-swc": "1.4.3",
+    "unplugin-swc": "1.4.4",
     "vite-tsconfig-paths": "4.2.1",
     "vitest": "0.34.6"
   }
