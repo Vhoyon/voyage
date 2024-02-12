@@ -160,8 +160,8 @@ importers:
         specifier: 2.9.2
         version: 2.9.2(@nestjs/common@9.4.3)(reflect-metadata@0.2.1)(rxjs@7.8.1)
       nestjs-dynamic-providers:
-        specifier: 0.3.1
-        version: 0.3.1(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(reflect-metadata@0.2.1)(rxjs@7.8.1)
+        specifier: 0.3.2
+        version: 0.3.2(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(reflect-metadata@0.2.1)(rxjs@7.8.1)
       reflect-metadata:
         specifier: 0.2.1
         version: 0.2.1
@@ -9232,8 +9232,8 @@ packages:
       - supports-color
     dev: false
 
-  /nestjs-dynamic-providers@0.3.1(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(reflect-metadata@0.2.1)(rxjs@7.8.1):
-    resolution: {integrity: sha512-GX4hYgmy5yQOQbKMEyyf0pL/bfpvRd/RTXmMR64W+1eMpj89xez6wwzwTh6J3RwpLqRLhajN4rZC2NsGG35MPA==}
+  /nestjs-dynamic-providers@0.3.2(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(reflect-metadata@0.2.1)(rxjs@7.8.1):
+    resolution: {integrity: sha512-moydvaY4wy4dII30e8yUcSuVnPJKIChBq8yP7DzaxRZy/cVVGyldzk7CKTi9IQscFcde7sqwq6mymdbZ6EVZKA==}
     peerDependencies:
       '@nestjs/common': 9.* || 10.*
       '@nestjs/core': 9.* || 10.*
