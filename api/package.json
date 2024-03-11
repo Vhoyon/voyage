@@ -51,7 +51,7 @@
     "@prisma/internals": "4.16.2",
     "@apollo/server": "4.9.5",
     "apollo-server-express": "3.13.0",
-    "class-transformer": "0.4.0",
+    "class-transformer": "0.5.1",
     "class-validator": "0.14.1",
     "deepmerge": "4.3.1",
     "discord-music-player": "github:V-ed/discord-music-player",
