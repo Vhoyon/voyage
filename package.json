@@ -48,7 +48,7 @@
     "graphql-config": "5.0.3",
     "npm-run-all2": "6.1.2",
     "prettier": "3.2.5",
-    "stylelint": "16.2.1",
+    "stylelint": "16.3.0",
     "tslib": "2.6.2",
     "typescript": "5.0.4"
   },
