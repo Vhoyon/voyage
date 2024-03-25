@@ -84,7 +84,7 @@
     "@types/supertest": "6.0.2",
     "@v-ed/tsconfig": "0.3.0",
     "c8": "9.1.0",
-    "del": "6.1.1",
+    "del": "7.1.0",
     "graphql-tag": "2.12.6",
     "gulp": "4.0.2",
     "gulp-prompt": "1.2.0",
