@@ -99,7 +99,7 @@ jobs:
 
       - name: Cache Build Folders
         if: contains(fromJson('["ved-bot"]'), github.actor) == false
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             client/.routify
@@ -130,7 +130,7 @@ jobs:
         run: pnpm install
 
       - name: Fetch Cached Build Folders
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             client/.routify
