@@ -4,7 +4,7 @@
   "description": "Discord Bot made with NestJS and discord-nestjs",
   "private": true,
   "engines": {
-    "node": "^16.0.0",
+    "node": "^20.0.0",
     "npm": "^8.1.0"
   },
   "scripts": {
