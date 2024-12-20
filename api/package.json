@@ -55,7 +55,7 @@
     "class-validator": "0.14.1",
     "deepmerge": "4.3.1",
     "discord-music-player": "github:V-ed/discord-music-player",
-    "discord.js": "13.6.0",
+    "discord.js": "13.17.1",
     "dotenv": "16.4.5",
     "dotenv-expand": "8.0.3",
     "ffmpeg": "0.0.4",
