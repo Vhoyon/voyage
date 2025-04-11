@@ -1,5 +1,49 @@
 # Changelog
 
+## [0.9.10](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.9.9...voyage-discord-bot-v0.9.10) (2024-12-20)
+
+
+### Dependencies
+
+* replace apollo graphql packages ([#88](https://github.com/Vhoyon/voyage/issues/88)) ([8984962](https://github.com/Vhoyon/voyage/commit/89849622dbe785f1c47c4a586df4caccbbe42478))
+* update apollo graphql packages ([#90](https://github.com/Vhoyon/voyage/issues/90)) ([1357ac3](https://github.com/Vhoyon/voyage/commit/1357ac305ad735b5d2e16abac5e11b0778df8f43))
+* update apollo graphql packages to v3.12.0 ([1019746](https://github.com/Vhoyon/voyage/commit/1019746dbfcbe343efd37a0c373005a7ba5fc4d9))
+* update dependency @apollo/server to v4.9.3 [security] ([9ccf552](https://github.com/Vhoyon/voyage/commit/9ccf5521f0b60744f99fbd30bab56439d0344ad1))
+* update dependency @discordjs/builders to v0.16.0 ([3e41f48](https://github.com/Vhoyon/voyage/commit/3e41f48cad9da05ad9036b6d1a01d99b9deb2fa8))
+* update dependency @discordjs/opus to v0.9.0 ([4956d8a](https://github.com/Vhoyon/voyage/commit/4956d8ac691dd1d686ada6fe5ad0f1b143cff1c7))
+* update dependency @discordjs/voice to v0.16.0 ([50471a0](https://github.com/Vhoyon/voyage/commit/50471a0ca973a9d65db6cafc2ffe539932ad7af1))
+* update dependency @discordjs/voice to v0.16.1 ([79908f0](https://github.com/Vhoyon/voyage/commit/79908f0d6351a4e27f0b274379f37ac0de971f3f))
+* update dependency @nestjs/apollo to v10.2.1 ([5e0dac3](https://github.com/Vhoyon/voyage/commit/5e0dac347da5bd203d0eb87cc0d845b6e36c2825))
+* update dependency @nestjs/graphql to v10.2.1 ([940e638](https://github.com/Vhoyon/voyage/commit/940e63899ff2f5efa64113037a5512b31faf96a9))
+* update dependency class-validator to v0.14.1 ([7d7d095](https://github.com/Vhoyon/voyage/commit/7d7d095f37b2806ab43e57274d708ec8ac60d060))
+* update dependency deepmerge to v4.3.1 ([5a59853](https://github.com/Vhoyon/voyage/commit/5a598538550ddb4d3c1bf88c36925fdbf495acda))
+* update dependency dotenv to v16.0.3 ([d109c23](https://github.com/Vhoyon/voyage/commit/d109c232953ebc31ec36cd653632200031da0f1a))
+* update dependency dotenv to v16.3.1 ([76620d0](https://github.com/Vhoyon/voyage/commit/76620d0b7ec623c272fff516d4f2959a21b73dec))
+* update dependency dotenv to v16.3.2 ([aa910a9](https://github.com/Vhoyon/voyage/commit/aa910a9903f90762c266e798535fc41d0b6e1057))
+* update dependency dotenv to v16.4.5 ([993010a](https://github.com/Vhoyon/voyage/commit/993010a5e59b65cc30f4d16f82476eb18c0611a9))
+* update dependency graphql-ws to v5.14.0 ([b6a8b34](https://github.com/Vhoyon/voyage/commit/b6a8b342ce1293544b6614dbbee9abd801cca6cd))
+* update dependency graphql-ws to v5.14.1 ([c903364](https://github.com/Vhoyon/voyage/commit/c903364ebfcf622c6fda35402150736f744ad76d))
+* update dependency graphql-ws to v5.14.2 ([96e4899](https://github.com/Vhoyon/voyage/commit/96e4899ebd5c5609cf04f340cb067224e6917c77))
+* update dependency graphql-ws to v5.14.3 ([ce5eac4](https://github.com/Vhoyon/voyage/commit/ce5eac40b6104dc8df18f7e0668c41e4a5ff3b57))
+* update dependency graphql-ws to v5.15.0 ([5fb73e9](https://github.com/Vhoyon/voyage/commit/5fb73e99134f7448583682897093396ec6a9f5dc))
+* update dependency nest-typed-config to v2.8.0 ([8ed17ce](https://github.com/Vhoyon/voyage/commit/8ed17ce4ee04a7bed576327162835f398976abda))
+* update dependency nest-typed-config to v2.9.1 ([6c08e81](https://github.com/Vhoyon/voyage/commit/6c08e810a936fc503a27d246bf9f4c7671b5f17d))
+* update dependency nest-typed-config to v2.9.2 ([1c8f464](https://github.com/Vhoyon/voyage/commit/1c8f464e0e9ebba9f228ca07dee2716c44c0f8a7))
+* update dependency nest-typed-config to v2.9.3 ([6238fd1](https://github.com/Vhoyon/voyage/commit/6238fd1e8d0205a706dafc83a87ab7d4f8b6e664))
+* update dependency nestjs-dynamic-providers to v0.1.10 ([3a74900](https://github.com/Vhoyon/voyage/commit/3a7490095ee10659184dfaad4c83d713bcba7b65))
+* update dependency nestjs-dynamic-providers to v0.1.9 ([802a66c](https://github.com/Vhoyon/voyage/commit/802a66c7d7e5a2606e5d22bc614742cf8f1213cc))
+* update dependency nestjs-dynamic-providers to v0.3.0 ([262c473](https://github.com/Vhoyon/voyage/commit/262c47300ba2e46f509f5da95287fd9c14ed593d))
+* update dependency nestjs-dynamic-providers to v0.3.1 ([b8197b2](https://github.com/Vhoyon/voyage/commit/b8197b237684c4738554904e2685744faddf220f))
+* update dependency nestjs-dynamic-providers to v0.3.2 ([470d567](https://github.com/Vhoyon/voyage/commit/470d5670bcdfda13246b2bbd8f9e9eb915fb42b5))
+* update dependency nestjs-dynamic-providers to v0.3.4 ([2229805](https://github.com/Vhoyon/voyage/commit/222980587d2485857f813d9947520ccb26bf9653))
+* update dependency reflect-metadata to v0.2.1 ([70786d5](https://github.com/Vhoyon/voyage/commit/70786d58a62b5965947f3a5c33b7a37dadb140d5))
+* update dependency reflect-metadata to v0.2.2 ([0e0f3b1](https://github.com/Vhoyon/voyage/commit/0e0f3b10594769afd8f3a14f41cf8e197bc3085b))
+* update dependency rxjs to v7.8.1 ([6bdb05b](https://github.com/Vhoyon/voyage/commit/6bdb05bb0faa5dafac070ce55ca2702c080bed10))
+* update dependency ytdl-core to v4.11.5 ([af17b49](https://github.com/Vhoyon/voyage/commit/af17b490f86bb269523bd24571f3f97873926a43))
+* update discord-nestjs ([d7b77f6](https://github.com/Vhoyon/voyage/commit/d7b77f63ac4842efc4a994a4c6b0536f7fb10d8d))
+* update nest monorepo ([52d320a](https://github.com/Vhoyon/voyage/commit/52d320a02d9573fb5ef4e11189015dfe74b59e9a))
+* update prisma monorepo to v4.16.2 ([f83bd7f](https://github.com/Vhoyon/voyage/commit/f83bd7fb8bbd5dedb4071a3e4b73ad5599fe3872))
+
 ## [0.9.9](https://github.com/Vhoyon/voyage/compare/voyage-discord-bot-v0.9.8...voyage-discord-bot-v0.9.9) (2023-04-20)
 
 
