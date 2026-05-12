@@ -38,7 +38,7 @@
     "@graphql-codegen/typescript-operations": "2.5.13",
     "@types/node": "16.11.45",
     "@v-ed/eslint-config": "0.1.6",
-    "@v-ed/prettier-config": "0.3.0",
+    "@v-ed/prettier-config": "0.3.1",
     "@v-ed/stylelint-config": "0.2.4",
     "@v-ed/tsconfig": "0.3.0",
     "eslint": "8.57.1",
