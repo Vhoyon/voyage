@@ -31,8 +31,8 @@ importers:
         specifier: 0.1.6
         version: 0.1.6(eslint@8.57.1)(typescript@5.0.4)
       '@v-ed/prettier-config':
-        specifier: 0.3.0
-        version: 0.3.0(prettier@3.2.5)(svelte@4.2.19)
+        specifier: 0.3.1
+        version: 0.3.1(prettier@3.2.5)(svelte@4.2.19)
       '@v-ed/stylelint-config':
         specifier: 0.2.4
         version: 0.2.4(stylelint@16.3.0)
@@ -4414,15 +4414,15 @@ packages:
       - supports-color
     dev: true
 
-  /@v-ed/prettier-config@0.3.0(prettier@3.2.5)(svelte@4.2.19):
-    resolution: {integrity: sha512-VfsLHX8yGs++1uDlb74wEl3U7tzmV5BVxEaI2IE880219bcWC8tgYcyXrqaL+zkITpgB6nHHmapypvYe5JiXUA==}
+  /@v-ed/prettier-config@0.3.1(prettier@3.2.5)(svelte@4.2.19):
+    resolution: {integrity: sha512-hDACiJqIhhvmX2Ob2WHDyx3xr3hoIhP6txk0IEZDPkmVlbEJh6UyZGG7KpwKKPSRHyOa63UzAu4Lghybl6/y3Q==}
     engines: {node: '>=14'}
     peerDependencies:
       prettier: ^3
     dependencies:
       prettier: 3.2.5
     optionalDependencies:
-      prettier-plugin-svelte: 2.10.1(prettier@3.2.5)(svelte@4.2.19)
+      prettier-plugin-svelte: 3.5.2(prettier@3.2.5)(svelte@4.2.19)
     transitivePeerDependencies:
       - svelte
     dev: true
@@ -10868,12 +10868,12 @@ packages:
       fast-diff: 1.2.0
     dev: true
 
-  /prettier-plugin-svelte@2.10.1(prettier@3.2.5)(svelte@4.2.19):
-    resolution: {integrity: sha512-Wlq7Z5v2ueCubWo0TZzKc9XHcm7TDxqcuzRuGd0gcENfzfT4JZ9yDlCbEgxWgiPmLHkBjfOtpAWkcT28MCDpUQ==}
+  /prettier-plugin-svelte@3.5.2(prettier@3.2.5)(svelte@4.2.19):
+    resolution: {integrity: sha512-ItFouLvzSFE3ulNl4DKoWM3BGcbDCNVpIyy/Y3F2gC3aNiGLxtFUdffVqO5Z5hhYG+DFT5KULWaxmeFFpdbvaQ==}
     requiresBuild: true
     peerDependencies:
-      prettier: ^1.16.4 || ^2.0.0
-      svelte: ^3.2.0 || ^4.0.0-next.0
+      prettier: ^3.0.0
+      svelte: ^3.2.0 || ^4.0.0-next.0 || ^5.0.0-next.0
     dependencies:
       prettier: 3.2.5
       svelte: 4.2.19
