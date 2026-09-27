@@ -197,8 +197,8 @@ importers:
         specifier: 1.1.6
         version: 1.1.6
       '@types/gulp':
-        specifier: 4.0.17
-        version: 4.0.17
+        specifier: 4.0.18
+        version: 4.0.18
       '@types/gulp-rename':
         specifier: 2.0.6
         version: 2.0.6
@@ -4092,13 +4092,13 @@ packages:
       '@types/vinyl': 2.0.7
     dev: true
 
-  /@types/gulp@4.0.17:
-    resolution: {integrity: sha512-+pKQynu2C/HS16kgmDlAicjtFYP8kaa86eE9P0Ae7GB5W29we/E2TIdbOWtEZD5XkpY+jr8fyqfwO6SWZecLpQ==}
+  /@types/gulp@4.0.18:
+    resolution: {integrity: sha512-IqkYa4sXkwH2uwqO2aXYOoAisJpLX13BPaS6lmEAoG4BbgOay3qqGQFsT9LMSSQVMQlEKU7wTUW0sPV46V0olw==}
     dependencies:
       '@types/node': 16.11.45
       '@types/undertaker': 1.2.8
       '@types/vinyl-fs': 3.0.1
-      chokidar: 3.5.3
+      chokidar: 3.6.0
     dev: true
 
   /@types/istanbul-lib-coverage@2.0.4:
