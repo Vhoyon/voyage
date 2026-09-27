@@ -72,7 +72,7 @@
     "ytdl-core": "4.11.5"
   },
   "devDependencies": {
-    "@faker-js/faker": "8.4.1",
+    "@faker-js/faker": "10.5.0",
     "@nestjs/cli": "10.4.5",
     "@nestjs/schematics": "9.2.0",
     "@nestjs/testing": "9.4.3",
