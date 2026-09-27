@@ -77,10 +77,10 @@ importers:
         version: 4.9.5(graphql@16.8.1)
       '@discord-nestjs/common':
         specifier: 3.4.2
-        version: 3.4.2(@discord-nestjs/core@3.6.0)(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(discord.js@13.6.0)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+        version: 3.4.2(@discord-nestjs/core@3.6.0)(@nestjs/common@10.4.16)(@nestjs/core@9.4.3)(discord.js@13.6.0)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       '@discord-nestjs/core':
         specifier: 3.6.0
-        version: 3.6.0(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(discord.js@13.6.0)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+        version: 3.6.0(@nestjs/common@10.4.16)(@nestjs/core@9.4.3)(discord.js@13.6.0)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       '@discordjs/builders':
         specifier: 0.16.0
         version: 0.16.0
@@ -92,19 +92,19 @@ importers:
         version: 0.16.1(@discordjs/opus@0.9.0)(ffmpeg-static@4.4.1)
       '@nestjs/apollo':
         specifier: 10.2.1
-        version: 10.2.1(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(@nestjs/graphql@10.2.1)(apollo-server-express@3.13.0)(graphql@16.8.1)
+        version: 10.2.1(@nestjs/common@10.4.16)(@nestjs/core@9.4.3)(@nestjs/graphql@10.2.1)(apollo-server-express@3.13.0)(graphql@16.8.1)
       '@nestjs/common':
-        specifier: 9.4.3
-        version: 9.4.3(class-transformer@0.4.0)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+        specifier: 10.4.16
+        version: 10.4.16(class-transformer@0.4.0)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       '@nestjs/core':
         specifier: 9.4.3
-        version: 9.4.3(@nestjs/common@9.4.3)(@nestjs/platform-express@9.4.3)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+        version: 9.4.3(@nestjs/common@10.4.16)(@nestjs/platform-express@9.4.3)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       '@nestjs/graphql':
         specifier: 10.2.1
-        version: 10.2.1(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(class-transformer@0.4.0)(class-validator@0.14.1)(graphql@16.8.1)(reflect-metadata@0.2.2)
+        version: 10.2.1(@nestjs/common@10.4.16)(@nestjs/core@9.4.3)(class-transformer@0.4.0)(class-validator@0.14.1)(graphql@16.8.1)(reflect-metadata@0.2.2)
       '@nestjs/platform-express':
         specifier: 9.4.3
-        version: 9.4.3(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)
+        version: 9.4.3(@nestjs/common@10.4.16)(@nestjs/core@9.4.3)
       '@paljs/plugins':
         specifier: 4.1.0
         version: 4.1.0(graphql@16.8.1)
@@ -158,10 +158,10 @@ importers:
         version: 5.15.0(graphql@16.8.1)
       nest-typed-config:
         specifier: 2.9.3
-        version: 2.9.3(@nestjs/common@9.4.3)(axios@1.7.9)(reflect-metadata@0.2.2)(rxjs@7.8.1)(typescript@4.9.5)
+        version: 2.9.3(@nestjs/common@10.4.16)(axios@1.7.9)(reflect-metadata@0.2.2)(rxjs@7.8.1)(typescript@4.9.5)
       nestjs-dynamic-providers:
         specifier: 0.3.4
-        version: 0.3.4(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+        version: 0.3.4(@nestjs/common@10.4.16)(@nestjs/core@9.4.3)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       reflect-metadata:
         specifier: 0.2.2
         version: 0.2.2
@@ -186,7 +186,7 @@ importers:
         version: 9.2.0(typescript@4.9.5)
       '@nestjs/testing':
         specifier: 9.4.3
-        version: 9.4.3(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(@nestjs/platform-express@9.4.3)
+        version: 9.4.3(@nestjs/common@10.4.16)(@nestjs/core@9.4.3)(@nestjs/platform-express@9.4.3)
       '@swc/core':
         specifier: 1.7.36
         version: 1.7.36
@@ -1530,7 +1530,7 @@ packages:
       parse-cache-control: 1.0.1
     dev: false
 
-  /@discord-nestjs/common@3.4.2(@discord-nestjs/core@3.6.0)(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(discord.js@13.6.0)(reflect-metadata@0.2.2)(rxjs@7.8.1):
+  /@discord-nestjs/common@3.4.2(@discord-nestjs/core@3.6.0)(@nestjs/common@10.4.16)(@nestjs/core@9.4.3)(discord.js@13.6.0)(reflect-metadata@0.2.2)(rxjs@7.8.1):
     resolution: {integrity: sha512-urgTFsqqmCzbqN/Plu0Fhq76MIxN5i0tuWi4FL793nBVe7C6Ail7+ueGvjzWGfBUK/L5EtFBzjD1ptDw9Z+2zg==}
     peerDependencies:
       '@discord-nestjs/core': '*'
@@ -1540,10 +1540,10 @@ packages:
       reflect-metadata: ^0.1.13
       rxjs: ^7.*
     dependencies:
-      '@discord-nestjs/core': 3.6.0(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(discord.js@13.6.0)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-      '@nestjs/common': 9.4.3(class-transformer@0.4.0)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-      '@nestjs/core': 9.4.3(@nestjs/common@9.4.3)(@nestjs/platform-express@9.4.3)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-      '@nestjs/mapped-types': 1.0.1(@nestjs/common@9.4.3)(class-transformer@0.5.1)(class-validator@0.13.2)(reflect-metadata@0.2.2)
+      '@discord-nestjs/core': 3.6.0(@nestjs/common@10.4.16)(@nestjs/core@9.4.3)(discord.js@13.6.0)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      '@nestjs/common': 10.4.16(class-transformer@0.4.0)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      '@nestjs/core': 9.4.3(@nestjs/common@10.4.16)(@nestjs/platform-express@9.4.3)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      '@nestjs/mapped-types': 1.0.1(@nestjs/common@10.4.16)(class-transformer@0.5.1)(class-validator@0.13.2)(reflect-metadata@0.2.2)
       class-transformer: 0.5.1
       class-validator: 0.13.2
       discord.js: 13.6.0
@@ -1551,7 +1551,7 @@ packages:
       rxjs: 7.8.1
     dev: false
 
-  /@discord-nestjs/core@3.6.0(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(discord.js@13.6.0)(reflect-metadata@0.2.2)(rxjs@7.8.1):
+  /@discord-nestjs/core@3.6.0(@nestjs/common@10.4.16)(@nestjs/core@9.4.3)(discord.js@13.6.0)(reflect-metadata@0.2.2)(rxjs@7.8.1):
     resolution: {integrity: sha512-RXkfMb/LuUddfuhY622DhTIT53p/ZUFCgSR1Rzt+xdw8xoE6bF6GKNkQisZLWontMsVV/FzoFzAEzDCVdrw4aA==}
     peerDependencies:
       '@nestjs/common': 8.* || 9.*
@@ -1560,8 +1560,8 @@ packages:
       reflect-metadata: ^0.1.13
       rxjs: ^7.*
     dependencies:
-      '@nestjs/common': 9.4.3(class-transformer@0.4.0)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-      '@nestjs/core': 9.4.3(@nestjs/common@9.4.3)(@nestjs/platform-express@9.4.3)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      '@nestjs/common': 10.4.16(class-transformer@0.4.0)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      '@nestjs/core': 9.4.3(@nestjs/common@10.4.16)(@nestjs/platform-express@9.4.3)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       class-transformer: 0.5.1
       discord.js: 13.6.0
       reflect-metadata: 0.2.2
@@ -3194,7 +3194,7 @@ packages:
       graphql: 16.10.0
     dev: true
 
-  /@nestjs/apollo@10.2.1(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(@nestjs/graphql@10.2.1)(apollo-server-express@3.13.0)(graphql@16.8.1):
+  /@nestjs/apollo@10.2.1(@nestjs/common@10.4.16)(@nestjs/core@9.4.3)(@nestjs/graphql@10.2.1)(apollo-server-express@3.13.0)(graphql@16.8.1):
     resolution: {integrity: sha512-xAui+/ZQ5THeO09YgAyP+AZyPvJplH8F3azwV8sMJjbbEaQev6gyzbZsCCbcVcCiHIL0t20JmNPmLIY9BIdRrg==}
     peerDependencies:
       '@apollo/gateway': ^0.44.1 || ^0.46.0 || ^0.48.0 || ^0.49.0 || ^0.50.0 || ^2.0.0
@@ -3218,9 +3218,9 @@ packages:
       apollo-server-fastify:
         optional: true
     dependencies:
-      '@nestjs/common': 9.4.3(class-transformer@0.4.0)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-      '@nestjs/core': 9.4.3(@nestjs/common@9.4.3)(@nestjs/platform-express@9.4.3)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-      '@nestjs/graphql': 10.2.1(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(class-transformer@0.4.0)(class-validator@0.14.1)(graphql@16.8.1)(reflect-metadata@0.2.2)
+      '@nestjs/common': 10.4.16(class-transformer@0.4.0)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      '@nestjs/core': 9.4.3(@nestjs/common@10.4.16)(@nestjs/platform-express@9.4.3)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      '@nestjs/graphql': 10.2.1(@nestjs/common@10.4.16)(@nestjs/core@9.4.3)(class-transformer@0.4.0)(class-validator@0.14.1)(graphql@16.8.1)(reflect-metadata@0.2.2)
       apollo-server-express: 3.13.0(express@4.21.2)(graphql@16.8.1)
       graphql: 16.8.1
       iterall: 1.3.0
@@ -3228,7 +3228,7 @@ packages:
       tslib: 2.5.0
     dev: false
 
-  /@nestjs/axios@3.1.3(@nestjs/common@9.4.3)(axios@1.7.9)(rxjs@7.8.1):
+  /@nestjs/axios@3.1.3(@nestjs/common@10.4.16)(axios@1.7.9)(rxjs@7.8.1):
     resolution: {integrity: sha512-RZ/63c1tMxGLqyG3iOCVt7A72oy4x1eM6QEhd4KzCYpaVWW0igq0WSREeRoEZhIxRcZfDfIIkvsOMiM7yfVGZQ==}
     requiresBuild: true
     peerDependencies:
@@ -3236,7 +3236,7 @@ packages:
       axios: ^1.3.1
       rxjs: ^6.0.0 || ^7.0.0
     dependencies:
-      '@nestjs/common': 9.4.3(class-transformer@0.4.0)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      '@nestjs/common': 10.4.16(class-transformer@0.4.0)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       axios: 1.7.9
       rxjs: 7.8.1
     dev: false
@@ -3281,20 +3281,20 @@ packages:
       - webpack-cli
     dev: true
 
-  /@nestjs/common@9.4.3(class-transformer@0.4.0)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1):
-    resolution: {integrity: sha512-Gd6D4IaYj01o14Bwv81ukidn4w3bPHCblMUq+SmUmWLyosK+XQmInCS09SbDDZyL8jy86PngtBLTdhJ2bXSUig==}
+  /@nestjs/common@10.4.16(class-transformer@0.4.0)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1):
+    resolution: {integrity: sha512-40jE0Na48HJ0xDcvmejzOQzaZttqwc0wkMyfDveG70L4hKBohL1FV1nEHoPicqbifkxOQAI+vrWaVwtRwm5g5g==}
     peerDependencies:
-      cache-manager: <=5
       class-transformer: '*'
       class-validator: '*'
-      reflect-metadata: ^0.1.12
+      file-type: ^20.4.1
+      reflect-metadata: ^0.1.12 || ^0.2.0
       rxjs: ^7.1.0
     peerDependenciesMeta:
-      cache-manager:
-        optional: true
       class-transformer:
         optional: true
       class-validator:
+        optional: true
+      file-type:
         optional: true
     dependencies:
       class-transformer: 0.4.0
@@ -3302,10 +3302,10 @@ packages:
       iterare: 1.2.1
       reflect-metadata: 0.2.2
       rxjs: 7.8.1
-      tslib: 2.5.3
+      tslib: 2.8.1
       uid: 2.0.2
 
-  /@nestjs/core@9.4.3(@nestjs/common@9.4.3)(@nestjs/platform-express@9.4.3)(reflect-metadata@0.2.2)(rxjs@7.8.1):
+  /@nestjs/core@9.4.3(@nestjs/common@10.4.16)(@nestjs/platform-express@9.4.3)(reflect-metadata@0.2.2)(rxjs@7.8.1):
     resolution: {integrity: sha512-Qi63+wi55Jh4sDyaj5Hhx2jOpKqT386aeo+VOKsxnd+Ql9VvkO/FjmuwBGUyzkJt29ENYc+P0Sx/k5LtstNpPQ==}
     requiresBuild: true
     peerDependencies:
@@ -3323,8 +3323,8 @@ packages:
       '@nestjs/websockets':
         optional: true
     dependencies:
-      '@nestjs/common': 9.4.3(class-transformer@0.4.0)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-      '@nestjs/platform-express': 9.4.3(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)
+      '@nestjs/common': 10.4.16(class-transformer@0.4.0)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      '@nestjs/platform-express': 9.4.3(@nestjs/common@10.4.16)(@nestjs/core@9.4.3)
       '@nuxtjs/opencollective': 0.3.2
       fast-safe-stringify: 2.1.1
       iterare: 1.2.1
@@ -3336,7 +3336,7 @@ packages:
     transitivePeerDependencies:
       - encoding
 
-  /@nestjs/graphql@10.2.1(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(class-transformer@0.4.0)(class-validator@0.14.1)(graphql@16.8.1)(reflect-metadata@0.2.2):
+  /@nestjs/graphql@10.2.1(@nestjs/common@10.4.16)(@nestjs/core@9.4.3)(class-transformer@0.4.0)(class-validator@0.14.1)(graphql@16.8.1)(reflect-metadata@0.2.2):
     resolution: {integrity: sha512-FBzYTymT4oopiGMpej7GTRyhz1BgJxLlXZPUueamC5J9u1WxCwJyETkzBI/zeUkUydlklF/xd5zDd/Md6//hEw==}
     peerDependencies:
       '@apollo/subgraph': ^0.1.5 || ^0.3.0 || ^0.4.0 || ^2.0.0
@@ -3360,9 +3360,9 @@ packages:
       '@graphql-tools/merge': 8.3.18(graphql@16.8.1)
       '@graphql-tools/schema': 9.0.16(graphql@16.8.1)
       '@graphql-tools/utils': 9.2.1(graphql@16.8.1)
-      '@nestjs/common': 9.4.3(class-transformer@0.4.0)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-      '@nestjs/core': 9.4.3(@nestjs/common@9.4.3)(@nestjs/platform-express@9.4.3)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-      '@nestjs/mapped-types': 1.2.2(@nestjs/common@9.4.3)(class-transformer@0.4.0)(class-validator@0.14.1)(reflect-metadata@0.2.2)
+      '@nestjs/common': 10.4.16(class-transformer@0.4.0)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      '@nestjs/core': 9.4.3(@nestjs/common@10.4.16)(@nestjs/platform-express@9.4.3)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      '@nestjs/mapped-types': 1.2.2(@nestjs/common@10.4.16)(class-transformer@0.4.0)(class-validator@0.14.1)(reflect-metadata@0.2.2)
       chokidar: 3.5.3
       class-transformer: 0.4.0
       class-validator: 0.14.1
@@ -3382,7 +3382,7 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@nestjs/mapped-types@1.0.1(@nestjs/common@9.4.3)(class-transformer@0.5.1)(class-validator@0.13.2)(reflect-metadata@0.2.2):
+  /@nestjs/mapped-types@1.0.1(@nestjs/common@10.4.16)(class-transformer@0.5.1)(class-validator@0.13.2)(reflect-metadata@0.2.2):
     resolution: {integrity: sha512-NFvofzSinp00j5rzUd4tf+xi9od6383iY0JP7o0Bnu1fuItAUkWBgc4EKuIQ3D+c2QI3i9pG1kDWAeY27EMGtg==}
     peerDependencies:
       '@nestjs/common': ^7.0.8 || ^8.0.0
@@ -3395,13 +3395,13 @@ packages:
       class-validator:
         optional: true
     dependencies:
-      '@nestjs/common': 9.4.3(class-transformer@0.4.0)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      '@nestjs/common': 10.4.16(class-transformer@0.4.0)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       class-transformer: 0.5.1
       class-validator: 0.13.2
       reflect-metadata: 0.2.2
     dev: false
 
-  /@nestjs/mapped-types@1.2.2(@nestjs/common@9.4.3)(class-transformer@0.4.0)(class-validator@0.14.1)(reflect-metadata@0.2.2):
+  /@nestjs/mapped-types@1.2.2(@nestjs/common@10.4.16)(class-transformer@0.4.0)(class-validator@0.14.1)(reflect-metadata@0.2.2):
     resolution: {integrity: sha512-3dHxLXs3M0GPiriAcCFFJQHoDFUuzTD5w6JDhE7TyfT89YKpe6tcCCIqOZWdXmt9AZjjK30RkHRSFF+QEnWFQg==}
     peerDependencies:
       '@nestjs/common': ^7.0.8 || ^8.0.0 || ^9.0.0
@@ -3414,20 +3414,20 @@ packages:
       class-validator:
         optional: true
     dependencies:
-      '@nestjs/common': 9.4.3(class-transformer@0.4.0)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      '@nestjs/common': 10.4.16(class-transformer@0.4.0)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       class-transformer: 0.4.0
       class-validator: 0.14.1
       reflect-metadata: 0.2.2
     dev: false
 
-  /@nestjs/platform-express@9.4.3(@nestjs/common@9.4.3)(@nestjs/core@9.4.3):
+  /@nestjs/platform-express@9.4.3(@nestjs/common@10.4.16)(@nestjs/core@9.4.3):
     resolution: {integrity: sha512-FpdczWoRSC0zz2dNL9u2AQLXKXRVtq4HgHklAhbL59X0uy+mcxhlSThG7DHzDMkoSnuuHY8ojDVf7mDxk+GtCw==}
     peerDependencies:
       '@nestjs/common': ^9.0.0
       '@nestjs/core': ^9.0.0
     dependencies:
-      '@nestjs/common': 9.4.3(class-transformer@0.4.0)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-      '@nestjs/core': 9.4.3(@nestjs/common@9.4.3)(@nestjs/platform-express@9.4.3)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      '@nestjs/common': 10.4.16(class-transformer@0.4.0)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      '@nestjs/core': 9.4.3(@nestjs/common@10.4.16)(@nestjs/platform-express@9.4.3)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       body-parser: 1.20.2
       cors: 2.8.5
       express: 4.18.2
@@ -3465,7 +3465,7 @@ packages:
       - chokidar
     dev: true
 
-  /@nestjs/testing@9.4.3(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(@nestjs/platform-express@9.4.3):
+  /@nestjs/testing@9.4.3(@nestjs/common@10.4.16)(@nestjs/core@9.4.3)(@nestjs/platform-express@9.4.3):
     resolution: {integrity: sha512-LDT8Ai2eKnTzvnPaJwWOK03qTaFap5uHHsJCv6dL0uKWk6hyF9jms8DjyVaGsaujCaXDG8izl1mDEER0OmxaZA==}
     peerDependencies:
       '@nestjs/common': ^9.0.0
@@ -3478,9 +3478,9 @@ packages:
       '@nestjs/platform-express':
         optional: true
     dependencies:
-      '@nestjs/common': 9.4.3(class-transformer@0.4.0)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-      '@nestjs/core': 9.4.3(@nestjs/common@9.4.3)(@nestjs/platform-express@9.4.3)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-      '@nestjs/platform-express': 9.4.3(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)
+      '@nestjs/common': 10.4.16(class-transformer@0.4.0)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      '@nestjs/core': 9.4.3(@nestjs/common@10.4.16)(@nestjs/platform-express@9.4.3)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      '@nestjs/platform-express': 9.4.3(@nestjs/common@10.4.16)(@nestjs/core@9.4.3)
       tslib: 2.5.3
     dev: true
 
@@ -10048,14 +10048,14 @@ packages:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
     dev: true
 
-  /nest-typed-config@2.9.3(@nestjs/common@9.4.3)(axios@1.7.9)(reflect-metadata@0.2.2)(rxjs@7.8.1)(typescript@4.9.5):
+  /nest-typed-config@2.9.3(@nestjs/common@10.4.16)(axios@1.7.9)(reflect-metadata@0.2.2)(rxjs@7.8.1)(typescript@4.9.5):
     resolution: {integrity: sha512-hmng90IrSMHNzibrmDJyC1WThZulAcdpEtil2sHd0Tgwkh2ZJvGoU4gbtZ0v0uqFUXezK+ODv2TosyFd50NDBQ==}
     peerDependencies:
       '@nestjs/common': '>= 6.10.0 < 11'
       reflect-metadata: '>= 0.1.12 < 0.3'
       rxjs: '>= 6.0.0 < 8'
     dependencies:
-      '@nestjs/common': 9.4.3(class-transformer@0.4.0)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      '@nestjs/common': 10.4.16(class-transformer@0.4.0)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       chalk: 4.1.2
       class-transformer: 0.5.1
       class-validator: 0.14.1
@@ -10067,7 +10067,7 @@ packages:
       set-value: 4.1.0
     optionalDependencies:
       '@iarna/toml': 2.2.5
-      '@nestjs/axios': 3.1.3(@nestjs/common@9.4.3)(axios@1.7.9)(rxjs@7.8.1)
+      '@nestjs/axios': 3.1.3(@nestjs/common@10.4.16)(axios@1.7.9)(rxjs@7.8.1)
       cosmiconfig: 9.0.0(typescript@4.9.5)
       dotenv: 16.4.5
       dotenv-expand: 12.0.1
@@ -10079,7 +10079,7 @@ packages:
       - typescript
     dev: false
 
-  /nestjs-dynamic-providers@0.3.4(@nestjs/common@9.4.3)(@nestjs/core@9.4.3)(reflect-metadata@0.2.2)(rxjs@7.8.1):
+  /nestjs-dynamic-providers@0.3.4(@nestjs/common@10.4.16)(@nestjs/core@9.4.3)(reflect-metadata@0.2.2)(rxjs@7.8.1):
     resolution: {integrity: sha512-wfFJ01BFP3S1gSB2rDgfbnsxePpMKBYVYUd9ngYpDw/MLUeQWMj/Hz7FWpFTKpUuoU2GzYwzyAkqVrmG2oETSQ==}
     peerDependencies:
       '@nestjs/common': 9.* || 10.*
@@ -10087,8 +10087,8 @@ packages:
       reflect-metadata: ^0.1.12 || ^0.2.0
       rxjs: 7.*
     dependencies:
-      '@nestjs/common': 9.4.3(class-transformer@0.4.0)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
-      '@nestjs/core': 9.4.3(@nestjs/common@9.4.3)(@nestjs/platform-express@9.4.3)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      '@nestjs/common': 10.4.16(class-transformer@0.4.0)(class-validator@0.14.1)(reflect-metadata@0.2.2)(rxjs@7.8.1)
+      '@nestjs/core': 9.4.3(@nestjs/common@10.4.16)(@nestjs/platform-express@9.4.3)(reflect-metadata@0.2.2)(rxjs@7.8.1)
       glob: 10.3.10
       reflect-metadata: 0.2.2
       rxjs: 7.8.1
@@ -12717,6 +12717,9 @@ packages:
 
   /tslib@2.6.2:
     resolution: {integrity: sha512-AEYxH93jGFPn/a2iVAwW87VuUIkR1FVUKB77NwMF7nBTDkDrrT/Hpt/IrCJ0QXhW27jTBDcf5ZY7w6RiqTMw2Q==}
+
+  /tslib@2.8.1:
+    resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
 
   /tsutils@3.21.0(typescript@5.0.4):
     resolution: {integrity: sha512-mHKK3iUXL+3UF6xL5k0PEhKRUBKPBCv/+RkEOpjRWxxx27KKRBmmA60A9pgOUvMi8GKhRMPEmjBRPzs2W7O1OA==}
